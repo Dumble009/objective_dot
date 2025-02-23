@@ -4,27 +4,34 @@
 mod common;
 mod ui_components;
 
-use ui_components::canvas::*;
+use ui_components::canvas_ui::*;
+use ui_components::palette_ui::*;
 
 use eframe::egui::*;
 
-#[derive(Default)]
 pub struct ObjectiveDot {
-    canvas: Canvas,
+    canvas_ui: CanvasUi,
+    palette_ui: PaletteUi,
 }
 
 impl ObjectiveDot {
     fn new(_cc: &eframe::CreationContext<'_>) -> Self {
         ObjectiveDot {
-            canvas: Canvas::new(),
+            canvas_ui: CanvasUi::new(),
+            palette_ui: PaletteUi::new(),
         }
     }
 }
 
 impl eframe::App for ObjectiveDot {
     fn save(&mut self, _storage: &mut dyn eframe::Storage) {}
-    fn update(&mut self, _ctx: &Context, _frame: &mut eframe::Frame) {
-        self.canvas.update(_ctx, _frame);
+    fn update(&mut self, ctx: &Context, frame: &mut eframe::Frame) {
+        self.palette_ui.update(ctx, frame);
+
+        let palette = self.palette_ui.clone_palette();
+        self.canvas_ui.set_palette(palette);
+
+        self.canvas_ui.update(ctx, frame);
     }
 }
 

@@ -1,3 +1,5 @@
+use crate::common::color::ODColor;
+use crate::common::palette::{Palette, PaletteColorIndex};
 use eframe::egui::*;
 
 const GRID_WIDTH: u32 = 10;
@@ -7,7 +9,7 @@ const DEFAULT_SQUARE_HEIGHT: u32 = 30;
 
 #[derive(Default)]
 struct CanvasGrid {
-    grid: Vec<Vec<u8>>,
+    grid: Vec<Vec<PaletteColorIndex>>,
 }
 
 impl CanvasGrid {
@@ -25,7 +27,7 @@ impl CanvasGrid {
         }
     }
 
-    fn set_color(&mut self, x: usize, y: usize, val: u8) -> Result<(), String> {
+    fn set_color(&mut self, x: usize, y: usize, val: PaletteColorIndex) -> Result<(), String> {
         self.coordinate_validation(x, y)?;
 
         self.grid[y][x] = val;
@@ -33,21 +35,22 @@ impl CanvasGrid {
         Ok(())
     }
 
-    fn get_color(&self, x: usize, y: usize) -> Result<u8, String> {
+    fn get_color(&self, x: usize, y: usize) -> Result<PaletteColorIndex, String> {
         self.coordinate_validation(x, y)?;
         Ok(self.grid[y][x])
     }
 }
 
-#[derive(Default)]
-pub struct Canvas {
+pub struct CanvasUi {
     grid: CanvasGrid,
+    palette: Palette,
 }
 
-impl Canvas {
+impl CanvasUi {
     pub fn new() -> Self {
-        Canvas {
+        CanvasUi {
             grid: CanvasGrid::new(),
+            palette: Palette::new(),
         }
     }
 
@@ -57,7 +60,7 @@ impl Canvas {
 
         for y in 0..GRID_HEIGHT {
             for x in 0..GRID_WIDTH {
-                let color = self.grid.get_color(x as usize, y as usize)?;
+                let color_idx = self.grid.get_color(x as usize, y as usize)?;
                 let square_rect = Rect::from_min_max(
                     Pos2::new(square_x as f32, square_y as f32),
                     Pos2::new(
@@ -66,11 +69,8 @@ impl Canvas {
                     ),
                 );
 
-                let fill_color = if color == 1 {
-                    Color32::BLACK
-                } else {
-                    Color32::WHITE
-                };
+                let color = self.palette.get_color(color_idx)?;
+                let fill_color = color.to_color32();
 
                 let stroke_color = Color32::from_rgb(
                     255 - fill_color.r(),
@@ -106,12 +106,16 @@ impl Canvas {
                 return Ok(());
             }
 
-            self.grid.set_color(grid_x as usize, grid_y as usize, 1)?;
+            self.grid.set_color(
+                grid_x as usize,
+                grid_y as usize,
+                self.palette.get_current_active_idx()?,
+            )?;
         }
         Ok(())
     }
 
-    fn update(&mut self, _ctx: &Context, _frame: &mut eframe::Frame, ui: &mut Ui) {
+    fn update(&mut self, ui: &mut Ui) {
         if let Err(msg) = self.fill_by_cursor(ui) {
             println!("Error!: {msg}");
         }
@@ -119,15 +123,17 @@ impl Canvas {
             println!("Error!: {msg}");
         }
     }
-}
 
-impl eframe::App for Canvas {
-    fn save(&mut self, _storage: &mut dyn eframe::Storage) {}
-    fn update(&mut self, ctx: &Context, frame: &mut eframe::Frame) {
-        CentralPanel::default().show(ctx, |ui| {
-            self.update(ctx, frame, ui);
-        });
+    pub fn set_palette(&mut self, palette: Palette) {
+        self.palette = palette;
     }
 }
 
-include!("tests/canvas_test.rs");
+impl eframe::App for CanvasUi {
+    fn save(&mut self, _storage: &mut dyn eframe::Storage) {}
+    fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
+        CentralPanel::default().show(ctx, |ui| self.update(ui));
+    }
+}
+
+include!("tests/canvas_ui_test.rs");
