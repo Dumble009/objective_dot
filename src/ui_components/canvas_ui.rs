@@ -1,4 +1,3 @@
-use crate::common::color::ODColor;
 use crate::common::palette::{Palette, PaletteColorIndex};
 use eframe::egui::*;
 
@@ -21,9 +20,9 @@ impl CanvasGrid {
 
     fn coordinate_validation(&self, x: usize, y: usize) -> Result<(), String> {
         if y < self.grid.len() && x < self.grid[y].len() {
-            return Ok(());
+            Ok(())
         } else {
-            return Err(format!("args are out of range! x={x}, y={y}"));
+            Err(format!("args are out of range! x={x}, y={y}"))
         }
     }
 

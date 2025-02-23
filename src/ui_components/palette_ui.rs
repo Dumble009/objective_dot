@@ -1,5 +1,5 @@
 use crate::common::color::ODColor;
-use crate::common::palette::{Palette, PaletteColorIndex};
+use crate::common::palette::Palette;
 use eframe::egui::*;
 
 pub struct PaletteUi {

@@ -12,7 +12,7 @@ impl ODColor {
         ODColor { r, g, b }
     }
 
-    pub fn to_color32(&self) -> Color32 {
+    pub fn to_color32(self) -> Color32 {
         Color32::from_rgb(self.r, self.g, self.b)
     }
 }

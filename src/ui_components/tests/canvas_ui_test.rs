@@ -2,7 +2,6 @@
 mod test {
 
     use super::{CanvasGrid, GRID_HEIGHT, GRID_WIDTH};
-    use crate::common::color::ODColor;
 
     #[test]
     fn canvas_grid_get_set_color_test() {
