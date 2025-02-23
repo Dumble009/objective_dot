@@ -6,42 +6,58 @@ const DEFAULT_SQUARE_WIDTH: u32 = 30;
 const DEFAULT_SQUARE_HEIGHT: u32 = 30;
 
 #[derive(Default)]
-struct Grid {
+struct CanvasGrid {
     grid: Vec<Vec<u8>>,
 }
 
-impl Grid {
+impl CanvasGrid {
     fn new() -> Self {
-        Grid {
+        CanvasGrid {
             grid: vec![vec![0; GRID_WIDTH as usize]; GRID_HEIGHT as usize],
         }
     }
 
-    fn set_color(&mut self, x: usize, y: usize, val: u8) {
-        if y >= self.grid.len() || x >= self.grid.len() {
-            return;
+    fn coordinate_validation(&self, x: usize, y: usize) -> Result<(), String> {
+        if y < self.grid.len() && x < self.grid[y].len() {
+            return Ok(());
+        } else {
+            return Err(format!("args are out of range! x={x}, y={y}"));
         }
+    }
+
+    fn set_color(&mut self, x: usize, y: usize, val: u8) -> Result<(), String> {
+        self.coordinate_validation(x, y)?;
 
         self.grid[y][x] = val;
+
+        Ok(())
+    }
+
+    fn get_color(&self, x: usize, y: usize) -> Result<u8, String> {
+        self.coordinate_validation(x, y)?;
+        Ok(self.grid[y][x])
     }
 }
 
 #[derive(Default)]
 pub struct Canvas {
-    grid: Grid,
+    grid: CanvasGrid,
 }
 
 impl Canvas {
     pub fn new() -> Self {
-        Canvas { grid: Grid::new() }
+        Canvas {
+            grid: CanvasGrid::new(),
+        }
     }
 
-    fn draw_grid(&self, ui: &mut Ui) {
+    fn draw(&self, ui: &mut Ui) -> Result<(), String> {
         let mut square_x = 0;
         let mut square_y = 0;
 
-        for row in &self.grid.grid {
-            for color in row.iter() {
+        for y in 0..GRID_HEIGHT {
+            for x in 0..GRID_WIDTH {
+                let color = self.grid.get_color(x as usize, y as usize)?;
                 let square_rect = Rect::from_min_max(
                     Pos2::new(square_x as f32, square_y as f32),
                     Pos2::new(
@@ -50,7 +66,7 @@ impl Canvas {
                     ),
                 );
 
-                let fill_color = if *color == 1 {
+                let fill_color = if color == 1 {
                     Color32::BLACK
                 } else {
                     Color32::WHITE
@@ -71,9 +87,11 @@ impl Canvas {
             square_x = 0;
             square_y += DEFAULT_SQUARE_HEIGHT;
         }
+
+        Ok(())
     }
 
-    fn fill_by_cursor(&mut self, ui: &mut Ui) {
+    fn fill_by_cursor(&mut self, ui: &mut Ui) -> Result<(), String> {
         let (response, _) = ui.allocate_painter(ui.available_size_before_wrap(), Sense::drag());
 
         // cursor_pos はウインドウの左上を (0, 0) とする座標系の値で返ってくる想定
@@ -85,20 +103,31 @@ impl Canvas {
                 && 0 <= grid_y
                 && grid_y < GRID_HEIGHT as i32)
             {
-                return;
+                return Ok(());
             }
 
-            self.grid.set_color(grid_x as usize, grid_y as usize, 1);
+            self.grid.set_color(grid_x as usize, grid_y as usize, 1)?;
+        }
+        Ok(())
+    }
+
+    fn update(&mut self, _ctx: &Context, _frame: &mut eframe::Frame, ui: &mut Ui) {
+        if let Err(msg) = self.fill_by_cursor(ui) {
+            println!("Error!: {msg}");
+        }
+        if let Err(msg) = self.draw(ui) {
+            println!("Error!: {msg}");
         }
     }
 }
 
 impl eframe::App for Canvas {
     fn save(&mut self, _storage: &mut dyn eframe::Storage) {}
-    fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
+    fn update(&mut self, ctx: &Context, frame: &mut eframe::Frame) {
         CentralPanel::default().show(ctx, |ui| {
-            self.fill_by_cursor(ui);
-            self.draw_grid(ui);
+            self.update(ctx, frame, ui);
         });
     }
 }
+
+include!("tests/canvas_test.rs");
