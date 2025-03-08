@@ -15,6 +15,10 @@ impl ODColor {
     pub fn to_color32(self) -> Color32 {
         Color32::from_rgb(self.r, self.g, self.b)
     }
+
+    pub fn from_color32(c32: Color32) -> Self {
+        ODColor::new(c32.r(), c32.g(), c32.b())
+    }
 }
 
 include!("tests/color_test.rs");

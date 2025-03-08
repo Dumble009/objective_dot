@@ -1,15 +1,18 @@
 use crate::common::color::ODColor;
 use crate::common::palette::Palette;
+use color_picker::{color_picker_color32, Alpha};
 use eframe::egui::*;
 
 pub struct PaletteUi {
     palette: Palette,
+    picked_color: Color32,
 }
 
 impl PaletteUi {
     pub fn new() -> Self {
         PaletteUi {
             palette: Palette::new(),
+            picked_color: Color32::WHITE,
         }
     }
 
@@ -18,8 +21,11 @@ impl PaletteUi {
     }
 
     fn update(&mut self, ui: &mut Ui) {
+        let alpha = Alpha::Opaque;
+        color_picker_color32(ui, &mut self.picked_color, alpha);
         if ui.button("Add Color").clicked() {
-            self.add_color(ODColor::new(255, 0, 0)).unwrap_or_default();
+            self.add_color(ODColor::from_color32(self.picked_color))
+                .unwrap_or_default();
         }
 
         let mut layout = Layout::left_to_right(Align::Min);
@@ -29,7 +35,8 @@ impl PaletteUi {
 
     fn draw_color_boxes(&mut self, ui: &mut Ui) {
         for idx in 0..self.palette.get_color_count() {
-            let button = Button::new("").fill(Color32::RED);
+            let color_i = self.palette.get_color(idx).unwrap();
+            let button = Button::new("").fill(color_i.to_color32());
 
             if ui.add(button).clicked() {
                 if let Err(msg) = self.palette.select_color(idx) {
