@@ -1,10 +1,13 @@
 use crate::common::palette::{Palette, PaletteColorIndex};
 use eframe::egui::*;
 
+use super::top_menu_bar_item::{self, TopMenuBarItem};
+
 const GRID_WIDTH: u32 = 10;
 const GRID_HEIGHT: u32 = 10;
 const DEFAULT_SQUARE_WIDTH: u32 = 30;
 const DEFAULT_SQUARE_HEIGHT: u32 = 30;
+const TOP_MENU_BAR_HEIGHT: u32 = 20;
 
 #[derive(Default)]
 struct CanvasGrid {
@@ -53,7 +56,7 @@ impl CanvasUi {
         }
     }
 
-    fn draw(&self, ui: &mut Ui) -> Result<(), String> {
+    fn draw_grid(&self, ui: &mut Ui) -> Result<(), String> {
         let mut square_x = 0;
         let mut square_y = 0;
 
@@ -61,10 +64,10 @@ impl CanvasUi {
             for x in 0..GRID_WIDTH {
                 let color_idx = self.grid.get_color(x as usize, y as usize)?;
                 let square_rect = Rect::from_min_max(
-                    Pos2::new(square_x as f32, square_y as f32),
+                    Pos2::new(square_x as f32, (square_y + TOP_MENU_BAR_HEIGHT) as f32),
                     Pos2::new(
                         (square_x + DEFAULT_SQUARE_WIDTH) as f32,
-                        (square_y + DEFAULT_SQUARE_HEIGHT) as f32,
+                        (square_y + DEFAULT_SQUARE_HEIGHT + TOP_MENU_BAR_HEIGHT) as f32,
                     ),
                 );
 
@@ -96,7 +99,8 @@ impl CanvasUi {
         // cursor_pos はウインドウの左上を (0, 0) とする座標系の値で返ってくる想定
         if let Some(cursor_pos) = response.interact_pointer_pos() {
             let grid_x = (cursor_pos.x / (DEFAULT_SQUARE_WIDTH as f32)) as i32;
-            let grid_y = (cursor_pos.y / (DEFAULT_SQUARE_HEIGHT as f32)) as i32;
+            let grid_y = ((cursor_pos.y - TOP_MENU_BAR_HEIGHT as f32)
+                / (DEFAULT_SQUARE_HEIGHT as f32)) as i32;
             if !(0 <= grid_x
                 && grid_x < GRID_WIDTH as i32
                 && 0 <= grid_y
@@ -114,11 +118,18 @@ impl CanvasUi {
         Ok(())
     }
 
-    fn update(&mut self, ui: &mut Ui) {
+    fn draw_top_menu_bar(&self, ui: &mut Ui, top_menu_bar_items: Vec<&mut dyn TopMenuBarItem>) {
+        for top_menu_bar_item in top_menu_bar_items {
+            top_menu_bar_item.draw(ui);
+        }
+    }
+
+    fn draw(&mut self, ui: &mut Ui) {
         if let Err(msg) = self.fill_by_cursor(ui) {
             println!("Error!: {msg}");
         }
-        if let Err(msg) = self.draw(ui) {
+
+        if let Err(msg) = self.draw_grid(ui) {
             println!("Error!: {msg}");
         }
     }
@@ -126,12 +137,11 @@ impl CanvasUi {
     pub fn set_palette(&mut self, palette: Palette) {
         self.palette = palette;
     }
-}
 
-impl eframe::App for CanvasUi {
-    fn save(&mut self, _storage: &mut dyn eframe::Storage) {}
-    fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
-        CentralPanel::default().show(ctx, |ui| self.update(ui));
+    pub fn update(&mut self, ctx: &Context, top_menu_bar_items: Vec<&mut dyn TopMenuBarItem>) {
+        TopBottomPanel::top("wrap_app_top_bar")
+            .show(ctx, |ui| self.draw_top_menu_bar(ui, top_menu_bar_items));
+        CentralPanel::default().show(ctx, |ui| self.draw(ui));
     }
 }
 

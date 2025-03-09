@@ -3,9 +3,12 @@ use crate::common::palette::Palette;
 use color_picker::{color_picker_color32, Alpha};
 use eframe::egui::*;
 
+use super::top_menu_bar_item::TopMenuBarItem;
+
 pub struct PaletteUi {
     palette: Palette,
     picked_color: Color32,
+    is_showing: bool,
 }
 
 impl PaletteUi {
@@ -13,6 +16,7 @@ impl PaletteUi {
         PaletteUi {
             palette: Palette::new(),
             picked_color: Color32::WHITE,
+            is_showing: false,
         }
     }
 
@@ -20,7 +24,7 @@ impl PaletteUi {
         self.palette.add_color(color)
     }
 
-    fn update(&mut self, ui: &mut Ui) {
+    fn draw(&mut self, ui: &mut Ui) {
         let alpha = Alpha::Opaque;
         color_picker_color32(ui, &mut self.picked_color, alpha);
         if ui.button("Add Color").clicked() {
@@ -46,15 +50,32 @@ impl PaletteUi {
         }
     }
 
+    pub fn update(&mut self, _ctx: &Context, _frame: &mut eframe::Frame) {
+        if !self.is_showing {
+            return;
+        }
+
+        // open に直接 self.is_showing を渡すと、
+        // show に渡しているクロージャが self.draw を保持しようとする際に
+        // 2重 burrow になるというエラーが出るので、一時変数に入れている。
+        let mut is_showing = self.is_showing;
+        Window::new("Palette")
+            .open(&mut is_showing)
+            .show(_ctx, |ui| self.draw(ui));
+
+        self.is_showing = is_showing;
+    }
+
     pub fn clone_palette(&self) -> Palette {
         self.palette.clone()
     }
 }
 
-impl eframe::App for PaletteUi {
-    fn save(&mut self, _storage: &mut dyn eframe::Storage) {}
-    fn update(&mut self, _ctx: &Context, _frame: &mut eframe::Frame) {
-        Window::new("Palette").show(_ctx, |ui| self.update(ui));
+impl TopMenuBarItem for PaletteUi {
+    fn draw(&mut self, ui: &mut Ui) {
+        if ui.button("Palette").clicked() {
+            self.is_showing = true;
+        }
     }
 }
 

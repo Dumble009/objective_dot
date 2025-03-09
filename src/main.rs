@@ -8,6 +8,7 @@ use ui_components::canvas_ui::*;
 use ui_components::palette_ui::*;
 
 use eframe::egui::*;
+use ui_components::top_menu_bar_item::TopMenuBarItem;
 
 pub struct ObjectiveDot {
     canvas_ui: CanvasUi,
@@ -31,7 +32,8 @@ impl eframe::App for ObjectiveDot {
         let palette = self.palette_ui.clone_palette();
         self.canvas_ui.set_palette(palette);
 
-        self.canvas_ui.update(ctx, frame);
+        let top_menu_bar_items: Vec<&mut dyn TopMenuBarItem> = vec![&mut self.palette_ui];
+        self.canvas_ui.update(ctx, top_menu_bar_items);
     }
 }
 
