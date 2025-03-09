@@ -1,7 +1,7 @@
 use crate::common::palette::{Palette, PaletteColorIndex};
 use eframe::egui::*;
 
-use super::top_menu_bar_item::{self, TopMenuBarItem};
+use super::top_menu_bar_item::TopMenuBarItem;
 
 const GRID_WIDTH: u32 = 10;
 const GRID_HEIGHT: u32 = 10;
