@@ -1,13 +1,13 @@
 use crate::common::color::ODColor;
 use crate::common::palette::Palette;
-use color_picker::{color_picker_color32, Alpha};
+use crate::ui_components::color_picker_ui::{ColorPickResult, ColorPickerUi};
 use eframe::egui::*;
 
 use super::top_menu_bar_item::TopMenuBarItem;
 
 pub struct PaletteUi {
     palette: Palette,
-    picked_color: Color32,
+    color_picker: ColorPickerUi,
     is_showing: bool,
 }
 
@@ -15,7 +15,7 @@ impl PaletteUi {
     pub fn new() -> Self {
         PaletteUi {
             palette: Palette::new(),
-            picked_color: Color32::WHITE,
+            color_picker: ColorPickerUi::new(),
             is_showing: false,
         }
     }
@@ -24,12 +24,21 @@ impl PaletteUi {
         self.palette.add_color(color)
     }
 
-    fn draw(&mut self, ui: &mut Ui) {
-        let alpha = Alpha::Opaque;
-        color_picker_color32(ui, &mut self.picked_color, alpha);
+    fn draw(&mut self, ctx: &Context, ui: &mut Ui) {
+        if self.color_picker.is_showing() {
+            self.color_picker.draw(ctx);
+            let result = self.color_picker.get_color();
+
+            if let ColorPickResult::Picked(color) = result {
+                self.add_color(color).unwrap();
+                self.color_picker.hide();
+            } else if result == ColorPickResult::Canceled {
+                self.color_picker.hide();
+            }
+        }
+
         if ui.button("Add Color").clicked() {
-            self.add_color(ODColor::from_color32(self.picked_color))
-                .unwrap_or_default();
+            self.color_picker.show("PaletteUiPicker");
         }
 
         let mut layout = Layout::left_to_right(Align::Min);
@@ -50,7 +59,7 @@ impl PaletteUi {
         }
     }
 
-    pub fn update(&mut self, _ctx: &Context, _frame: &mut eframe::Frame) {
+    pub fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
         if !self.is_showing {
             return;
         }
@@ -61,7 +70,7 @@ impl PaletteUi {
         let mut is_showing = self.is_showing;
         Window::new("Palette")
             .open(&mut is_showing)
-            .show(_ctx, |ui| self.draw(ui));
+            .show(ctx, |ui| self.draw(ctx, ui));
 
         self.is_showing = is_showing;
     }
