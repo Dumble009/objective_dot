@@ -1,6 +1,6 @@
 use crate::common::color::ODColor;
 use crate::common::palette::Palette;
-use crate::ui_components::color_picker_ui::{ColorPickResult, ColorPickerUi};
+use crate::ui_components::color_picker_ui::{ColorPickMode, ColorPickResult, ColorPickerUi};
 use eframe::egui::*;
 
 use super::top_menu_bar_item::TopMenuBarItem;
@@ -29,8 +29,11 @@ impl PaletteUi {
             self.color_picker.draw(ctx);
             let result = self.color_picker.get_color();
 
-            if let ColorPickResult::Picked(color) = result {
+            if let ColorPickResult::AddNewColor(color) = result {
                 self.add_color(color).unwrap();
+                self.color_picker.hide();
+            } else if let ColorPickResult::ChangeColor(idx, color) = result {
+                self.palette.change_color(idx, color).unwrap();
                 self.color_picker.hide();
             } else if result == ColorPickResult::Canceled {
                 self.color_picker.hide();
@@ -38,7 +41,8 @@ impl PaletteUi {
         }
 
         if ui.button("Add Color").clicked() {
-            self.color_picker.show("PaletteUiPicker");
+            self.color_picker
+                .show("Add New Color", ColorPickMode::AddNewColor);
         }
 
         let mut layout = Layout::left_to_right(Align::Min);
@@ -50,11 +54,15 @@ impl PaletteUi {
         for idx in 0..self.palette.get_color_count() {
             let color_i = self.palette.get_color(idx).unwrap();
             let button = Button::new("").fill(color_i.to_color32());
+            let button_add_res = ui.add(button);
 
-            if ui.add(button).clicked() {
+            if button_add_res.clicked_by(PointerButton::Primary) {
                 if let Err(msg) = self.palette.select_color(idx) {
                     println!("Palette Error: {msg}");
                 }
+            } else if button_add_res.clicked_by(PointerButton::Secondary) {
+                self.color_picker
+                    .show("Change Color", ColorPickMode::ChangeColor(idx));
             }
         }
     }

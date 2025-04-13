@@ -52,6 +52,19 @@ impl Palette {
         self.current_selected_idx = idx;
         Ok(())
     }
+
+    pub fn change_color(
+        &mut self,
+        idx: PaletteColorIndex,
+        new_color: ODColor,
+    ) -> Result<(), String> {
+        if idx >= self.get_color_count() {
+            return Err(format!("cannnot chang color. idx: {idx} is out of range."));
+        }
+
+        self.colors[idx] = new_color;
+        Ok(())
+    }
 }
 
 include!("tests/palette_test.rs");

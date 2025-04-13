@@ -5,15 +5,24 @@ use eframe::egui::*;
 pub struct ColorPickerUi {
     window_title: String,
     pick_result: ColorPickResult,
+    pick_mode: ColorPickMode,
     pick_color: Color32,
     is_showing: bool,
 }
 
 #[derive(PartialEq, Clone, Copy, Debug)]
 pub enum ColorPickResult {
-    Picked(ODColor),
+    AddNewColor(ODColor),
+    ChangeColor(usize, ODColor),
     Waiting,
     Canceled,
+}
+
+#[derive(PartialEq, Clone, Copy, Debug)]
+
+pub enum ColorPickMode {
+    AddNewColor,
+    ChangeColor(usize),
 }
 
 impl ColorPickerUi {
@@ -21,6 +30,7 @@ impl ColorPickerUi {
         ColorPickerUi {
             window_title: String::from(""),
             pick_result: ColorPickResult::Waiting,
+            pick_mode: ColorPickMode::AddNewColor,
             pick_color: Color32::WHITE,
             is_showing: false,
         }
@@ -44,7 +54,11 @@ impl ColorPickerUi {
     }
 
     fn set_color(&mut self, color: Color32) {
-        self.pick_result = ColorPickResult::Picked(ODColor::from_color32(color));
+        if self.pick_mode == ColorPickMode::AddNewColor {
+            self.pick_result = ColorPickResult::AddNewColor(ODColor::from_color32(color));
+        } else if let ColorPickMode::ChangeColor(idx) = self.pick_mode {
+            self.pick_result = ColorPickResult::ChangeColor(idx, ODColor::from_color32(color));
+        }
     }
 
     fn cancel(&mut self) {
@@ -55,7 +69,7 @@ impl ColorPickerUi {
         let alpha = Alpha::Opaque;
         color_picker_color32(ui, &mut self.pick_color, alpha);
 
-        if ui.button("Add Color").clicked() {
+        if ui.button("Confirm").clicked() {
             self.set_color(self.pick_color);
         } else if ui.button("Cancel").clicked() {
             self.cancel();
@@ -66,9 +80,13 @@ impl ColorPickerUi {
         self.is_showing
     }
 
-    pub fn show(&mut self, title: &str) {
+    pub fn show(&mut self, title: &str, mode: ColorPickMode) {
+        if self.is_showing {
+            return;
+        }
         self.window_title = String::from(title);
         self.pick_result = ColorPickResult::Waiting;
+        self.pick_mode = mode;
         self.is_showing = true;
     }
 

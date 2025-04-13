@@ -69,4 +69,25 @@ mod test {
         let get_current_active_idx_res = palette.get_current_active_idx();
         assert!(get_current_active_idx_res.is_err());
     }
+
+    #[test]
+    fn change_color_test() {
+        let mut palette = Palette::new();
+
+        let color = ODColor::new(1, 2, 3);
+        palette.add_color(color).unwrap();
+
+        // 初期状態でも一色は存在するので、新しく追加した色は idx=1 になる。
+        let new_color = ODColor::new(2, 3, 4);
+        let change_color_res = palette.change_color(1, new_color);
+        assert!(change_color_res.is_ok());
+
+        let get_color_res = palette.get_color(1);
+        assert!(get_color_res.is_ok());
+        let changed_color = get_color_res.unwrap();
+        assert_eq!(changed_color, new_color);
+
+        let change_color_res = palette.change_color(2, new_color);
+        assert!(change_color_res.is_err());
+    }
 }
