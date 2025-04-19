@@ -96,6 +96,10 @@ impl CanvasUi {
     fn fill_by_cursor(&mut self, ui: &mut Ui) -> Result<(), String> {
         let (response, _) = ui.allocate_painter(ui.available_size_before_wrap(), Sense::drag());
 
+        if !response.dragged_by(PointerButton::Primary) {
+            return Ok(());
+        }
+
         // cursor_pos はウインドウの左上を (0, 0) とする座標系の値で返ってくる想定
         if let Some(cursor_pos) = response.interact_pointer_pos() {
             let grid_x = (cursor_pos.x / (DEFAULT_SQUARE_WIDTH as f32)) as i32;
