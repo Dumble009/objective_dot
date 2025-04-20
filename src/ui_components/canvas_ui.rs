@@ -114,27 +114,22 @@ impl CanvasUi {
 
     fn choose_color_from_grid(
         &self,
-        response: &Response,
+        grid_x: i32,
+        grid_y: i32,
         palette: &mut Palette,
     ) -> Result<(), String> {
-        if !response.clicked_by(PointerButton::Secondary) {
-            return Ok(());
-        }
-
-        let (grid_x, grid_y) = self.get_grid_id_pair(&response)?;
         let color_idx = self.grid.get_color(grid_x as usize, grid_y as usize)?;
         palette.select_color(color_idx)?;
 
         Ok(())
     }
 
-    fn fill_by_cursor(&mut self, response: &Response, palette: &mut Palette) -> Result<(), String> {
-        if !response.dragged_by(PointerButton::Primary) {
-            return Ok(());
-        }
-
-        let (grid_x, grid_y) = self.get_grid_id_pair(&response)?;
-
+    fn fill_by_cursor(
+        &mut self,
+        grid_x: i32,
+        grid_y: i32,
+        palette: &mut Palette,
+    ) -> Result<(), String> {
         self.grid.set_color(
             grid_x as usize,
             grid_y as usize,
@@ -156,12 +151,18 @@ impl CanvasUi {
             Sense::drag() | Sense::click(),
         );
 
-        if let Err(msg) = self.fill_by_cursor(&response, palette) {
-            println!("Error!: {msg}");
-        }
+        if let Ok((grid_x, grid_y)) = self.get_grid_id_pair(&response) {
+            if response.dragged_by(PointerButton::Primary) {
+                if let Err(msg) = self.fill_by_cursor(grid_x, grid_y, palette) {
+                    println!("Error!: {msg}");
+                }
+            }
 
-        if let Err(msg) = self.choose_color_from_grid(&response, palette) {
-            println!("Error!: {msg}");
+            if response.clicked_by(PointerButton::Secondary) {
+                if let Err(msg) = self.choose_color_from_grid(grid_x, grid_y, palette) {
+                    println!("Error!: {msg}");
+                }
+            }
         }
 
         if let Err(msg) = self.draw_grid(ui, palette) {
