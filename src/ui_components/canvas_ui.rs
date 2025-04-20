@@ -93,6 +93,19 @@ impl CanvasUi {
         Ok(())
     }
 
+    fn get_grid_id_pair(&self, response: &Response) -> Result<(i32, i32), String> {
+        // cursor_pos はウインドウの左上を (0, 0) とする座標系の値で返ってくる想定
+        if let Some(cursor_pos) = response.interact_pointer_pos() {
+            let grid_x = (cursor_pos.x / (DEFAULT_SQUARE_WIDTH as f32)) as i32;
+            let grid_y = ((cursor_pos.y - TOP_MENU_BAR_HEIGHT as f32)
+                / (DEFAULT_SQUARE_HEIGHT as f32)) as i32;
+
+            return Ok((grid_x, grid_y));
+        }
+
+        Err(String::from("Invalid Pointer"))
+    }
+
     fn fill_by_cursor(&mut self, ui: &mut Ui) -> Result<(), String> {
         let (response, _) = ui.allocate_painter(ui.available_size_before_wrap(), Sense::drag());
 
@@ -100,25 +113,22 @@ impl CanvasUi {
             return Ok(());
         }
 
-        // cursor_pos はウインドウの左上を (0, 0) とする座標系の値で返ってくる想定
-        if let Some(cursor_pos) = response.interact_pointer_pos() {
-            let grid_x = (cursor_pos.x / (DEFAULT_SQUARE_WIDTH as f32)) as i32;
-            let grid_y = ((cursor_pos.y - TOP_MENU_BAR_HEIGHT as f32)
-                / (DEFAULT_SQUARE_HEIGHT as f32)) as i32;
-            if !(0 <= grid_x
-                && grid_x < GRID_WIDTH as i32
-                && 0 <= grid_y
-                && grid_y < GRID_HEIGHT as i32)
-            {
-                return Ok(());
-            }
+        let (grid_x, grid_y) = self.get_grid_id_pair(&response)?;
 
-            self.grid.set_color(
-                grid_x as usize,
-                grid_y as usize,
-                self.palette.get_current_active_idx()?,
-            )?;
+        if grid_x < 0
+            || grid_x >= DEFAULT_SQUARE_WIDTH as i32
+            || grid_y < 0
+            || grid_y >= DEFAULT_SQUARE_HEIGHT as i32
+        {
+            return Ok(());
         }
+
+        self.grid.set_color(
+            grid_x as usize,
+            grid_y as usize,
+            self.palette.get_current_active_idx()?,
+        )?;
+
         Ok(())
     }
 
