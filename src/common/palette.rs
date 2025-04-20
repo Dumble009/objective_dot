@@ -50,6 +50,7 @@ impl Palette {
         }
 
         self.current_selected_idx = idx;
+        println!("selected color {}", idx);
         Ok(())
     }
 

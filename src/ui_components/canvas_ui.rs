@@ -98,28 +98,42 @@ impl CanvasUi {
             let grid_y = ((cursor_pos.y - TOP_MENU_BAR_HEIGHT as f32)
                 / (DEFAULT_SQUARE_HEIGHT as f32)) as i32;
 
+            if grid_x < 0
+                || grid_x >= DEFAULT_SQUARE_WIDTH as i32
+                || grid_y < 0
+                || grid_y >= DEFAULT_SQUARE_HEIGHT as i32
+            {
+                return Err(String::from("get_grid_id_pair : Invalid Position"));
+            }
+
             return Ok((grid_x, grid_y));
         }
 
-        Err(String::from("Invalid Pointer"))
+        Err(String::from("get_grid_id_pair : Invalid Pointer"))
     }
 
-    fn fill_by_cursor(&mut self, ui: &mut Ui, palette: &mut Palette) -> Result<(), String> {
-        let (response, _) = ui.allocate_painter(ui.available_size_before_wrap(), Sense::drag());
+    fn choose_color_from_grid(
+        &self,
+        response: &Response,
+        palette: &mut Palette,
+    ) -> Result<(), String> {
+        if !response.clicked_by(PointerButton::Secondary) {
+            return Ok(());
+        }
 
+        let (grid_x, grid_y) = self.get_grid_id_pair(&response)?;
+        let color_idx = self.grid.get_color(grid_x as usize, grid_y as usize)?;
+        palette.select_color(color_idx)?;
+
+        Ok(())
+    }
+
+    fn fill_by_cursor(&mut self, response: &Response, palette: &mut Palette) -> Result<(), String> {
         if !response.dragged_by(PointerButton::Primary) {
             return Ok(());
         }
 
         let (grid_x, grid_y) = self.get_grid_id_pair(&response)?;
-
-        if grid_x < 0
-            || grid_x >= DEFAULT_SQUARE_WIDTH as i32
-            || grid_y < 0
-            || grid_y >= DEFAULT_SQUARE_HEIGHT as i32
-        {
-            return Ok(());
-        }
 
         self.grid.set_color(
             grid_x as usize,
@@ -137,7 +151,16 @@ impl CanvasUi {
     }
 
     fn draw(&mut self, ui: &mut Ui, palette: &mut Palette) {
-        if let Err(msg) = self.fill_by_cursor(ui, palette) {
+        let (response, _) = ui.allocate_painter(
+            ui.available_size_before_wrap(),
+            Sense::drag() | Sense::click(),
+        );
+
+        if let Err(msg) = self.fill_by_cursor(&response, palette) {
+            println!("Error!: {msg}");
+        }
+
+        if let Err(msg) = self.choose_color_from_grid(&response, palette) {
             println!("Error!: {msg}");
         }
 
