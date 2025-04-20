@@ -51,10 +51,13 @@ mod test {
         palette.add_color(color).unwrap();
         palette.select_color(1).unwrap();
 
+        let selected_idx = palette.get_current_selected_idx().unwrap();
+        assert_eq!(selected_idx, 1);
+
         canvas_ui
             .choose_color_from_grid(0, 0, &mut palette)
             .unwrap();
-        let selected_idx = palette.get_current_active_idx().unwrap();
+        let selected_idx = palette.get_current_selected_idx().unwrap();
         assert_eq!(selected_idx, 0);
     }
 }

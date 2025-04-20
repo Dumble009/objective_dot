@@ -133,7 +133,7 @@ impl CanvasUi {
         self.grid.set_color(
             grid_x as usize,
             grid_y as usize,
-            palette.get_current_active_idx()?,
+            palette.get_current_selected_idx()?,
         )?;
 
         Ok(())

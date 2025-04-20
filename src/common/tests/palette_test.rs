@@ -33,13 +33,13 @@ mod test {
     }
 
     #[test]
-    fn select_and_get_active_color() {
+    fn select_and_get_selected_color() {
         let mut palette = Palette::new();
 
         // 初期状態でも1色は存在している。最初はそれが選択されている。
-        let get_current_active_idx_res = palette.get_current_active_idx();
-        assert!(get_current_active_idx_res.is_ok());
-        assert_eq!(get_current_active_idx_res.unwrap(), 0);
+        let get_current_selected_idx_res = palette.get_current_selected_idx();
+        assert!(get_current_selected_idx_res.is_ok());
+        assert_eq!(get_current_selected_idx_res.unwrap(), 0);
 
         let color = ODColor::new(1, 2, 3);
         palette.add_color(color).unwrap();
@@ -47,9 +47,9 @@ mod test {
         let select_color_res = palette.select_color(1);
         assert!(select_color_res.is_ok());
 
-        let get_current_active_idx_res = palette.get_current_active_idx();
-        assert!(get_current_active_idx_res.is_ok());
-        assert_eq!(get_current_active_idx_res.unwrap(), 1);
+        let get_current_selected_idx_res = palette.get_current_selected_idx();
+        assert!(get_current_selected_idx_res.is_ok());
+        assert_eq!(get_current_selected_idx_res.unwrap(), 1);
     }
 
     #[test]
@@ -61,13 +61,13 @@ mod test {
     }
 
     #[test]
-    fn get_current_active_color_test() {
+    fn get_current_selected_color_test() {
         let mut palette = Palette::new();
 
         palette.current_selected_idx = 1;
 
-        let get_current_active_idx_res = palette.get_current_active_idx();
-        assert!(get_current_active_idx_res.is_err());
+        let get_current_selected_idx_res = palette.get_current_selected_idx();
+        assert!(get_current_selected_idx_res.is_err());
     }
 
     #[test]

@@ -33,11 +33,11 @@ impl Palette {
         self.colors.len()
     }
 
-    pub fn get_current_active_idx(&self) -> Result<PaletteColorIndex, String> {
+    pub fn get_current_selected_idx(&self) -> Result<PaletteColorIndex, String> {
         if self.current_selected_idx >= self.get_color_count() {
             let current_selected_idx = self.current_selected_idx;
             return Err(format!(
-                "cannot get active color Index. idx: {current_selected_idx} is out of range."
+                "cannot get selected color Index. idx: {current_selected_idx} is out of range."
             ));
         }
 
