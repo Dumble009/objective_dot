@@ -45,18 +45,16 @@ impl CanvasGrid {
 
 pub struct CanvasUi {
     grid: CanvasGrid,
-    palette: Palette,
 }
 
 impl CanvasUi {
     pub fn new() -> Self {
         CanvasUi {
             grid: CanvasGrid::new(),
-            palette: Palette::new(),
         }
     }
 
-    fn draw_grid(&self, ui: &mut Ui) -> Result<(), String> {
+    fn draw_grid(&self, ui: &mut Ui, palette: &mut Palette) -> Result<(), String> {
         let mut square_x = 0;
         let mut square_y = 0;
 
@@ -71,7 +69,7 @@ impl CanvasUi {
                     ),
                 );
 
-                let color = self.palette.get_color(color_idx)?;
+                let color = palette.get_color(color_idx)?;
                 let fill_color = color.to_color32();
 
                 let stroke_color = Color32::from_rgb(
@@ -106,7 +104,7 @@ impl CanvasUi {
         Err(String::from("Invalid Pointer"))
     }
 
-    fn fill_by_cursor(&mut self, ui: &mut Ui) -> Result<(), String> {
+    fn fill_by_cursor(&mut self, ui: &mut Ui, palette: &mut Palette) -> Result<(), String> {
         let (response, _) = ui.allocate_painter(ui.available_size_before_wrap(), Sense::drag());
 
         if !response.dragged_by(PointerButton::Primary) {
@@ -126,7 +124,7 @@ impl CanvasUi {
         self.grid.set_color(
             grid_x as usize,
             grid_y as usize,
-            self.palette.get_current_active_idx()?,
+            palette.get_current_active_idx()?,
         )?;
 
         Ok(())
@@ -138,24 +136,25 @@ impl CanvasUi {
         }
     }
 
-    fn draw(&mut self, ui: &mut Ui) {
-        if let Err(msg) = self.fill_by_cursor(ui) {
+    fn draw(&mut self, ui: &mut Ui, palette: &mut Palette) {
+        if let Err(msg) = self.fill_by_cursor(ui, palette) {
             println!("Error!: {msg}");
         }
 
-        if let Err(msg) = self.draw_grid(ui) {
+        if let Err(msg) = self.draw_grid(ui, palette) {
             println!("Error!: {msg}");
         }
     }
 
-    pub fn set_palette(&mut self, palette: Palette) {
-        self.palette = palette;
-    }
-
-    pub fn update(&mut self, ctx: &Context, top_menu_bar_items: Vec<&mut dyn TopMenuBarItem>) {
+    pub fn update(
+        &mut self,
+        ctx: &Context,
+        top_menu_bar_items: Vec<&mut dyn TopMenuBarItem>,
+        palette: &mut Palette,
+    ) {
         TopBottomPanel::top("wrap_app_top_bar")
             .show(ctx, |ui| self.draw_top_menu_bar(ui, top_menu_bar_items));
-        CentralPanel::default().show(ctx, |ui| self.draw(ui));
+        CentralPanel::default().show(ctx, |ui| self.draw(ui, palette));
     }
 }
 

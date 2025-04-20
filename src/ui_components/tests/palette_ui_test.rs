@@ -7,18 +7,13 @@ mod test {
     fn add_color_test() {
         let color = ODColor::new(1, 2, 3);
         let mut palette_ui = PaletteUi::new();
+        let mut palette = Palette::new();
 
-        assert!(palette_ui.add_color(color).is_ok());
-    }
-
-    #[test]
-    fn clone_palette_test() {
-        let mut palette_ui = PaletteUi::new();
-
-        palette_ui.add_color(ODColor::default()).unwrap();
-
-        let palette = palette_ui.clone_palette();
+        assert!(palette_ui.add_color(color, &mut palette).is_ok());
 
         assert_eq!(palette.get_color_count(), 2);
+
+        let added_color = palette.get_color(1).unwrap();
+        assert_eq!(added_color, color);
     }
 }
