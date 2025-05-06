@@ -18,11 +18,11 @@ impl PaletteUi {
         }
     }
 
-    fn add_color(&mut self, color: ODColor, palette: &mut Palette) -> Result<(), String> {
+    fn add_color(&mut self, color: ODColor, palette: &mut dyn Palette) -> Result<(), String> {
         palette.add_color(color)
     }
 
-    fn draw(&mut self, ctx: &Context, ui: &mut Ui, palette: &mut Palette) {
+    fn draw(&mut self, ctx: &Context, ui: &mut Ui, palette: &mut dyn Palette) {
         if self.color_picker.is_showing() {
             self.color_picker.draw(ctx);
             let result = self.color_picker.get_color();
@@ -48,7 +48,7 @@ impl PaletteUi {
         ui.with_layout(layout, |ui| self.draw_color_boxes(ui, palette));
     }
 
-    fn draw_color_boxes(&mut self, ui: &mut Ui, palette: &mut Palette) {
+    fn draw_color_boxes(&mut self, ui: &mut Ui, palette: &mut dyn Palette) {
         for idx in 0..palette.get_color_count() {
             let color_i = palette.get_color(idx).unwrap();
             let button = Button::new("").fill(color_i.to_color32());
@@ -65,7 +65,7 @@ impl PaletteUi {
         }
     }
 
-    pub fn update(&mut self, ctx: &Context, palette: &mut Palette) {
+    pub fn update(&mut self, ctx: &Context, palette: &mut dyn Palette) {
         if !self.is_showing {
             return;
         }

@@ -5,7 +5,7 @@ mod common;
 mod ui_components;
 
 use common::canvas_grid::CanvasGrid;
-use common::palette::Palette;
+use common::palette::ObjectPalette;
 use ui_components::canvas_menu_ui::CanvasMenuUi;
 use ui_components::canvas_ui::*;
 use ui_components::palette_ui::*;
@@ -18,7 +18,7 @@ pub struct ObjectiveDot {
     palette_ui: PaletteUi,
     canvas_menu_ui: CanvasMenuUi,
     grid: CanvasGrid,
-    palette: Palette,
+    palette: ObjectPalette,
 }
 
 impl ObjectiveDot {
@@ -27,7 +27,7 @@ impl ObjectiveDot {
             canvas_ui: CanvasUi::new(),
             palette_ui: PaletteUi::new(),
             canvas_menu_ui: CanvasMenuUi::new(),
-            palette: Palette::new(),
+            palette: ObjectPalette::new(),
             grid: CanvasGrid::new(),
         }
     }

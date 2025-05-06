@@ -2,11 +2,12 @@
 mod test {
     use super::*;
     use crate::common::color::ODColor;
+    use crate::common::palette::ObjectPalette;
 
     #[test]
     fn add_get_color_test() {
         let color = ODColor::new(1, 2, 3);
-        let mut palette = Palette::new();
+        let mut palette = ObjectPalette::new();
 
         // 初期状態でも1色は存在している。
         assert_eq!(palette.get_color_count(), 1);
@@ -26,7 +27,7 @@ mod test {
 
     #[test]
     fn get_color_invalid_idx_test() {
-        let palette = Palette::new();
+        let palette = ObjectPalette::new();
 
         let get_color_res = palette.get_color(1);
         assert!(get_color_res.is_err());
@@ -34,7 +35,7 @@ mod test {
 
     #[test]
     fn select_and_get_selected_color() {
-        let mut palette = Palette::new();
+        let mut palette = ObjectPalette::new();
 
         // 初期状態でも1色は存在している。最初はそれが選択されている。
         let get_current_selected_idx_res = palette.get_current_selected_idx();
@@ -54,7 +55,7 @@ mod test {
 
     #[test]
     fn select_color_invalid_idx_test() {
-        let mut palette = Palette::new();
+        let mut palette = ObjectPalette::new();
 
         let select_color_res = palette.select_color(1);
         assert!(select_color_res.is_err());
@@ -62,7 +63,7 @@ mod test {
 
     #[test]
     fn get_current_selected_color_test() {
-        let mut palette = Palette::new();
+        let mut palette = ObjectPalette::new();
 
         palette.current_selected_idx = 1;
 
@@ -72,7 +73,7 @@ mod test {
 
     #[test]
     fn change_color_test() {
-        let mut palette = Palette::new();
+        let mut palette = ObjectPalette::new();
 
         let color = ODColor::new(1, 2, 3);
         palette.add_color(color).unwrap();

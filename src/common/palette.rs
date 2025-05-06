@@ -2,26 +2,37 @@ use crate::common::color::ODColor;
 
 pub type PaletteColorIndex = usize;
 
+pub trait Palette {
+    fn add_color(&mut self, color: ODColor) -> Result<(), String>;
+    fn get_color(&self, idx: PaletteColorIndex) -> Result<ODColor, String>;
+    fn get_color_count(&self) -> usize;
+    fn get_current_selected_idx(&self) -> Result<PaletteColorIndex, String>;
+    fn select_color(&mut self, idx: PaletteColorIndex) -> Result<(), String>;
+    fn change_color(&mut self, idx: PaletteColorIndex, new_color: ODColor) -> Result<(), String>;
+}
+
 #[derive(Clone)]
-pub struct Palette {
+pub struct ObjectPalette {
     colors: Vec<ODColor>,
     current_selected_idx: PaletteColorIndex,
 }
 
-impl Palette {
+impl ObjectPalette {
     pub fn new() -> Self {
-        Palette {
+        ObjectPalette {
             colors: vec![ODColor::new(0, 0, 0)],
             current_selected_idx: 0,
         }
     }
+}
 
-    pub fn add_color(&mut self, color: ODColor) -> Result<(), String> {
+impl Palette for ObjectPalette {
+    fn add_color(&mut self, color: ODColor) -> Result<(), String> {
         self.colors.push(color);
         Ok(())
     }
 
-    pub fn get_color(&self, idx: PaletteColorIndex) -> Result<ODColor, String> {
+    fn get_color(&self, idx: PaletteColorIndex) -> Result<ODColor, String> {
         if idx >= self.colors.len() {
             return Err(format!("idx is invalid! idx:{idx}"));
         }
@@ -29,11 +40,11 @@ impl Palette {
         Ok(self.colors[idx])
     }
 
-    pub fn get_color_count(&self) -> usize {
+    fn get_color_count(&self) -> usize {
         self.colors.len()
     }
 
-    pub fn get_current_selected_idx(&self) -> Result<PaletteColorIndex, String> {
+    fn get_current_selected_idx(&self) -> Result<PaletteColorIndex, String> {
         if self.current_selected_idx >= self.get_color_count() {
             let current_selected_idx = self.current_selected_idx;
             return Err(format!(
@@ -44,7 +55,7 @@ impl Palette {
         Ok(self.current_selected_idx)
     }
 
-    pub fn select_color(&mut self, idx: PaletteColorIndex) -> Result<(), String> {
+    fn select_color(&mut self, idx: PaletteColorIndex) -> Result<(), String> {
         if idx >= self.get_color_count() {
             return Err(format!("cannot select color. idx: {idx} is out of range."));
         }
@@ -54,11 +65,7 @@ impl Palette {
         Ok(())
     }
 
-    pub fn change_color(
-        &mut self,
-        idx: PaletteColorIndex,
-        new_color: ODColor,
-    ) -> Result<(), String> {
+    fn change_color(&mut self, idx: PaletteColorIndex, new_color: ODColor) -> Result<(), String> {
         if idx >= self.get_color_count() {
             return Err(format!("cannnot chang color. idx: {idx} is out of range."));
         }
