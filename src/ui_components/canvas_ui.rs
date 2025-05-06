@@ -24,8 +24,8 @@ impl CanvasUi {
         let mut square_x = 0;
         let mut square_y = 0;
 
-        for y in 0..grid.get_grid_width() {
-            for x in 0..grid.get_grid_height() {
+        for y in 0..grid.get_grid_height() {
+            for x in 0..grid.get_grid_width() {
                 let color_idx = grid.get_color(x, y)?;
                 let square_rect = Rect::from_min_max(
                     Pos2::new(square_x as f32, (square_y + TOP_MENU_BAR_HEIGHT) as f32),
@@ -108,9 +108,13 @@ impl CanvasUi {
     }
 
     fn draw_top_menu_bar(&self, ui: &mut Ui, top_menu_bar_items: Vec<&mut dyn TopMenuBarItem>) {
-        for top_menu_bar_item in top_menu_bar_items {
-            top_menu_bar_item.draw(ui);
-        }
+        let mut layout = Layout::left_to_right(Align::Min);
+        layout.main_wrap = true;
+        ui.with_layout(layout, |ui| {
+            for top_menu_bar_item in top_menu_bar_items {
+                top_menu_bar_item.draw(ui);
+            }
+        });
     }
 
     fn draw(&mut self, ui: &mut Ui, grid: &mut CanvasGrid, palette: &mut Palette) {

@@ -6,6 +6,7 @@ mod ui_components;
 
 use common::canvas_grid::CanvasGrid;
 use common::palette::Palette;
+use ui_components::canvas_menu_ui::CanvasMenuUi;
 use ui_components::canvas_ui::*;
 use ui_components::palette_ui::*;
 
@@ -15,6 +16,7 @@ use ui_components::top_menu_bar_item::TopMenuBarItem;
 pub struct ObjectiveDot {
     canvas_ui: CanvasUi,
     palette_ui: PaletteUi,
+    canvas_menu_ui: CanvasMenuUi,
     grid: CanvasGrid,
     palette: Palette,
 }
@@ -24,6 +26,7 @@ impl ObjectiveDot {
         ObjectiveDot {
             canvas_ui: CanvasUi::new(),
             palette_ui: PaletteUi::new(),
+            canvas_menu_ui: CanvasMenuUi::new(),
             palette: Palette::new(),
             grid: CanvasGrid::new(),
         }
@@ -34,8 +37,10 @@ impl eframe::App for ObjectiveDot {
     fn save(&mut self, _storage: &mut dyn eframe::Storage) {}
     fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
         self.palette_ui.update(ctx, &mut self.palette);
+        self.canvas_menu_ui.update(ctx, &mut self.grid);
 
-        let top_menu_bar_items: Vec<&mut dyn TopMenuBarItem> = vec![&mut self.palette_ui];
+        let top_menu_bar_items: Vec<&mut dyn TopMenuBarItem> =
+            vec![&mut self.palette_ui, &mut self.canvas_menu_ui];
         self.canvas_ui
             .update(ctx, top_menu_bar_items, &mut self.grid, &mut self.palette);
     }
