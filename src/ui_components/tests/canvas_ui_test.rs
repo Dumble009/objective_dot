@@ -1,7 +1,11 @@
 #[cfg(test)]
 mod test {
 
-    use crate::common::{canvas_grid::CanvasGrid, color::ODColor, palette::Palette};
+    use crate::common::{
+        canvas_grid::{CanvasGrid, Grid},
+        color::ODColor,
+        palette::Palette,
+    };
 
     use super::CanvasUi;
 

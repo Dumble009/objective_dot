@@ -1,5 +1,14 @@
 use crate::common::palette::PaletteColorIndex;
 
+pub trait Grid {
+    fn get_color(&self, x: usize, y: usize) -> Result<PaletteColorIndex, String>;
+    fn set_color(&mut self, x: usize, y: usize, val: PaletteColorIndex) -> Result<(), String>;
+    fn get_grid_width(&self) -> usize;
+    fn get_grid_height(&self) -> usize;
+    fn set_grid_width(&mut self, new_w: usize) -> Result<(), String>;
+    fn set_grid_height(&mut self, new_h: usize) -> Result<(), String>;
+}
+
 #[derive(Default)]
 pub struct CanvasGrid {
     grid: Vec<Vec<PaletteColorIndex>>,
@@ -15,7 +24,17 @@ impl CanvasGrid {
         }
     }
 
-    pub fn set_color(&mut self, x: usize, y: usize, val: PaletteColorIndex) -> Result<(), String> {
+    fn coordinate_validation(&self, x: usize, y: usize) -> Result<(), String> {
+        if y < self.grid.len() && x < self.grid[y].len() {
+            Ok(())
+        } else {
+            Err(format!("args are out of range! x={x}, y={y}"))
+        }
+    }
+}
+
+impl Grid for CanvasGrid {
+    fn set_color(&mut self, x: usize, y: usize, val: PaletteColorIndex) -> Result<(), String> {
         self.coordinate_validation(x, y)?;
 
         self.grid[y][x] = val;
@@ -23,23 +42,23 @@ impl CanvasGrid {
         Ok(())
     }
 
-    pub fn get_color(&self, x: usize, y: usize) -> Result<PaletteColorIndex, String> {
+    fn get_color(&self, x: usize, y: usize) -> Result<PaletteColorIndex, String> {
         self.coordinate_validation(x, y)?;
         Ok(self.grid[y][x])
     }
 
-    pub fn get_grid_width(&self) -> usize {
+    fn get_grid_width(&self) -> usize {
         if self.get_grid_height() == 0 {
             return 0;
         }
         self.grid[0].len()
     }
 
-    pub fn get_grid_height(&self) -> usize {
+    fn get_grid_height(&self) -> usize {
         self.grid.len()
     }
 
-    pub fn set_grid_width(&mut self, new_w: usize) -> Result<(), String> {
+    fn set_grid_width(&mut self, new_w: usize) -> Result<(), String> {
         if new_w == 0 {
             return Err(String::from("cannot set grid width 0."));
         }
@@ -69,7 +88,7 @@ impl CanvasGrid {
         Ok(())
     }
 
-    pub fn set_grid_height(&mut self, new_h: usize) -> Result<(), String> {
+    fn set_grid_height(&mut self, new_h: usize) -> Result<(), String> {
         if new_h == 0 {
             return Err(String::from("cannot set grid height 0."));
         }
@@ -94,14 +113,6 @@ impl CanvasGrid {
         }
 
         Ok(())
-    }
-
-    fn coordinate_validation(&self, x: usize, y: usize) -> Result<(), String> {
-        if y < self.grid.len() && x < self.grid[y].len() {
-            Ok(())
-        } else {
-            Err(format!("args are out of range! x={x}, y={y}"))
-        }
     }
 }
 

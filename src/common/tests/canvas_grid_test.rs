@@ -1,6 +1,6 @@
 #[cfg(test)]
 mod test {
-    use super::{CanvasGrid, INITIAL_GRID_HEIGHT, INITIAL_GRID_WIDTH};
+    use super::{CanvasGrid, Grid, INITIAL_GRID_HEIGHT, INITIAL_GRID_WIDTH};
 
     #[test]
     fn canvas_grid_get_set_color_test() {

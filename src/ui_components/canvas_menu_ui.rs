@@ -1,6 +1,6 @@
 use eframe::egui::*;
 
-use crate::common::canvas_grid::CanvasGrid;
+use crate::common::canvas_grid::Grid;
 
 use super::top_menu_bar_item::TopMenuBarItem;
 
@@ -13,7 +13,7 @@ impl CanvasMenuUi {
         CanvasMenuUi { is_showing: false }
     }
 
-    fn draw(&mut self, ui: &mut Ui, grid: &mut CanvasGrid) {
+    fn draw(&mut self, ui: &mut Ui, grid: &mut dyn Grid) {
         let mut layout = Layout::left_to_right(Align::Min);
         layout.main_wrap = true;
 
@@ -38,7 +38,7 @@ impl CanvasMenuUi {
         });
     }
 
-    pub fn update(&mut self, ctx: &Context, grid: &mut CanvasGrid) {
+    pub fn update(&mut self, ctx: &Context, grid: &mut dyn Grid) {
         if !self.is_showing {
             return;
         }

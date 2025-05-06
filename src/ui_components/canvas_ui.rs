@@ -1,4 +1,4 @@
-use crate::common::canvas_grid::CanvasGrid;
+use crate::common::canvas_grid::Grid;
 use crate::common::palette::Palette;
 use eframe::egui::*;
 
@@ -15,12 +15,7 @@ impl CanvasUi {
         CanvasUi {}
     }
 
-    fn draw_grid(
-        &self,
-        ui: &mut Ui,
-        grid: &CanvasGrid,
-        palette: &mut Palette,
-    ) -> Result<(), String> {
+    fn draw_grid(&self, ui: &mut Ui, grid: &dyn Grid, palette: &mut Palette) -> Result<(), String> {
         let mut square_x = 0;
         let mut square_y = 0;
 
@@ -82,7 +77,7 @@ impl CanvasUi {
         &self,
         grid_x: i32,
         grid_y: i32,
-        grid: &CanvasGrid,
+        grid: &dyn Grid,
         palette: &mut Palette,
     ) -> Result<(), String> {
         let color_idx = grid.get_color(grid_x as usize, grid_y as usize)?;
@@ -95,7 +90,7 @@ impl CanvasUi {
         &mut self,
         grid_x: i32,
         grid_y: i32,
-        grid: &mut CanvasGrid,
+        grid: &mut dyn Grid,
         palette: &mut Palette,
     ) -> Result<(), String> {
         grid.set_color(
@@ -117,7 +112,7 @@ impl CanvasUi {
         });
     }
 
-    fn draw(&mut self, ui: &mut Ui, grid: &mut CanvasGrid, palette: &mut Palette) {
+    fn draw(&mut self, ui: &mut Ui, grid: &mut dyn Grid, palette: &mut Palette) {
         let (response, _) = ui.allocate_painter(
             ui.available_size_before_wrap(),
             Sense::drag() | Sense::click(),
@@ -146,7 +141,7 @@ impl CanvasUi {
         &mut self,
         ctx: &Context,
         top_menu_bar_items: Vec<&mut dyn TopMenuBarItem>,
-        grid: &mut CanvasGrid,
+        grid: &mut dyn Grid,
         palette: &mut Palette,
     ) {
         TopBottomPanel::top("wrap_app_top_bar")
