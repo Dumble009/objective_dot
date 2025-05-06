@@ -1,47 +1,12 @@
-use crate::common::palette::{Palette, PaletteColorIndex};
+use crate::common::canvas_grid::CanvasGrid;
+use crate::common::palette::Palette;
 use eframe::egui::*;
 
 use super::top_menu_bar_item::TopMenuBarItem;
 
-const GRID_WIDTH: u32 = 10;
-const GRID_HEIGHT: u32 = 10;
 const DEFAULT_SQUARE_WIDTH: u32 = 30;
 const DEFAULT_SQUARE_HEIGHT: u32 = 30;
 const TOP_MENU_BAR_HEIGHT: u32 = 20;
-
-#[derive(Default)]
-struct CanvasGrid {
-    grid: Vec<Vec<PaletteColorIndex>>,
-}
-
-impl CanvasGrid {
-    fn new() -> Self {
-        CanvasGrid {
-            grid: vec![vec![0; GRID_WIDTH as usize]; GRID_HEIGHT as usize],
-        }
-    }
-
-    fn coordinate_validation(&self, x: usize, y: usize) -> Result<(), String> {
-        if y < self.grid.len() && x < self.grid[y].len() {
-            Ok(())
-        } else {
-            Err(format!("args are out of range! x={x}, y={y}"))
-        }
-    }
-
-    fn set_color(&mut self, x: usize, y: usize, val: PaletteColorIndex) -> Result<(), String> {
-        self.coordinate_validation(x, y)?;
-
-        self.grid[y][x] = val;
-
-        Ok(())
-    }
-
-    fn get_color(&self, x: usize, y: usize) -> Result<PaletteColorIndex, String> {
-        self.coordinate_validation(x, y)?;
-        Ok(self.grid[y][x])
-    }
-}
 
 pub struct CanvasUi {
     grid: CanvasGrid,
@@ -58,9 +23,9 @@ impl CanvasUi {
         let mut square_x = 0;
         let mut square_y = 0;
 
-        for y in 0..GRID_HEIGHT {
-            for x in 0..GRID_WIDTH {
-                let color_idx = self.grid.get_color(x as usize, y as usize)?;
+        for y in 0..self.grid.get_grid_width() {
+            for x in 0..self.grid.get_grid_height() {
+                let color_idx = self.grid.get_color(x, y)?;
                 let square_rect = Rect::from_min_max(
                     Pos2::new(square_x as f32, (square_y + TOP_MENU_BAR_HEIGHT) as f32),
                     Pos2::new(
