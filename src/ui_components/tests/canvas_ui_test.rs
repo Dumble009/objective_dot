@@ -2,16 +2,18 @@
 mod test {
 
     use crate::common::{
-        canvas_grid::{CanvasGrid, Grid},
+        canvas_grid::Grid,
         color::ODColor,
         palette::{ObjectPalette, Palette},
     };
+
+    use crate::mock::grid_mock::GridMock;
 
     use super::CanvasUi;
 
     #[test]
     fn canvas_fill_by_cursor_test() {
-        let mut grid = CanvasGrid::new();
+        let mut grid = GridMock::new();
         let mut canvas_ui = CanvasUi::new();
         let mut palette = ObjectPalette::new();
         let color = ODColor::new(1, 2, 3);
@@ -27,7 +29,7 @@ mod test {
 
     #[test]
     fn canvas_choose_color_from_grid_test() {
-        let grid = CanvasGrid::new();
+        let grid = GridMock::new();
         let canvas_ui = CanvasUi::new();
         let mut palette = ObjectPalette::new();
         let color = ODColor::new(1, 2, 3);

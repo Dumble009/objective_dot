@@ -4,6 +4,8 @@
 mod common;
 mod ui_components;
 
+mod mock;
+
 use common::canvas_grid::CanvasGrid;
 use common::palette::ObjectPalette;
 use ui_components::canvas_menu_ui::CanvasMenuUi;
