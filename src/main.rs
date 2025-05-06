@@ -4,6 +4,7 @@
 mod common;
 mod ui_components;
 
+use common::canvas_grid::CanvasGrid;
 use common::palette::Palette;
 use ui_components::canvas_ui::*;
 use ui_components::palette_ui::*;
@@ -14,6 +15,7 @@ use ui_components::top_menu_bar_item::TopMenuBarItem;
 pub struct ObjectiveDot {
     canvas_ui: CanvasUi,
     palette_ui: PaletteUi,
+    grid: CanvasGrid,
     palette: Palette,
 }
 
@@ -23,6 +25,7 @@ impl ObjectiveDot {
             canvas_ui: CanvasUi::new(),
             palette_ui: PaletteUi::new(),
             palette: Palette::new(),
+            grid: CanvasGrid::new(),
         }
     }
 }
@@ -34,7 +37,7 @@ impl eframe::App for ObjectiveDot {
 
         let top_menu_bar_items: Vec<&mut dyn TopMenuBarItem> = vec![&mut self.palette_ui];
         self.canvas_ui
-            .update(ctx, top_menu_bar_items, &mut self.palette);
+            .update(ctx, top_menu_bar_items, &mut self.grid, &mut self.palette);
     }
 }
 

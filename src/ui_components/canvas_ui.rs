@@ -8,24 +8,25 @@ const DEFAULT_SQUARE_WIDTH: u32 = 30;
 const DEFAULT_SQUARE_HEIGHT: u32 = 30;
 const TOP_MENU_BAR_HEIGHT: u32 = 20;
 
-pub struct CanvasUi {
-    grid: CanvasGrid,
-}
+pub struct CanvasUi {}
 
 impl CanvasUi {
     pub fn new() -> Self {
-        CanvasUi {
-            grid: CanvasGrid::new(),
-        }
+        CanvasUi {}
     }
 
-    fn draw_grid(&self, ui: &mut Ui, palette: &mut Palette) -> Result<(), String> {
+    fn draw_grid(
+        &self,
+        ui: &mut Ui,
+        grid: &CanvasGrid,
+        palette: &mut Palette,
+    ) -> Result<(), String> {
         let mut square_x = 0;
         let mut square_y = 0;
 
-        for y in 0..self.grid.get_grid_width() {
-            for x in 0..self.grid.get_grid_height() {
-                let color_idx = self.grid.get_color(x, y)?;
+        for y in 0..grid.get_grid_width() {
+            for x in 0..grid.get_grid_height() {
+                let color_idx = grid.get_color(x, y)?;
                 let square_rect = Rect::from_min_max(
                     Pos2::new(square_x as f32, (square_y + TOP_MENU_BAR_HEIGHT) as f32),
                     Pos2::new(
@@ -81,9 +82,10 @@ impl CanvasUi {
         &self,
         grid_x: i32,
         grid_y: i32,
+        grid: &CanvasGrid,
         palette: &mut Palette,
     ) -> Result<(), String> {
-        let color_idx = self.grid.get_color(grid_x as usize, grid_y as usize)?;
+        let color_idx = grid.get_color(grid_x as usize, grid_y as usize)?;
         palette.select_color(color_idx)?;
 
         Ok(())
@@ -93,9 +95,10 @@ impl CanvasUi {
         &mut self,
         grid_x: i32,
         grid_y: i32,
+        grid: &mut CanvasGrid,
         palette: &mut Palette,
     ) -> Result<(), String> {
-        self.grid.set_color(
+        grid.set_color(
             grid_x as usize,
             grid_y as usize,
             palette.get_current_selected_idx()?,
@@ -110,7 +113,7 @@ impl CanvasUi {
         }
     }
 
-    fn draw(&mut self, ui: &mut Ui, palette: &mut Palette) {
+    fn draw(&mut self, ui: &mut Ui, grid: &mut CanvasGrid, palette: &mut Palette) {
         let (response, _) = ui.allocate_painter(
             ui.available_size_before_wrap(),
             Sense::drag() | Sense::click(),
@@ -118,19 +121,19 @@ impl CanvasUi {
 
         if let Ok((grid_x, grid_y)) = self.get_grid_id_pair(&response) {
             if response.dragged_by(PointerButton::Primary) {
-                if let Err(msg) = self.fill_by_cursor(grid_x, grid_y, palette) {
+                if let Err(msg) = self.fill_by_cursor(grid_x, grid_y, grid, palette) {
                     println!("Error!: {msg}");
                 }
             }
 
             if response.clicked_by(PointerButton::Secondary) {
-                if let Err(msg) = self.choose_color_from_grid(grid_x, grid_y, palette) {
+                if let Err(msg) = self.choose_color_from_grid(grid_x, grid_y, grid, palette) {
                     println!("Error!: {msg}");
                 }
             }
         }
 
-        if let Err(msg) = self.draw_grid(ui, palette) {
+        if let Err(msg) = self.draw_grid(ui, grid, palette) {
             println!("Error!: {msg}");
         }
     }
@@ -139,11 +142,12 @@ impl CanvasUi {
         &mut self,
         ctx: &Context,
         top_menu_bar_items: Vec<&mut dyn TopMenuBarItem>,
+        grid: &mut CanvasGrid,
         palette: &mut Palette,
     ) {
         TopBottomPanel::top("wrap_app_top_bar")
             .show(ctx, |ui| self.draw_top_menu_bar(ui, top_menu_bar_items));
-        CentralPanel::default().show(ctx, |ui| self.draw(ui, palette));
+        CentralPanel::default().show(ctx, |ui| self.draw(ui, grid, palette));
     }
 }
 
