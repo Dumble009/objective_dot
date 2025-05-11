@@ -4,15 +4,21 @@ use eframe::egui::*;
 
 use super::top_menu_bar_item::TopMenuBarItem;
 
-const DEFAULT_SQUARE_WIDTH: u32 = 30;
-const DEFAULT_SQUARE_HEIGHT: u32 = 30;
+const DEFAULT_SQUARE_SIZE: f32 = 30.0;
 const TOP_MENU_BAR_HEIGHT: u32 = 20;
+const SCROLL_MAGNI: f32 = 0.1;
 
-pub struct CanvasUi {}
+pub struct CanvasUi {
+    square_root_pos: Pos2,
+    square_size: f32,
+}
 
 impl CanvasUi {
     pub fn new() -> Self {
-        CanvasUi {}
+        CanvasUi {
+            square_root_pos: Pos2::new(0.0, 0.0),
+            square_size: DEFAULT_SQUARE_SIZE,
+        }
     }
 
     fn draw_grid(
@@ -21,18 +27,17 @@ impl CanvasUi {
         grid: &dyn Grid,
         palette: &mut dyn Palette,
     ) -> Result<(), String> {
-        let mut square_x = 0;
-        let mut square_y = 0;
-
         for y in 0..grid.get_grid_height() {
             for x in 0..grid.get_grid_width() {
                 let color_idx = grid.get_color(x, y)?;
+                let square_pos = self.square_root_pos
+                    + Vec2::new(
+                        x as f32 * self.square_size,
+                        y as f32 * self.square_size + TOP_MENU_BAR_HEIGHT as f32,
+                    );
                 let square_rect = Rect::from_min_max(
-                    Pos2::new(square_x as f32, (square_y + TOP_MENU_BAR_HEIGHT) as f32),
-                    Pos2::new(
-                        (square_x + DEFAULT_SQUARE_WIDTH) as f32,
-                        (square_y + DEFAULT_SQUARE_HEIGHT + TOP_MENU_BAR_HEIGHT) as f32,
-                    ),
+                    square_pos,
+                    square_pos + Vec2::new(self.square_size, self.square_size),
                 );
 
                 let color = palette.get_color(color_idx)?;
@@ -47,11 +52,7 @@ impl CanvasUi {
 
                 ui.painter()
                     .rect(square_rect, 0, fill_color, grid_stroke, StrokeKind::Middle);
-
-                square_x += DEFAULT_SQUARE_WIDTH;
             }
-            square_x = 0;
-            square_y += DEFAULT_SQUARE_HEIGHT;
         }
 
         Ok(())
@@ -60,14 +61,14 @@ impl CanvasUi {
     fn get_grid_id_pair(&self, response: &Response) -> Result<(i32, i32), String> {
         // cursor_pos はウインドウの左上を (0, 0) とする座標系の値で返ってくる想定
         if let Some(cursor_pos) = response.interact_pointer_pos() {
-            let grid_x = (cursor_pos.x / (DEFAULT_SQUARE_WIDTH as f32)) as i32;
-            let grid_y = ((cursor_pos.y - TOP_MENU_BAR_HEIGHT as f32)
-                / (DEFAULT_SQUARE_HEIGHT as f32)) as i32;
+            let grid_x = (cursor_pos.x / (self.square_size as f32)) as i32;
+            let grid_y =
+                ((cursor_pos.y - TOP_MENU_BAR_HEIGHT as f32) / (self.square_size as f32)) as i32;
 
             if grid_x < 0
-                || grid_x >= DEFAULT_SQUARE_WIDTH as i32
+                || grid_x >= self.square_size as i32
                 || grid_y < 0
-                || grid_y >= DEFAULT_SQUARE_HEIGHT as i32
+                || grid_y >= self.square_size as i32
             {
                 return Err(String::from("get_grid_id_pair : Invalid Position"));
             }
@@ -117,10 +118,30 @@ impl CanvasUi {
         });
     }
 
-    fn draw(&mut self, ui: &mut Ui, grid: &mut dyn Grid, palette: &mut dyn Palette) {
+    fn move_canvas(&mut self, response: &Response) {
+        let mov = response.drag_delta();
+        self.square_root_pos += mov;
+        self.square_root_pos.x = if self.square_root_pos.x > 0.0 {
+            0.0
+        } else {
+            self.square_root_pos.x
+        };
+
+        self.square_root_pos.y = if self.square_root_pos.y > 0.0 {
+            0.0
+        } else {
+            self.square_root_pos.y
+        };
+    }
+
+    fn zoom(&mut self, scroll_y: f32) {
+        self.square_size += scroll_y * SCROLL_MAGNI;
+    }
+
+    fn draw(&mut self, ui: &mut Ui, ctx: &Context, grid: &mut dyn Grid, palette: &mut dyn Palette) {
         let (response, _) = ui.allocate_painter(
             ui.available_size_before_wrap(),
-            Sense::drag() | Sense::click(),
+            Sense::drag() | Sense::click() | Sense::hover(),
         );
 
         if let Ok((grid_x, grid_y)) = self.get_grid_id_pair(&response) {
@@ -137,6 +158,15 @@ impl CanvasUi {
             }
         }
 
+        if response.dragged_by(PointerButton::Middle) {
+            self.move_canvas(&response);
+        }
+
+        if response.hovered() {
+            let scroll = ctx.input(|i| i.raw_scroll_delta);
+            self.zoom(scroll.y);
+        }
+
         if let Err(msg) = self.draw_grid(ui, grid, palette) {
             println!("Error!: {msg}");
         }
@@ -151,7 +181,7 @@ impl CanvasUi {
     ) {
         TopBottomPanel::top("wrap_app_top_bar")
             .show(ctx, |ui| self.draw_top_menu_bar(ui, top_menu_bar_items));
-        CentralPanel::default().show(ctx, |ui| self.draw(ui, grid, palette));
+        CentralPanel::default().show(ctx, |ui| self.draw(ui, ctx, grid, palette));
     }
 }
 
