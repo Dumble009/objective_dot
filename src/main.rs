@@ -4,6 +4,7 @@
 mod common;
 mod ui_components;
 
+#[cfg(test)]
 mod mock;
 
 use common::drawing::{Drawing, ObjectDrawing};
