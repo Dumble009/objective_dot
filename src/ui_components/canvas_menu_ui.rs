@@ -36,6 +36,13 @@ impl CanvasMenuUi {
                 println!("set height error: {msg}");
             }
         });
+
+        if ui.button("split").clicked() {
+            let res = grid.split();
+            if let Err(msg) = res {
+                println!("split error: {msg}");
+            }
+        }
     }
 
     pub fn update(&mut self, ctx: &Context, grid: &mut dyn Grid) {
