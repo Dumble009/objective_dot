@@ -7,6 +7,7 @@ pub trait Grid {
     fn get_grid_height(&self) -> usize;
     fn set_grid_width(&mut self, new_w: usize) -> Result<(), String>;
     fn set_grid_height(&mut self, new_h: usize) -> Result<(), String>;
+    fn split(&mut self) -> Result<(), String>;
 }
 
 #[derive(Default)]
@@ -109,6 +110,27 @@ impl Grid for CanvasGrid {
             let diff = old_h - new_h;
             for _ in 0..diff {
                 self.grid.pop();
+            }
+        }
+
+        Ok(())
+    }
+
+    fn split(&mut self) -> Result<(), String> {
+        let pgrid = self.grid.clone();
+
+        let new_w = self.get_grid_width() * 2;
+        let new_h = self.get_grid_height() * 2;
+
+        self.set_grid_width(new_w)?;
+        self.set_grid_height(new_h)?;
+
+        for x in 0..new_w {
+            for y in 0..new_h {
+                let px = x / 2;
+                let py = y / 2;
+
+                self.set_color(x, y, pgrid[py][px])?;
             }
         }
 

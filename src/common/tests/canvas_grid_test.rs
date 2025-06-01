@@ -103,4 +103,38 @@ mod test {
         assert_eq!(width, INITIAL_GRID_WIDTH);
         assert_eq!(height, INITIAL_GRID_HEIGHT);
     }
+
+    #[test]
+    fn canvas_grid_split_test() {
+        let mut canvas_grid = CanvasGrid::new();
+
+        let res = canvas_grid.set_grid_width(2);
+        assert!(res.is_ok());
+        let res = canvas_grid.set_grid_height(2);
+        assert!(res.is_ok());
+
+        for x in 0..2 {
+            for y in 0..2 {
+                let res = canvas_grid.set_color(x, y, x + y * 2);
+                assert!(res.is_ok());
+            }
+        }
+        let res = canvas_grid.split();
+        assert!(res.is_ok());
+
+        let w = canvas_grid.get_grid_width();
+        let h = canvas_grid.get_grid_height();
+        assert_eq!(w, 4);
+        assert_eq!(h, 4);
+
+        for x in 0..4 {
+            for y in 0..4 {
+                let res = canvas_grid.get_color(x, y);
+                assert!(res.is_ok());
+                let color = res.unwrap();
+
+                assert_eq!(color, (x / 2) + (y / 2) * 2, "x = {}, y = {}", x, y);
+            }
+        }
+    }
 }

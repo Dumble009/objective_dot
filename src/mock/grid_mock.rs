@@ -50,4 +50,8 @@ impl Grid for GridMock {
         self.height = new_h;
         Ok(())
     }
+
+    fn split(&mut self) -> Result<(), String> {
+        Ok(())
+    }
 }
