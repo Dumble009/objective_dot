@@ -13,12 +13,14 @@ use ui_components::canvas_ui::*;
 use ui_components::palette_ui::*;
 
 use eframe::egui::*;
+use ui_components::file_menu_ui::FileMenuUi;
 use ui_components::top_menu_bar_item::TopMenuBarItem;
 
 pub struct ObjectiveDot {
     canvas_ui: CanvasUi,
     palette_ui: PaletteUi,
     canvas_menu_ui: CanvasMenuUi,
+    save_drawing_ui: FileMenuUi,
     drawing: ObjectDrawing,
 }
 
@@ -28,6 +30,7 @@ impl ObjectiveDot {
             canvas_ui: CanvasUi::new(),
             palette_ui: PaletteUi::new(),
             canvas_menu_ui: CanvasMenuUi::new(),
+            save_drawing_ui: FileMenuUi::new(),
             drawing: ObjectDrawing::new(),
         }
     }
@@ -36,11 +39,16 @@ impl ObjectiveDot {
 impl eframe::App for ObjectiveDot {
     fn save(&mut self, _storage: &mut dyn eframe::Storage) {}
     fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
+        self.save_drawing_ui
+            .update(ctx, self.drawing.get_grid(), self.drawing.get_palette());
         self.palette_ui.update(ctx, self.drawing.get_palette_mut());
         self.canvas_menu_ui.update(ctx, self.drawing.get_grid_mut());
 
-        let top_menu_bar_items: Vec<&mut dyn TopMenuBarItem> =
-            vec![&mut self.palette_ui, &mut self.canvas_menu_ui];
+        let top_menu_bar_items: Vec<&mut dyn TopMenuBarItem> = vec![
+            &mut self.save_drawing_ui,
+            &mut self.palette_ui,
+            &mut self.canvas_menu_ui,
+        ];
         self.canvas_ui
             .update(ctx, top_menu_bar_items, &mut self.drawing);
     }
