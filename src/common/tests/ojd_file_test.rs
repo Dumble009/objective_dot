@@ -2,13 +2,13 @@
 mod test {
     use crate::{
         common::{
+            canvas_grid::Grid,
             color::ODColor,
             ojd_file_codec::{decode, encode},
+            palette::Palette,
         },
         mock::drawing_mock::DrawingMock,
     };
-
-    use super::*;
 
     #[test]
     fn encode_decode_test() {

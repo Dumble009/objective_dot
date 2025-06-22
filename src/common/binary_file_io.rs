@@ -4,15 +4,15 @@ use std::{fs::File, path::Path};
 
 pub fn read_binary_file(path: &str) -> Result<Vec<u8>, String> {
     if !Path::new(path).exists() {
-        return Err(String::from(format!("File {} doesn't exist", path)));
+        return Err(format!("File {} doesn't exist", path));
     }
 
     let res = fs::read(path);
     if let Err(msg) = res {
-        return Err(String::from(format!(
+        return Err(format!(
             "Failed to read binary. path : {}, msg : {}",
             path, msg
-        )));
+        ));
     } else if let Ok(data) = res {
         return Ok(data);
     }
@@ -20,20 +20,20 @@ pub fn read_binary_file(path: &str) -> Result<Vec<u8>, String> {
     Err(String::from("Failed for unknown reason"))
 }
 
-pub fn write_binary_file(path: &str, binary: &Vec<u8>) -> Result<(), String> {
+pub fn write_binary_file(path: &str, binary: &[u8]) -> Result<(), String> {
     let res = File::create(path);
     if let Err(msg) = res {
-        return Err(String::from(format!(
+        return Err(format!(
             "Failed to open file. path : {}, msg : {}",
             path, msg
-        )));
+        ));
     } else if let Ok(mut file) = res {
-        let res = file.write_all(&binary);
+        let res = file.write_all(binary);
         if let Err(msg) = res {
-            return Err(String::from(format!(
+            return Err(format!(
                 "Failed to write_all. path : {}, msg : {}",
                 path, msg
-            )));
+            ));
         }
 
         return Ok(());

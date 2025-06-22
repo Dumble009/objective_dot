@@ -1,10 +1,6 @@
-use crate::common::{color::ODColor, palette};
+use crate::common::color::ODColor;
 
-use super::{
-    canvas_grid::Grid,
-    drawing::Drawing,
-    palette::{Palette, PaletteColorIndex},
-};
+use super::{drawing::Drawing, palette::PaletteColorIndex};
 const MAGIC_O: u8 = 0x4f;
 const MAGIC_J: u8 = 0x4a;
 const MAGIC_D: u8 = 0x44;
@@ -62,7 +58,7 @@ pub fn encode(drawing: &dyn Drawing, out: &mut Vec<u8>) -> Result<(), String> {
     Ok(())
 }
 
-pub fn decode(input: &Vec<u8>, drawing: &mut dyn Drawing) -> Result<(), String> {
+pub fn decode(input: &[u8], drawing: &mut dyn Drawing) -> Result<(), String> {
     let mut pos = 0;
     // マジックの確認
     let magic1: u8 = pop!(input, pos, 1, u8);

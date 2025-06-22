@@ -1,11 +1,6 @@
-use std::fs::File;
-use std::io::Write;
-
 use egui::{Context, Ui, Window};
 
-use crate::common::{
-    binary_file_io, canvas_grid::Grid, drawing::Drawing, ojd_file_codec, palette::Palette,
-};
+use crate::common::{binary_file_io, drawing::Drawing, ojd_file_codec};
 
 use super::top_menu_bar_item::TopMenuBarItem;
 
