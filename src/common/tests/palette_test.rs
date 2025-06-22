@@ -91,4 +91,20 @@ mod test {
         let change_color_res = palette.change_color(2, new_color);
         assert!(change_color_res.is_err());
     }
+
+    #[test]
+    fn reset_color_test() {
+        let mut palette = ObjectPalette::new();
+
+        let color = ODColor::new(1, 2, 3);
+        palette.add_color(color).unwrap();
+
+        let res = palette.change_color(0, color);
+        assert!(res.is_ok());
+
+        palette.reset();
+
+        assert_eq!(1, palette.get_color_count());
+        assert_ne!(color, palette.get_color(0).unwrap());
+    }
 }

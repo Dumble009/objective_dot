@@ -43,4 +43,10 @@ impl Palette for PaletteMock {
         self.colors[idx] = new_color;
         Ok(())
     }
+
+    fn reset(&mut self) {
+        self.colors.clear();
+        self.colors.push(ODColor::new(0, 0, 0));
+        self.current_selected_idx = 0;
+    }
 }

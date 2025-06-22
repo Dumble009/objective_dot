@@ -7,8 +7,8 @@ use crate::common::canvas_grid::Grid;
 use crate::common::palette::Palette;
 
 pub struct DrawingMock {
-    grid: GridMock,
-    palette: PaletteMock,
+    pub grid: GridMock,
+    pub palette: PaletteMock,
 }
 
 impl DrawingMock {

@@ -9,6 +9,7 @@ pub trait Palette {
     fn get_current_selected_idx(&self) -> Result<PaletteColorIndex, String>;
     fn select_color(&mut self, idx: PaletteColorIndex) -> Result<(), String>;
     fn change_color(&mut self, idx: PaletteColorIndex, new_color: ODColor) -> Result<(), String>;
+    fn reset(&mut self);
 }
 
 #[derive(Clone)]
@@ -17,10 +18,12 @@ pub struct ObjectPalette {
     current_selected_idx: PaletteColorIndex,
 }
 
+const INITIAL_COLOR0: ODColor = ODColor::new(0, 0, 0);
+
 impl ObjectPalette {
     pub fn new() -> Self {
         ObjectPalette {
-            colors: vec![ODColor::new(0, 0, 0)],
+            colors: vec![INITIAL_COLOR0],
             current_selected_idx: 0,
         }
     }
@@ -72,6 +75,12 @@ impl Palette for ObjectPalette {
 
         self.colors[idx] = new_color;
         Ok(())
+    }
+
+    fn reset(&mut self) {
+        self.colors.clear();
+        self.colors.push(INITIAL_COLOR0);
+        self.current_selected_idx = 0;
     }
 }
 

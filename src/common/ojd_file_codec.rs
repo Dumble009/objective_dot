@@ -1,7 +1,8 @@
-use crate::common::color::ODColor;
+use crate::common::{color::ODColor, palette};
 
 use super::{
     canvas_grid::Grid,
+    drawing::Drawing,
     palette::{Palette, PaletteColorIndex},
 };
 const MAGIC_O: u8 = 0x4f;
@@ -28,13 +29,14 @@ macro_rules! pop {
     }};
 }
 
-pub fn encode(grid: &dyn Grid, palette: &dyn Palette, out: &mut Vec<u8>) -> Result<(), String> {
+pub fn encode(drawing: &dyn Drawing, out: &mut Vec<u8>) -> Result<(), String> {
     // マジックの追加
     out.push(MAGIC_O);
     out.push(MAGIC_J);
     out.push(MAGIC_D);
 
     // パレットのエンコード
+    let palette = drawing.get_palette();
     let color_count = palette.get_color_count();
     append!(out, color_count);
     for i in 0..palette.get_color_count() {
@@ -45,6 +47,7 @@ pub fn encode(grid: &dyn Grid, palette: &dyn Palette, out: &mut Vec<u8>) -> Resu
     }
 
     // グリッドのエンコード
+    let grid = drawing.get_grid();
     let width = grid.get_grid_width();
     let height = grid.get_grid_height();
     append!(out, width);
@@ -59,11 +62,7 @@ pub fn encode(grid: &dyn Grid, palette: &dyn Palette, out: &mut Vec<u8>) -> Resu
     Ok(())
 }
 
-pub fn decode(
-    input: &Vec<u8>,
-    grid: &mut dyn Grid,
-    palette: &mut dyn Palette,
-) -> Result<(), String> {
+pub fn decode(input: &Vec<u8>, drawing: &mut dyn Drawing) -> Result<(), String> {
     let mut pos = 0;
     // マジックの確認
     let magic1: u8 = pop!(input, pos, 1, u8);
@@ -77,6 +76,8 @@ pub fn decode(
     // パレットのデコード
     let color_count: usize = pop!(input, pos, 8, usize);
     println!("color_count : {}", color_count);
+    let palette = drawing.get_palette_mut();
+    palette.reset();
     for i in 0..color_count {
         let r: u8 = pop!(input, pos, 1, u8);
         let g: u8 = pop!(input, pos, 1, u8);
@@ -94,6 +95,7 @@ pub fn decode(
     let width: usize = pop!(input, pos, 8, usize);
     let height: usize = pop!(input, pos, 8, usize);
 
+    let grid = drawing.get_grid_mut();
     grid.set_grid_width(width)?;
     grid.set_grid_height(height)?;
 

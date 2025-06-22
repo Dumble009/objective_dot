@@ -39,8 +39,7 @@ impl ObjectiveDot {
 impl eframe::App for ObjectiveDot {
     fn save(&mut self, _storage: &mut dyn eframe::Storage) {}
     fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
-        self.save_drawing_ui
-            .update(ctx, self.drawing.get_grid(), self.drawing.get_palette());
+        self.save_drawing_ui.update(ctx, &mut self.drawing);
         self.palette_ui.update(ctx, self.drawing.get_palette_mut());
         self.canvas_menu_ui.update(ctx, self.drawing.get_grid_mut());
 

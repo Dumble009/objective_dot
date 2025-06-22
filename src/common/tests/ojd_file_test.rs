@@ -5,44 +5,52 @@ mod test {
             color::ODColor,
             ojd_file_codec::{decode, encode},
         },
-        mock::{grid_mock::GridMock, palette_mock::PaletteMock},
+        mock::drawing_mock::DrawingMock,
     };
 
     use super::*;
 
     #[test]
     fn encode_decode_test() {
-        let mut g1 = GridMock::new();
-        let mut p1 = PaletteMock::new();
+        let mut drawing1 = DrawingMock::new();
 
         let w = 20;
         let h = 20;
-        g1.set_grid_width(w).unwrap();
-        g1.set_grid_height(h).unwrap();
+        drawing1.grid.set_grid_width(w).unwrap();
+        drawing1.grid.set_grid_height(h).unwrap();
 
         let color1 = ODColor::new(0, 0, 0);
         let color2 = ODColor::new(1, 1, 1);
         let color3 = ODColor::new(2, 2, 2);
-        p1.add_color(color1).unwrap();
-        p1.add_color(color2).unwrap();
-        p1.add_color(color3).unwrap();
+        drawing1.palette.add_color(color1).unwrap();
+        drawing1.palette.add_color(color2).unwrap();
+        drawing1.palette.add_color(color3).unwrap();
 
         for x in 0..w {
             for y in 0..h {
-                g1.set_color(x, y, (x + y * w) % p1.get_color_count())
+                drawing1
+                    .grid
+                    .set_color(x, y, (x + y * w) % drawing1.palette.get_color_count())
                     .unwrap();
             }
         }
 
         let mut encoded = vec![];
-        encode(&g1, &p1, &mut encoded).unwrap();
+        encode(&drawing1, &mut encoded).unwrap();
 
-        let mut g2 = GridMock::new();
-        let mut p2 = PaletteMock::new();
-        decode(&encoded, &mut g2, &mut p2).unwrap();
+        let mut drawing2 = DrawingMock::new();
+        drawing2.grid.set_grid_width(w + 10).unwrap();
+        drawing2.grid.set_grid_height(h + 10).unwrap();
+        drawing2.palette.add_color(color1).unwrap();
+        drawing2.palette.add_color(color2).unwrap();
+        drawing2.palette.add_color(color3).unwrap();
 
-        assert_eq_grid(&g1, &g2);
-        assert_eq_palette(&p1, &p2);
+        let color4 = ODColor::new(3, 3, 3);
+        drawing2.palette.add_color(color4).unwrap();
+        decode(&encoded, &mut drawing2).unwrap();
+
+        assert_eq_grid(&drawing1.grid, &drawing2.grid);
+        assert_eq_palette(&drawing1.palette, &drawing2.palette);
     }
 
     fn assert_eq_grid(g1: &dyn Grid, g2: &dyn Grid) {

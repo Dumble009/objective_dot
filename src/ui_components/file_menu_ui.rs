@@ -3,7 +3,9 @@ use std::io::Write;
 
 use egui::{Context, Ui, Window};
 
-use crate::common::{canvas_grid::Grid, ojd_file_codec, palette::Palette};
+use crate::common::{
+    binary_file_io, canvas_grid::Grid, drawing::Drawing, ojd_file_codec, palette::Palette,
+};
 
 use super::top_menu_bar_item::TopMenuBarItem;
 
@@ -16,18 +18,41 @@ impl FileMenuUi {
         FileMenuUi { is_showing: false }
     }
 
-    pub fn draw(&mut self, ui: &mut Ui, grid: &dyn Grid, palette: &dyn Palette) {
+    pub fn draw(&mut self, ui: &mut Ui, drawing: &mut dyn Drawing) {
         let path = "drawing.ojd";
         if ui.button("Save").clicked() {
+            let mut encoded_binary = vec![];
+            let res = ojd_file_codec::encode(drawing, &mut encoded_binary);
+            if let Err(msg) = res {
+                println!("{}", msg);
+                return;
+            }
+
+            let res = binary_file_io::write_binary_file(path, &encoded_binary);
+            if let Err(msg) = res {
+                println!("{}", msg);
+                return;
+            }
             println!("Saved");
         }
 
         if ui.button("Load").clicked() {
+            let res = binary_file_io::read_binary_file(path);
+            if let Err(msg) = res {
+                println!("{}", msg);
+                return;
+            } else if let Ok(decoded_binary) = res {
+                let res = ojd_file_codec::decode(&decoded_binary, drawing);
+                if let Err(msg) = res {
+                    println!("{}", msg);
+                    return;
+                }
+            }
             println!("Loaded");
         }
     }
 
-    pub fn update(&mut self, ctx: &Context, grid: &dyn Grid, palette: &dyn Palette) {
+    pub fn update(&mut self, ctx: &Context, drawing: &mut dyn Drawing) {
         if !self.is_showing {
             return;
         }
@@ -35,7 +60,7 @@ impl FileMenuUi {
         let mut is_showing = self.is_showing;
         Window::new("Save Drawing Menu")
             .open(&mut is_showing)
-            .show(ctx, |ui| self.draw(ui, grid, palette));
+            .show(ctx, |ui| self.draw(ui, drawing));
         self.is_showing = is_showing;
     }
 }
