@@ -1,6 +1,9 @@
+use std::fs::File;
+use std::io::Write;
+
 use egui::{Context, Ui, Window};
 
-use crate::common::{canvas_grid::Grid, palette::Palette};
+use crate::common::{canvas_grid::Grid, ojd_file_codec, palette::Palette};
 
 use super::top_menu_bar_item::TopMenuBarItem;
 
@@ -14,6 +17,7 @@ impl FileMenuUi {
     }
 
     pub fn draw(&mut self, ui: &mut Ui, grid: &dyn Grid, palette: &dyn Palette) {
+        let path = "drawing.ojd";
         if ui.button("Save").clicked() {
             println!("Saved");
         }
