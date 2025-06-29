@@ -58,8 +58,11 @@ impl CanvasUi {
     fn get_grid_id_pair(&self, response: &Response) -> Result<(i32, i32), String> {
         // cursor_pos はウインドウの左上を (0, 0) とする座標系の値で返ってくる想定
         if let Some(cursor_pos) = response.interact_pointer_pos() {
-            let grid_x = (cursor_pos.x / (self.square_size)) as i32;
-            let grid_y = ((cursor_pos.y - TOP_MENU_BAR_HEIGHT as f32) / self.square_size) as i32;
+            let absolute_cursor_pos = cursor_pos - self.square_root_pos;
+
+            let grid_x = (absolute_cursor_pos.x / (self.square_size)) as i32;
+            let grid_y =
+                ((absolute_cursor_pos.y - TOP_MENU_BAR_HEIGHT as f32) / self.square_size) as i32;
 
             if grid_x < 0
                 || grid_x >= self.square_size as i32
