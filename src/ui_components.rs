@@ -4,3 +4,4 @@ pub mod color_picker_ui;
 pub mod file_menu_ui;
 pub mod palette_ui;
 pub mod top_menu_bar_item;
+pub mod drawing_preview_ui;
