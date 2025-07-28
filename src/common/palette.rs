@@ -64,7 +64,7 @@ impl Palette for ObjectPalette {
         }
 
         self.current_selected_idx = idx;
-        println!("selected color {}", idx);
+        println!("selected color {idx}");
         Ok(())
     }
 

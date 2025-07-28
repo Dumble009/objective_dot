@@ -19,13 +19,13 @@ impl FileMenuUi {
             let mut encoded_binary = vec![];
             let res = ojd_file_codec::encode(drawing, &mut encoded_binary);
             if let Err(msg) = res {
-                println!("{}", msg);
+                println!("{msg}");
                 return;
             }
 
             let res = binary_file_io::write_binary_file(path, &encoded_binary);
             if let Err(msg) = res {
-                println!("{}", msg);
+                println!("{msg}");
                 return;
             }
             println!("Saved");
@@ -34,12 +34,12 @@ impl FileMenuUi {
         if ui.button("Load").clicked() {
             let res = binary_file_io::read_binary_file(path);
             if let Err(msg) = res {
-                println!("{}", msg);
+                println!("{msg}");
                 return;
             } else if let Ok(decoded_binary) = res {
                 let res = ojd_file_codec::decode(&decoded_binary, drawing);
                 if let Err(msg) = res {
-                    println!("{}", msg);
+                    println!("{msg}");
                     return;
                 }
             }

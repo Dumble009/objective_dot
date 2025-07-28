@@ -71,7 +71,7 @@ pub fn decode(input: &[u8], drawing: &mut dyn Drawing) -> Result<(), String> {
 
     // パレットのデコード
     let color_count: usize = pop!(input, pos, 8, usize);
-    println!("color_count : {}", color_count);
+    println!("color_count : {color_count}");
     let palette = drawing.get_palette_mut();
     palette.reset();
     for i in 0..color_count {
