@@ -1,4 +1,5 @@
 use crate::common::drawing::Drawing;
+use crate::common::canvas_grid::Grid;
 use eframe::egui::*;
 
 use super::top_menu_bar_item::TopMenuBarItem;
@@ -55,7 +56,7 @@ impl CanvasUi {
         Ok(())
     }
 
-    fn get_grid_id_pair(&self, response: &Response) -> Result<(i32, i32), String> {
+    fn get_grid_id_pair(&self, response: &Response, grid: &dyn Grid) -> Result<(i32, i32), String> {
         // cursor_pos はウインドウの左上を (0, 0) とする座標系の値で返ってくる想定
         if let Some(cursor_pos) = response.interact_pointer_pos() {
             let absolute_cursor_pos = cursor_pos - self.square_root_pos;
@@ -65,9 +66,9 @@ impl CanvasUi {
                 ((absolute_cursor_pos.y - TOP_MENU_BAR_HEIGHT as f32) / self.square_size) as i32;
 
             if grid_x < 0
-                || grid_x >= self.square_size as i32
+                || grid_x >= grid.get_grid_width() as i32
                 || grid_y < 0
-                || grid_y >= self.square_size as i32
+                || grid_y >= grid.get_grid_height() as i32
             {
                 return Err(String::from("get_grid_id_pair : Invalid Position"));
             }
@@ -142,7 +143,7 @@ impl CanvasUi {
             Sense::drag() | Sense::click() | Sense::hover(),
         );
 
-        if let Ok((grid_x, grid_y)) = self.get_grid_id_pair(&response) {
+        if let Ok((grid_x, grid_y)) = self.get_grid_id_pair(&response, drawing.get_grid()) {
             if response.dragged_by(PointerButton::Primary) {
                 if let Err(msg) = self.fill_by_cursor(grid_x, grid_y, drawing) {
                     println!("Error!: {msg}");
