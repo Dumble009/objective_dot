@@ -1,4 +1,3 @@
-use crate::common::canvas_grid::Grid;
 use crate::common::drawing::Drawing;
 use crate::common::palette::{Palette, PaletteColorIndex};
 use crate::ui_components::draw_modes::draw_mode::DrawMode;
@@ -29,15 +28,11 @@ impl CanvasUi {
     fn draw_grid(
         &self,
         ui: &mut Ui,
-        canvas: Vec<Vec<PaletteColorIndex>>,
+        canvas: &[Vec<PaletteColorIndex>],
         palette: &dyn Palette,
     ) -> Result<(), String> {
-        let grid_height = canvas.len();
-        let grid_width = canvas[0].len();
-
-        for y in 0..grid_height {
-            for x in 0..grid_width {
-                let color_idx = canvas[y][x];
+        for (y, row) in canvas.iter().enumerate() {
+            for (x, color_idx) in row.iter().enumerate() {
                 let square_pos = self.square_root_pos
                     + Vec2::new(
                         x as f32 * self.square_size,
@@ -48,7 +43,7 @@ impl CanvasUi {
                     square_pos + Vec2::new(self.square_size, self.square_size),
                 );
 
-                let color = palette.get_color(color_idx)?;
+                let color = palette.get_color(*color_idx)?;
                 let fill_color = color.to_color32();
 
                 let stroke_color = Color32::from_rgb(
@@ -127,13 +122,13 @@ impl CanvasUi {
 
     fn set_current_drawing_to_canvas(
         &self,
-        canvas: &mut Vec<Vec<PaletteColorIndex>>,
+        canvas: &mut [Vec<PaletteColorIndex>],
         drawing: &dyn Drawing,
     ) {
         let grid = drawing.get_grid();
-        for y in 0..grid.get_grid_height() {
-            for x in 0..grid.get_grid_width() {
-                canvas[y][x] = grid.get_color(x, y).unwrap_or(PaletteColorIndex::default());
+        for (y, row) in canvas.iter_mut().enumerate() {
+            for (x, color_idx) in row.iter_mut().enumerate() {
+                *color_idx = grid.get_color(x, y).unwrap_or(0);
             }
         }
     }
@@ -217,7 +212,7 @@ impl CanvasUi {
             self.zoom(scroll.y);
         }
 
-        if let Err(msg) = self.draw_grid(ui, canvas, drawing.get_palette()) {
+        if let Err(msg) = self.draw_grid(ui, &canvas, drawing.get_palette()) {
             println!("Error!: {msg}");
         }
     }

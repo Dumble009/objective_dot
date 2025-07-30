@@ -14,7 +14,7 @@ impl Pencil {
 
     fn put_color_on_cell(
         &self,
-        canvas: &mut Vec<Vec<PaletteColorIndex>>,
+        canvas: &mut [Vec<PaletteColorIndex>],
         canvas_size: &(usize, usize),
         drawing: &mut dyn Drawing,
         mouse_pos: &(usize, usize),
@@ -36,7 +36,7 @@ impl Pencil {
 impl DrawMode for Pencil {
     fn on_mouse_down(
         &mut self,
-        canvas: &mut Vec<Vec<PaletteColorIndex>>,
+        canvas: &mut [Vec<PaletteColorIndex>],
         canvas_size: &(usize, usize),
         drawing: &mut dyn Drawing,
         mouse_pos: &(usize, usize),
@@ -55,7 +55,7 @@ impl DrawMode for Pencil {
 
     fn on_mouse_drag(
         &mut self,
-        canvas: &mut Vec<Vec<PaletteColorIndex>>,
+        canvas: &mut [Vec<PaletteColorIndex>],
         canvas_size: &(usize, usize),
         drawing: &mut dyn Drawing,
         mouse_pos: &(usize, usize),
@@ -76,7 +76,7 @@ impl DrawMode for Pencil {
 
     fn on_mouse_up(
         &mut self,
-        _canvas: &mut Vec<Vec<PaletteColorIndex>>,
+        _canvas: &mut [Vec<PaletteColorIndex>],
         _canvas_size: &(usize, usize),
         _drawing: &mut dyn Drawing,
         _mouse_pos: &(usize, usize),
