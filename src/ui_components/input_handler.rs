@@ -9,6 +9,7 @@ pub trait InputHandler {
 
     fn get_mouse_pos(&self) -> Option<Pos2>;
     fn get_scroll_delta(&self) -> Vec2;
+    fn get_drag_delta(&self) -> Vec2;
 
     fn update(&mut self, response: &Response, ctx: &Context);
 }
@@ -70,6 +71,13 @@ impl InputHandler for UserInputHandler {
 
     fn get_scroll_delta(&self) -> Vec2 {
         self.scroll_delta.unwrap_or(Vec2::ZERO)
+    }
+
+    fn get_drag_delta(&self) -> Vec2 {
+        self.response
+            .as_ref()
+            .map(|r| r.drag_delta())
+            .unwrap_or(Vec2::ZERO)
     }
 
     fn update(&mut self, response: &Response, ctx: &Context) {

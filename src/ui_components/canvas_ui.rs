@@ -104,8 +104,8 @@ impl CanvasUi {
         });
     }
 
-    fn move_canvas(&mut self, response: &Response) {
-        let mov = response.drag_delta();
+    fn move_canvas(&mut self) {
+        let mov = self.input_handler.get_drag_delta();
         self.square_root_pos += mov;
         self.square_root_pos.x = if self.square_root_pos.x > 0.0 {
             0.0
@@ -202,7 +202,7 @@ impl CanvasUi {
         }
 
         if self.input_handler.is_dragged_by(PointerButton::Middle) {
-            self.move_canvas(&response);
+            self.move_canvas();
         }
 
         if self.input_handler.is_hovered() {
