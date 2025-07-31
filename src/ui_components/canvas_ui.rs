@@ -2,8 +2,10 @@ use crate::common::drawing::Drawing;
 use crate::common::palette::{Palette, PaletteColorIndex};
 use crate::ui_components::draw_modes::draw_mode::DrawMode;
 use crate::ui_components::draw_modes::pencil::Pencil;
+use crate::ui_components::input_handler::UserInputHandler;
 use eframe::egui::*;
 
+use super::input_handler::InputHandler;
 use super::top_menu_bar_item::TopMenuBarItem;
 
 const DEFAULT_SQUARE_SIZE: f32 = 30.0;
@@ -14,6 +16,7 @@ pub struct CanvasUi {
     square_root_pos: Pos2,
     square_size: f32,
     draw_mode: Box<dyn DrawMode>,
+    input_handler: Box<dyn InputHandler>,
 }
 
 impl CanvasUi {
@@ -22,6 +25,7 @@ impl CanvasUi {
             square_root_pos: Pos2::new(0.0, 0.0),
             square_size: DEFAULT_SQUARE_SIZE,
             draw_mode: Box::new(Pencil::new()),
+            input_handler: Box::new(UserInputHandler::new()),
         }
     }
 
@@ -61,9 +65,9 @@ impl CanvasUi {
         Ok(())
     }
 
-    fn get_current_mouse_pos_in_idx(&self, response: &Response) -> Result<(i32, i32), String> {
+    fn get_current_mouse_pos_in_idx(&self) -> Result<(i32, i32), String> {
         // cursor_pos はウインドウの左上を (0, 0) とする座標系の値で返ってくる想定
-        if let Some(cursor_pos) = response.interact_pointer_pos() {
+        if let Some(cursor_pos) = self.input_handler.get_mouse_pos() {
             let absolute_cursor_pos = cursor_pos - self.square_root_pos;
 
             let grid_x = (absolute_cursor_pos.x / (self.square_size)) as i32;
@@ -138,6 +142,7 @@ impl CanvasUi {
             ui.available_size_before_wrap(),
             Sense::drag() | Sense::click() | Sense::hover(),
         );
+        self.input_handler.update(&response, ctx);
 
         let mut canvas =
             vec![
@@ -146,15 +151,8 @@ impl CanvasUi {
             ];
         self.set_current_drawing_to_canvas(&mut canvas, drawing);
 
-        if let Ok((mouse_x, mouse_y)) = self.get_current_mouse_pos_in_idx(&response) {
-            let mut is_mouse_down = false;
-            let mut is_mouse_up = false;
-            ctx.input(|i| {
-                is_mouse_down = i.pointer.button_down(PointerButton::Primary);
-                is_mouse_up = i.pointer.button_released(PointerButton::Primary);
-            });
-
-            if is_mouse_down {
+        if let Ok((mouse_idx_x, mouse_idx_y)) = self.get_current_mouse_pos_in_idx() {
+            if self.input_handler.is_mouse_down(PointerButton::Primary) {
                 if let Err(msg) = self.draw_mode.on_mouse_down(
                     &mut canvas,
                     &(
@@ -162,13 +160,13 @@ impl CanvasUi {
                         drawing.get_grid().get_grid_height(),
                     ),
                     drawing,
-                    &(mouse_x as usize, mouse_y as usize),
+                    &(mouse_idx_x as usize, mouse_idx_y as usize),
                 ) {
                     println!("Error!: {msg}");
                 }
             }
 
-            if response.dragged_by(PointerButton::Primary) {
+            if self.input_handler.is_dragged_by(PointerButton::Primary) {
                 if let Err(msg) = self.draw_mode.on_mouse_drag(
                     &mut canvas,
                     &(
@@ -176,13 +174,13 @@ impl CanvasUi {
                         drawing.get_grid().get_grid_height(),
                     ),
                     drawing,
-                    &(mouse_x as usize, mouse_y as usize),
+                    &(mouse_idx_x as usize, mouse_idx_y as usize),
                 ) {
                     println!("Error!: {msg}");
                 }
             }
 
-            if is_mouse_up {
+            if self.input_handler.is_mouse_up(PointerButton::Primary) {
                 if let Err(msg) = self.draw_mode.on_mouse_up(
                     &mut canvas,
                     &(
@@ -190,26 +188,25 @@ impl CanvasUi {
                         drawing.get_grid().get_grid_height(),
                     ),
                     drawing,
-                    &(mouse_x as usize, mouse_y as usize),
+                    &(mouse_idx_x as usize, mouse_idx_y as usize),
                 ) {
                     println!("Error!: {msg}");
                 }
             }
 
-            if response.clicked_by(PointerButton::Secondary) {
-                if let Err(msg) = self.choose_color_from_grid(mouse_x, mouse_y, drawing) {
+            if self.input_handler.is_clicked_by(PointerButton::Secondary) {
+                if let Err(msg) = self.choose_color_from_grid(mouse_idx_x, mouse_idx_y, drawing) {
                     println!("Error!: {msg}");
                 }
             }
         }
 
-        if response.dragged_by(PointerButton::Middle) {
+        if self.input_handler.is_dragged_by(PointerButton::Middle) {
             self.move_canvas(&response);
         }
 
-        if response.hovered() {
-            let scroll = ctx.input(|i| i.raw_scroll_delta);
-            self.zoom(scroll.y);
+        if self.input_handler.is_hovered() {
+            self.zoom(self.input_handler.get_scroll_delta().y);
         }
 
         if let Err(msg) = self.draw_grid(ui, &canvas, drawing.get_palette()) {

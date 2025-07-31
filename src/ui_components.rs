@@ -7,3 +7,4 @@ pub mod palette_ui;
 pub mod top_menu_bar_item;
 
 mod draw_modes;
+mod input_handler;
