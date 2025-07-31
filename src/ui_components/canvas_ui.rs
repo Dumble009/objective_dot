@@ -1,7 +1,8 @@
 use crate::common::drawing::Drawing;
-use crate::common::palette::{Palette, PaletteColorIndex};
+use crate::common::palette::PaletteColorIndex;
 use crate::ui_components::draw_modes::draw_mode::DrawMode;
 use crate::ui_components::draw_modes::pencil::Pencil;
+use crate::ui_components::grid_renderer::{GridRenderer, SimpleGridRenderer};
 use crate::ui_components::input_handler::UserInputHandler;
 use eframe::egui::*;
 
@@ -17,6 +18,7 @@ pub struct CanvasUi {
     square_size: f32,
     draw_mode: Box<dyn DrawMode>,
     input_handler: Box<dyn InputHandler>,
+    grid_renderer: Box<dyn GridRenderer>,
 }
 
 impl CanvasUi {
@@ -26,43 +28,8 @@ impl CanvasUi {
             square_size: DEFAULT_SQUARE_SIZE,
             draw_mode: Box::new(Pencil::new()),
             input_handler: Box::new(UserInputHandler::new()),
+            grid_renderer: Box::new(SimpleGridRenderer::new()),
         }
-    }
-
-    fn draw_grid(
-        &self,
-        ui: &mut Ui,
-        canvas: &[Vec<PaletteColorIndex>],
-        palette: &dyn Palette,
-    ) -> Result<(), String> {
-        for (y, row) in canvas.iter().enumerate() {
-            for (x, color_idx) in row.iter().enumerate() {
-                let square_pos = self.square_root_pos
-                    + Vec2::new(
-                        x as f32 * self.square_size,
-                        y as f32 * self.square_size + TOP_MENU_BAR_HEIGHT as f32,
-                    );
-                let square_rect = Rect::from_min_max(
-                    square_pos,
-                    square_pos + Vec2::new(self.square_size, self.square_size),
-                );
-
-                let color = palette.get_color(*color_idx)?;
-                let fill_color = color.to_color32();
-
-                let stroke_color = Color32::from_rgb(
-                    255 - fill_color.r(),
-                    255 - fill_color.g(),
-                    255 - fill_color.b(),
-                );
-                let grid_stroke = Stroke::new(1.0, stroke_color);
-
-                ui.painter()
-                    .rect(square_rect, 0, fill_color, grid_stroke, StrokeKind::Middle);
-            }
-        }
-
-        Ok(())
     }
 
     fn get_current_mouse_pos_in_idx(&self) -> Result<(i32, i32), String> {
@@ -209,7 +176,14 @@ impl CanvasUi {
             self.zoom(self.input_handler.get_scroll_delta().y);
         }
 
-        if let Err(msg) = self.draw_grid(ui, &canvas, drawing.get_palette()) {
+        if let Err(msg) = self.grid_renderer.draw(
+            ui,
+            &canvas,
+            drawing.get_palette(),
+            self.square_root_pos,
+            self.square_size,
+            Vec2::new(0.0, TOP_MENU_BAR_HEIGHT as f32),
+        ) {
             println!("Error!: {msg}");
         }
     }
