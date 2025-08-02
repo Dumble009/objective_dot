@@ -3,6 +3,7 @@ use crate::{
     ui_components::draw_modes::draw_mode::DrawMode,
 };
 
+#[derive(Clone)]
 pub struct Line {
     is_drawing: bool,
     drawing_start_pos: Option<(usize, usize)>,
@@ -20,7 +21,18 @@ impl Line {
         let (mut x0, mut y0) = self.drawing_start_pos.unwrap_or((0, 0));
         let (mut x1, mut y1) = *mouse_pos;
 
+        let xdiff = (x1 as i64 - x0 as i64).abs();
+        let ydiff = (y1 as i64 - y0 as i64).abs();
+
+        if xdiff < ydiff {
+            // 傾斜が45度以下の直線にしか対応していないので、y軸の差分の方が大きい場合は
+            // xとyを入れ替えることで、傾斜を45度以下にする
+            std::mem::swap(&mut x0, &mut y0);
+            std::mem::swap(&mut x1, &mut y1);
+        }
+
         if x0 > x1 {
+            // 常に x0 <= x1 になるようにする
             std::mem::swap(&mut x0, &mut x1);
             std::mem::swap(&mut y0, &mut y1);
         }
@@ -44,6 +56,13 @@ impl Line {
                 e -= 2 * (x1 as i64 - x0 as i64);
             }
             out_points.push((x, y));
+        }
+
+        if xdiff < ydiff {
+            // 入れ替えた場合は、再度xとyを入れ替える
+            for point in out_points.iter_mut() {
+                std::mem::swap(&mut point.0, &mut point.1);
+            }
         }
     }
 
@@ -164,6 +183,10 @@ impl DrawMode for Line {
         }
 
         Ok(())
+    }
+
+    fn get_button_label(&self) -> &str {
+        "Line"
     }
 }
 

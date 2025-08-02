@@ -232,65 +232,129 @@ mod test {
         assert!(grid.set_grid_width(10).is_ok());
         assert!(grid.set_grid_height(10).is_ok());
 
-        let mouse_pos = (0, 0);
+        let mouse_pos = (4, 4);
         assert!(line
             .on_mouse_down(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
             .is_ok());
-        assert_eq!(canvas[0][0], 1);
-        assert_eq!(drawing.get_grid_mut().get_color(0, 0).unwrap(), 0);
+        assert_eq!(canvas[4][4], 1);
+        assert_eq!(drawing.get_grid_mut().get_color(4, 4).unwrap(), 0);
 
-        let mouse_pos = (7, 3);
+        let mouse_pos = (0, 1);
         assert!(line
             .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
             .is_ok());
-        for i in 0..4 {
-            assert_eq!(canvas[i][i * 2], 1);
-            assert_eq!(canvas[i][i * 2 + 1], 1);
-            assert_eq!(drawing.get_grid_mut().get_color(i * 2, i).unwrap(), 0);
-            assert_eq!(drawing.get_grid_mut().get_color(i * 2 + 1, i).unwrap(), 0);
-        }
+        assert_eq!(canvas[4][4], 1);
+        assert_eq!(canvas[3][3], 1);
+        assert_eq!(canvas[3][2], 1);
+        assert_eq!(canvas[2][1], 1);
+        assert_eq!(canvas[1][0], 1);
 
-        let mouse_pos = (8, 5);
+        let mouse_pos = (1, 0);
         assert!(line
             .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
             .is_ok());
-        assert_eq!(canvas[0][0], 1);
-        assert_eq!(canvas[1][1], 1);
-        assert_eq!(canvas[1][2], 1);
+        assert_eq!(canvas[4][4], 1);
+        assert_eq!(canvas[3][3], 1);
         assert_eq!(canvas[2][3], 1);
-        assert_eq!(canvas[3][4], 1);
+        assert_eq!(canvas[1][2], 1);
+        assert_eq!(canvas[0][1], 1);
+
+        let mouse_pos = (7, 0);
+        assert!(line
+            .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
+            .is_ok());
+        assert_eq!(canvas[4][4], 1);
         assert_eq!(canvas[3][5], 1);
-        assert_eq!(canvas[4][6], 1);
-        assert_eq!(canvas[4][7], 1);
-        assert_eq!(canvas[5][8], 1);
-        assert_eq!(drawing.get_grid_mut().get_color(0, 0).unwrap(), 0);
-        assert_eq!(drawing.get_grid_mut().get_color(1, 1).unwrap(), 0);
-        assert_eq!(drawing.get_grid_mut().get_color(2, 1).unwrap(), 0);
-        assert_eq!(drawing.get_grid_mut().get_color(3, 2).unwrap(), 0);
-        assert_eq!(drawing.get_grid_mut().get_color(4, 3).unwrap(), 0);
-        assert_eq!(drawing.get_grid_mut().get_color(5, 3).unwrap(), 0);
-        assert_eq!(drawing.get_grid_mut().get_color(6, 4).unwrap(), 0);
-        assert_eq!(drawing.get_grid_mut().get_color(7, 4).unwrap(), 0);
-        assert_eq!(drawing.get_grid_mut().get_color(8, 5).unwrap(), 0);
+        assert_eq!(canvas[2][5], 1);
+        assert_eq!(canvas[1][6], 1);
+        assert_eq!(canvas[0][7], 1);
+
+        let mouse_pos = (8, 1);
+        assert!(line
+            .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
+            .is_ok());
+        assert_eq!(canvas[4][4], 1);
+        assert_eq!(canvas[3][5], 1);
+        assert_eq!(canvas[2][6], 1);
+        assert_eq!(canvas[2][7], 1);
+        assert_eq!(canvas[1][8], 1);
+
+        let mouse_pos = (8, 7);
+        assert!(line
+            .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
+            .is_ok());
+        assert_eq!(canvas[4][4], 1);
+        assert_eq!(canvas[5][5], 1);
+        assert_eq!(canvas[6][6], 1);
+        assert_eq!(canvas[6][7], 1);
+        assert_eq!(canvas[7][8], 1);
+
+        let mouse_pos = (7, 8);
+        assert!(line
+            .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
+            .is_ok());
+        assert_eq!(canvas[4][4], 1);
+        assert_eq!(canvas[5][5], 1);
+        assert_eq!(canvas[6][6], 1);
+        assert_eq!(canvas[7][6], 1);
+        assert_eq!(canvas[8][7], 1);
+
+        let mouse_pos = (1, 8);
+        assert!(line
+            .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
+            .is_ok());
+        assert_eq!(canvas[4][4], 1);
+        assert_eq!(canvas[5][3], 1);
+        assert_eq!(canvas[6][2], 1);
+        assert_eq!(canvas[7][2], 1);
+        assert_eq!(canvas[8][1], 1);
+
+        let mouse_pos = (0, 7);
+        assert!(line
+            .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
+            .is_ok());
+        assert_eq!(canvas[4][4], 1);
+        assert_eq!(canvas[5][3], 1);
+        assert_eq!(canvas[5][2], 1);
+        assert_eq!(canvas[6][1], 1);
+        assert_eq!(canvas[7][0], 1);
 
         // 水平な線
-        let mouse_pos = (9, 0);
+        let mouse_pos = (8, 4);
         assert!(line
             .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
             .is_ok());
-        for i in 0..10 {
-            assert_eq!(canvas[0][i], 1);
-            assert_eq!(drawing.get_grid_mut().get_color(i, 0).unwrap(), 0);
+        for i in 4..=8 {
+            assert_eq!(canvas[4][i], 1);
+            assert_eq!(drawing.get_grid_mut().get_color(i, 4).unwrap(), 0);
+        }
+
+        let mouse_pos = (0, 4);
+        assert!(line
+            .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
+            .is_ok());
+        for i in 0..=4 {
+            assert_eq!(canvas[4][i], 1);
+            assert_eq!(drawing.get_grid_mut().get_color(i, 4).unwrap(), 0);
         }
 
         // 垂直な線
-        let mouse_pos = (0, 9);
+        let mouse_pos = (4, 0);
         assert!(line
             .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
             .is_ok());
-        for i in 0..10 {
-            assert_eq!(canvas[i][0], 1);
-            assert_eq!(drawing.get_grid_mut().get_color(0, i).unwrap(), 0);
+        for i in 0..=4 {
+            assert_eq!(canvas[i][4], 1);
+            assert_eq!(drawing.get_grid_mut().get_color(4, i).unwrap(), 0);
+        }
+
+        let mouse_pos = (4, 8);
+        assert!(line
+            .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
+            .is_ok());
+        for i in 4..=8 {
+            assert_eq!(canvas[i][4], 1);
+            assert_eq!(drawing.get_grid_mut().get_color(4, i).unwrap(), 0);
         }
     }
 
