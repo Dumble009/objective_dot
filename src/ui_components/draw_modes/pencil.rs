@@ -3,6 +3,7 @@ use crate::{
     ui_components::draw_modes::draw_mode::DrawMode,
 };
 
+#[derive(Clone)]
 pub struct Pencil {
     is_drawing: bool,
 }
@@ -83,6 +84,10 @@ impl DrawMode for Pencil {
     ) -> Result<(), String> {
         self.is_drawing = false;
         Ok(())
+    }
+
+    fn get_button_label(&self) -> &str {
+        "Pencil"
     }
 }
 

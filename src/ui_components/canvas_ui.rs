@@ -1,6 +1,7 @@
 use crate::common::drawing::Drawing;
 use crate::common::palette::PaletteColorIndex;
 use crate::ui_components::draw_modes::draw_mode::DrawMode;
+use crate::ui_components::draw_modes::line::Line;
 use crate::ui_components::draw_modes::pencil::Pencil;
 use crate::ui_components::grid_renderer::{GridRenderer, SimpleGridRenderer};
 use crate::ui_components::input_handler::UserInputHandler;
@@ -10,15 +11,16 @@ use super::input_handler::InputHandler;
 use super::top_menu_bar_item::TopMenuBarItem;
 
 const DEFAULT_SQUARE_SIZE: f32 = 30.0;
-const TOP_MENU_BAR_HEIGHT: u32 = 20;
+const TOP_MENU_BAR_HEIGHT: u32 = 40;
 const SCROLL_MAGNI: f32 = 0.1;
 
 pub struct CanvasUi {
     square_root_pos: Pos2,
     square_size: f32,
-    draw_mode: Box<dyn DrawMode>,
+    current_draw_mode: Box<dyn DrawMode>,
     input_handler: Box<dyn InputHandler>,
     grid_renderer: Box<dyn GridRenderer>,
+    draw_modes: Vec<Box<dyn DrawMode>>,
 }
 
 impl CanvasUi {
@@ -26,9 +28,10 @@ impl CanvasUi {
         CanvasUi {
             square_root_pos: Pos2::new(0.0, 0.0),
             square_size: DEFAULT_SQUARE_SIZE,
-            draw_mode: Box::new(Pencil::new()),
+            current_draw_mode: Box::new(Pencil::new()),
             input_handler: Box::new(UserInputHandler::new()),
             grid_renderer: Box::new(SimpleGridRenderer::new()),
+            draw_modes: vec![Box::new(Pencil::new()), Box::new(Line::new())],
         }
     }
 
@@ -37,9 +40,11 @@ impl CanvasUi {
         if let Some(cursor_pos) = self.input_handler.get_mouse_pos() {
             let absolute_cursor_pos = cursor_pos - self.square_root_pos;
 
-            let grid_x = (absolute_cursor_pos.x / (self.square_size)) as i32;
-            let grid_y =
-                ((absolute_cursor_pos.y - TOP_MENU_BAR_HEIGHT as f32) / self.square_size) as i32;
+            let grid_x = std::cmp::max(0, (absolute_cursor_pos.x / (self.square_size)) as i32);
+            let grid_y = std::cmp::max(
+                0,
+                ((absolute_cursor_pos.y - TOP_MENU_BAR_HEIGHT as f32) / self.square_size) as i32,
+            );
 
             return Ok((grid_x, grid_y));
         }
@@ -67,6 +72,18 @@ impl CanvasUi {
         ui.with_layout(layout, |ui| {
             for top_menu_bar_item in top_menu_bar_items {
                 top_menu_bar_item.draw(ui);
+            }
+        });
+    }
+
+    fn draw_draw_mode_bar(&mut self, ui: &mut Ui) {
+        let mut layout = Layout::left_to_right(Align::Min);
+        layout.main_wrap = true;
+        ui.with_layout(layout, |ui| {
+            for draw_mode in &self.draw_modes {
+                if ui.button(draw_mode.get_button_label()).clicked() {
+                    self.current_draw_mode = draw_mode.clone();
+                }
             }
         });
     }
@@ -119,13 +136,14 @@ impl CanvasUi {
         self.set_current_drawing_to_canvas(&mut canvas, drawing);
 
         if let Ok((mouse_idx_x, mouse_idx_y)) = self.get_current_mouse_pos_in_idx() {
+            let canvas_size = (
+                drawing.get_grid().get_grid_width(),
+                drawing.get_grid().get_grid_height(),
+            );
             if self.input_handler.is_mouse_down(PointerButton::Primary) {
-                if let Err(msg) = self.draw_mode.on_mouse_down(
+                if let Err(msg) = self.current_draw_mode.on_mouse_down(
                     &mut canvas,
-                    &(
-                        drawing.get_grid().get_grid_width(),
-                        drawing.get_grid().get_grid_height(),
-                    ),
+                    &canvas_size,
                     drawing,
                     &(mouse_idx_x as usize, mouse_idx_y as usize),
                 ) {
@@ -134,12 +152,9 @@ impl CanvasUi {
             }
 
             if self.input_handler.is_dragged_by(PointerButton::Primary) {
-                if let Err(msg) = self.draw_mode.on_mouse_drag(
+                if let Err(msg) = self.current_draw_mode.on_mouse_drag(
                     &mut canvas,
-                    &(
-                        drawing.get_grid().get_grid_width(),
-                        drawing.get_grid().get_grid_height(),
-                    ),
+                    &canvas_size,
                     drawing,
                     &(mouse_idx_x as usize, mouse_idx_y as usize),
                 ) {
@@ -148,12 +163,9 @@ impl CanvasUi {
             }
 
             if self.input_handler.is_mouse_up(PointerButton::Primary) {
-                if let Err(msg) = self.draw_mode.on_mouse_up(
+                if let Err(msg) = self.current_draw_mode.on_mouse_up(
                     &mut canvas,
-                    &(
-                        drawing.get_grid().get_grid_width(),
-                        drawing.get_grid().get_grid_height(),
-                    ),
+                    &canvas_size,
                     drawing,
                     &(mouse_idx_x as usize, mouse_idx_y as usize),
                 ) {
@@ -196,6 +208,7 @@ impl CanvasUi {
     ) {
         TopBottomPanel::top("wrap_app_top_bar")
             .show(ctx, |ui| self.draw_top_menu_bar(ui, top_menu_bar_items));
+        TopBottomPanel::top("draw_mode_top_bar").show(ctx, |ui| self.draw_draw_mode_bar(ui));
         CentralPanel::default().show(ctx, |ui| self.draw(ui, ctx, drawing));
     }
 }

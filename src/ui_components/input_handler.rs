@@ -54,7 +54,7 @@ impl InputHandler for UserInputHandler {
     fn is_mouse_down(&self, button: PointerButton) -> bool {
         self.pointer
             .as_ref()
-            .map(|p| p.button_down(button))
+            .map(|p| p.button_pressed(button))
             .unwrap_or(false)
     }
 
