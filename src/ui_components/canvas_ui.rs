@@ -1,6 +1,7 @@
 use crate::common::drawing::Drawing;
 use crate::common::palette::PaletteColorIndex;
 use crate::ui_components::draw_modes::draw_mode::DrawMode;
+use crate::ui_components::draw_modes::fill::Fill;
 use crate::ui_components::draw_modes::line::Line;
 use crate::ui_components::draw_modes::pencil::Pencil;
 use crate::ui_components::draw_modes::rect_fill::RectFill;
@@ -38,6 +39,7 @@ impl CanvasUi {
                 Box::new(Line::new()),
                 Box::new(RectFill::new()),
                 Box::new(RectLine::new()),
+                Box::new(Fill::new()),
             ],
         }
     }
