@@ -95,7 +95,9 @@ impl DrawMode for RectFill {
         for (x, y) in out_points {
             if x < canvas_size.0 && y < canvas_size.1 {
                 canvas[y][x] = current_selected_color_idx;
-                drawing.get_grid_mut().set_color(x, y, current_selected_color_idx)?;
+                drawing
+                    .get_grid_mut()
+                    .set_color(x, y, current_selected_color_idx)?;
             }
         }
         self.is_drawing = false;
