@@ -4,6 +4,7 @@ use crate::ui_components::draw_modes::draw_mode::DrawMode;
 use crate::ui_components::draw_modes::line::Line;
 use crate::ui_components::draw_modes::pencil::Pencil;
 use crate::ui_components::draw_modes::rect_fill::RectFill;
+use crate::ui_components::draw_modes::rect_line::RectLine;
 use crate::ui_components::grid_renderer::{GridRenderer, SimpleGridRenderer};
 use crate::ui_components::input_handler::UserInputHandler;
 use eframe::egui::*;
@@ -36,6 +37,7 @@ impl CanvasUi {
                 Box::new(Pencil::new()),
                 Box::new(Line::new()),
                 Box::new(RectFill::new()),
+                Box::new(RectLine::new()),
             ],
         }
     }
