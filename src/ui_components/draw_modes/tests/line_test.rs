@@ -5,18 +5,20 @@ mod test {
     use crate::common::color::ODColor;
     use crate::mock::drawing_mock::DrawingMock;
 
+    const CANVAS_EDGE_SIZE: usize = 10;
+
     #[test]
     fn line_draw_test1() {
         let mut line = Line::new();
-        let mut canvas = vec![vec![0; 10]; 10];
-        let canvas_size = (10, 10);
+        let mut canvas = vec![vec![0; CANVAS_EDGE_SIZE]; CANVAS_EDGE_SIZE];
+        let canvas_size = (CANVAS_EDGE_SIZE, CANVAS_EDGE_SIZE);
         let mut drawing = DrawingMock::new();
         let palette = drawing.get_palette_mut();
         assert!(palette.add_color(ODColor::new(0, 0, 0)).is_ok());
         assert!(palette.select_color(1).is_ok());
         let grid = drawing.get_grid_mut();
-        assert!(grid.set_grid_width(10).is_ok());
-        assert!(grid.set_grid_height(10).is_ok());
+        assert!(grid.set_grid_width(CANVAS_EDGE_SIZE).is_ok());
+        assert!(grid.set_grid_height(CANVAS_EDGE_SIZE).is_ok());
 
         // Start drawing a line
         let mouse_pos = (0, 0);
@@ -52,15 +54,15 @@ mod test {
     #[test]
     fn line_draw_test2() {
         let mut line = Line::new();
-        let mut canvas = vec![vec![0; 10]; 10];
-        let canvas_size = (10, 10);
+        let mut canvas = vec![vec![0; CANVAS_EDGE_SIZE]; CANVAS_EDGE_SIZE];
+        let canvas_size = (CANVAS_EDGE_SIZE, CANVAS_EDGE_SIZE);
         let mut drawing = DrawingMock::new();
         let palette = drawing.get_palette_mut();
         assert!(palette.add_color(ODColor::new(0, 0, 0)).is_ok());
         assert!(palette.select_color(1).is_ok());
         let grid = drawing.get_grid_mut();
-        assert!(grid.set_grid_width(10).is_ok());
-        assert!(grid.set_grid_height(10).is_ok());
+        assert!(grid.set_grid_width(CANVAS_EDGE_SIZE).is_ok());
+        assert!(grid.set_grid_height(CANVAS_EDGE_SIZE).is_ok());
 
         // Start drawing a line
         let mouse_pos_start = (9, 9);
@@ -96,15 +98,15 @@ mod test {
     #[test]
     fn line_draw_test3() {
         let mut line = Line::new();
-        let mut canvas = vec![vec![0; 10]; 10];
-        let canvas_size = (10, 10);
+        let mut canvas = vec![vec![0; CANVAS_EDGE_SIZE]; CANVAS_EDGE_SIZE];
+        let canvas_size = (CANVAS_EDGE_SIZE, CANVAS_EDGE_SIZE);
         let mut drawing = DrawingMock::new();
         let palette = drawing.get_palette_mut();
         assert!(palette.add_color(ODColor::new(0, 0, 0)).is_ok());
         assert!(palette.select_color(1).is_ok());
         let grid = drawing.get_grid_mut();
-        assert!(grid.set_grid_width(10).is_ok());
-        assert!(grid.set_grid_height(10).is_ok());
+        assert!(grid.set_grid_width(CANVAS_EDGE_SIZE).is_ok());
+        assert!(grid.set_grid_height(CANVAS_EDGE_SIZE).is_ok());
 
         // Start drawing a line
         let mouse_pos = (9, 0);
@@ -141,15 +143,15 @@ mod test {
     #[test]
     fn line_draw_test4() {
         let mut line = Line::new();
-        let mut canvas = vec![vec![0; 10]; 10];
-        let canvas_size = (10, 10);
+        let mut canvas = vec![vec![0; CANVAS_EDGE_SIZE]; CANVAS_EDGE_SIZE];
+        let canvas_size = (CANVAS_EDGE_SIZE, CANVAS_EDGE_SIZE);
         let mut drawing = DrawingMock::new();
         let palette = drawing.get_palette_mut();
         assert!(palette.add_color(ODColor::new(0, 0, 0)).is_ok());
         assert!(palette.select_color(1).is_ok());
         let grid = drawing.get_grid_mut();
-        assert!(grid.set_grid_width(10).is_ok());
-        assert!(grid.set_grid_height(10).is_ok());
+        assert!(grid.set_grid_width(CANVAS_EDGE_SIZE).is_ok());
+        assert!(grid.set_grid_height(CANVAS_EDGE_SIZE).is_ok());
 
         // Start drawing a line
         let mouse_pos_start = (0, 9);
@@ -185,15 +187,15 @@ mod test {
     #[test]
     fn line_outside_canvas_test() {
         let mut line = Line::new();
-        let mut canvas = vec![vec![0; 10]; 10];
-        let canvas_size = (10, 10);
+        let mut canvas = vec![vec![0; CANVAS_EDGE_SIZE]; CANVAS_EDGE_SIZE];
+        let canvas_size = (CANVAS_EDGE_SIZE, CANVAS_EDGE_SIZE);
         let mut drawing = DrawingMock::new();
         let palette = drawing.get_palette_mut();
         assert!(palette.add_color(ODColor::new(0, 0, 0)).is_ok());
         assert!(palette.select_color(1).is_ok());
         let grid = drawing.get_grid_mut();
-        assert!(grid.set_grid_width(10).is_ok());
-        assert!(grid.set_grid_height(10).is_ok());
+        assert!(grid.set_grid_width(CANVAS_EDGE_SIZE).is_ok());
+        assert!(grid.set_grid_height(CANVAS_EDGE_SIZE).is_ok());
 
         let mouse_pos = (7, 10);
         assert!(line
@@ -222,15 +224,15 @@ mod test {
     #[test]
     fn line_not_1x1_draw_test() {
         let mut line = Line::new();
-        let mut canvas = vec![vec![0; 10]; 10];
-        let canvas_size = (10, 10);
+        let mut canvas = vec![vec![0; CANVAS_EDGE_SIZE]; CANVAS_EDGE_SIZE];
+        let canvas_size = (CANVAS_EDGE_SIZE, CANVAS_EDGE_SIZE);
         let mut drawing = DrawingMock::new();
         let palette = drawing.get_palette_mut();
         assert!(palette.add_color(ODColor::new(0, 0, 0)).is_ok());
         assert!(palette.select_color(1).is_ok());
         let grid = drawing.get_grid_mut();
-        assert!(grid.set_grid_width(10).is_ok());
-        assert!(grid.set_grid_height(10).is_ok());
+        assert!(grid.set_grid_width(CANVAS_EDGE_SIZE).is_ok());
+        assert!(grid.set_grid_height(CANVAS_EDGE_SIZE).is_ok());
 
         let mouse_pos = (4, 4);
         assert!(line
@@ -361,15 +363,15 @@ mod test {
     #[test]
     fn line_not_mouse_down_test() {
         let mut line = Line::new();
-        let mut canvas = vec![vec![0; 10]; 10];
-        let canvas_size = (10, 10);
+        let mut canvas = vec![vec![0; CANVAS_EDGE_SIZE]; CANVAS_EDGE_SIZE];
+        let canvas_size = (CANVAS_EDGE_SIZE, CANVAS_EDGE_SIZE);
         let mut drawing = DrawingMock::new();
         let palette = drawing.get_palette_mut();
         assert!(palette.add_color(ODColor::new(0, 0, 0)).is_ok());
         assert!(palette.select_color(1).is_ok());
         let grid = drawing.get_grid_mut();
-        assert!(grid.set_grid_width(10).is_ok());
-        assert!(grid.set_grid_height(10).is_ok());
+        assert!(grid.set_grid_width(CANVAS_EDGE_SIZE).is_ok());
+        assert!(grid.set_grid_height(CANVAS_EDGE_SIZE).is_ok());
 
         // マウスダウンしていない状態でドラッグ
         let mouse_pos = (0, 0);
