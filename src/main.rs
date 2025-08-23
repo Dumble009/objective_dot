@@ -7,14 +7,14 @@ mod ui_components;
 #[cfg(test)]
 mod mock;
 
-use eframe::egui::*;
 use common::drawing::{Drawing, ObjectDrawing};
+use eframe::egui::*;
 use ui_components::canvas_menu_ui::CanvasMenuUi;
 use ui_components::canvas_ui::*;
-use ui_components::palette_ui::*;
-use ui_components::file_menu_ui::FileMenuUi;
-use ui_components::top_menu_bar_item::TopMenuBarItem;
 use ui_components::drawing_preview_ui::DrawingPreviewUi;
+use ui_components::file_menu_ui::FileMenuUi;
+use ui_components::palette_ui::*;
+use ui_components::top_menu_bar_item::TopMenuBarItem;
 
 pub struct ObjectiveDot {
     canvas_ui: CanvasUi,

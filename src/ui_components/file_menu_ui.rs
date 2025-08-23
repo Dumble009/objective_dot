@@ -3,6 +3,7 @@ use egui::{Context, Ui, Window};
 use crate::common::{binary_file_io, drawing::Drawing, ojd_file_codec};
 
 use super::top_menu_bar_item::TopMenuBarItem;
+use rfd::FileDialog;
 
 pub struct FileMenuUi {
     is_showing: bool,
@@ -14,7 +15,7 @@ impl FileMenuUi {
     }
 
     pub fn draw(&mut self, ui: &mut Ui, drawing: &mut dyn Drawing) {
-        let path = "drawing.ojd";
+        let default_filename = "drawing.ojd";
         if ui.button("Save").clicked() {
             let mut encoded_binary = vec![];
             let res = ojd_file_codec::encode(drawing, &mut encoded_binary);
@@ -23,7 +24,20 @@ impl FileMenuUi {
                 return;
             }
 
-            let res = binary_file_io::write_binary_file(path, &encoded_binary);
+            let save_path = FileDialog::new()
+                .set_file_name(default_filename)
+                .set_directory("/")
+                .save_file();
+
+            if save_path.is_none() {
+                // 保存せずにダイアログを閉じたりした場合なので、特に何もせずに返る
+                return;
+            }
+
+            let res = binary_file_io::write_binary_file(
+                save_path.unwrap().to_str().unwrap(),
+                &encoded_binary,
+            );
             if let Err(msg) = res {
                 println!("{msg}");
                 return;
@@ -32,7 +46,17 @@ impl FileMenuUi {
         }
 
         if ui.button("Load").clicked() {
-            let res = binary_file_io::read_binary_file(path);
+            let load_path = FileDialog::new()
+                .add_filter("ojd", &["ojd"])
+                .set_directory("/")
+                .pick_file();
+
+            if load_path.is_none() {
+                // ファイルを選択せずにダイアログを閉じたりした場合なので、特に何もせずに返る
+                return;
+            }
+
+            let res = binary_file_io::read_binary_file(load_path.unwrap().to_str().unwrap());
             if let Err(msg) = res {
                 println!("{msg}");
                 return;
