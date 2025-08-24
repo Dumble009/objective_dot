@@ -1,7 +1,10 @@
 use crate::common::color::ODColor;
+use crate::common::paint_net_codec::decode;
 use crate::common::palette::Palette;
 use crate::ui_components::color_picker_ui::{ColorPickMode, ColorPickResult, ColorPickerUi};
 use eframe::egui::*;
+use rfd::FileDialog;
+use std::fs;
 
 use super::top_menu_bar_item::TopMenuBarItem;
 
@@ -20,6 +23,32 @@ impl PaletteUi {
 
     fn add_color(&mut self, color: ODColor, palette: &mut dyn Palette) -> Result<(), String> {
         palette.add_color(color)
+    }
+
+    fn load_color(&mut self, palette: &mut dyn Palette) -> Result<(), String> {
+        let palette_file = FileDialog::new()
+            .add_filter("text", &["txt"])
+            .set_directory("/")
+            .pick_file()
+            .unwrap_or_default();
+
+        let palette_file_path_str = palette_file.to_str().unwrap_or("");
+
+        if palette_file_path_str.len() == 0 {
+            // ファイルを選ばずにダイアログを閉じた場合などもあるので、エラートはしない
+            return Ok(());
+        }
+
+        let content = fs::read_to_string(palette_file_path_str);
+        if let Err(err) = content {
+            return Err(err.to_string());
+        } else if let Ok(content) = content {
+            let mut colorset = vec![];
+            decode(content, &mut colorset)?;
+            palette.override_by_colorset(&colorset)?;
+        }
+
+        Ok(())
     }
 
     fn draw(&mut self, ctx: &Context, ui: &mut Ui, palette: &mut dyn Palette) {
@@ -41,6 +70,14 @@ impl PaletteUi {
         if ui.button("Add Color").clicked() {
             self.color_picker
                 .show("Add New Color", ColorPickMode::AddNewColor);
+        }
+
+        if ui.button("Load Palette").clicked() {
+            let res = self.load_color(palette);
+            if let Err(err) = res {
+                println!("filed to load_color. {}", err.to_string());
+                return;
+            }
         }
 
         let mut layout = Layout::left_to_right(Align::Min);
