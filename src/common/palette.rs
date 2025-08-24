@@ -10,6 +10,7 @@ pub trait Palette {
     fn select_color(&mut self, idx: PaletteColorIndex) -> Result<(), String>;
     fn change_color(&mut self, idx: PaletteColorIndex, new_color: ODColor) -> Result<(), String>;
     fn reset(&mut self);
+    fn override_by_colorset(&mut self, colorset: &Vec<ODColor>) -> Result<(), String>;
 }
 
 #[derive(Clone)]
@@ -81,6 +82,19 @@ impl Palette for ObjectPalette {
         self.colors.clear();
         self.colors.push(INITIAL_COLOR0);
         self.current_selected_idx = 0;
+    }
+
+    fn override_by_colorset(&mut self, colorset: &Vec<ODColor>) -> Result<(), String> {
+        if colorset.len() == 0 {
+            return Err(String::from("Color set is empty."));
+        }
+
+        self.colors.clear();
+        for color in colorset {
+            self.colors.push(*color);
+        }
+
+        Ok(())
     }
 }
 

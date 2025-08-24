@@ -49,4 +49,8 @@ impl Palette for PaletteMock {
         self.colors.push(ODColor::new(0, 0, 0));
         self.current_selected_idx = 0;
     }
+
+    fn override_by_colorset(&mut self, _colorset: &Vec<ODColor>) -> Result<(), String> {
+        Ok(())
+    }
 }

@@ -107,4 +107,30 @@ mod test {
         assert_eq!(1, palette.get_color_count());
         assert_ne!(color, palette.get_color(0).unwrap());
     }
+
+    #[test]
+    fn override_by_colorset_test() {
+        let mut palette = ObjectPalette::new();
+
+        let colorset = vec![
+            ODColor::new(1, 1, 1),
+            ODColor::new(2, 2, 2),
+            ODColor::new(3, 3, 3),
+        ];
+
+        let res = palette.override_by_colorset(&colorset);
+        assert!(res.is_ok());
+
+        assert_eq!(3, palette.get_color_count());
+        for (i, color) in colorset.iter().enumerate() {
+            assert_eq!(*color, palette.get_color(i).unwrap());
+        }
+        assert_eq!(0, palette.get_current_selected_idx().unwrap());
+
+        let colorset = vec![];
+
+        // 空のカラーセットで上書きしようとすると失敗する。
+        let res = palette.override_by_colorset(&colorset);
+        assert!(res.is_err());
+    }
 }
