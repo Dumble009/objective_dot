@@ -34,7 +34,7 @@ impl PaletteUi {
 
         let palette_file_path_str = palette_file.to_str().unwrap_or("");
 
-        if palette_file_path_str.len() == 0 {
+        if palette_file_path_str.is_empty() {
             // ファイルを選ばずにダイアログを閉じた場合などもあるので、エラートはしない
             return Ok(());
         }
@@ -75,7 +75,7 @@ impl PaletteUi {
         if ui.button("Load Palette").clicked() {
             let res = self.load_color(palette);
             if let Err(err) = res {
-                println!("filed to load_color. {}", err.to_string());
+                println!("filed to load_color. {err}");
                 return;
             }
         }
