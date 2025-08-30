@@ -35,7 +35,7 @@ impl PaletteUi {
         let palette_file_path_str = palette_file.to_str().unwrap_or("");
 
         if palette_file_path_str.is_empty() {
-            // ファイルを選ばずにダイアログを閉じた場合などもあるので、エラートはしない
+            // ファイルを選ばずにダイアログを閉じた場合などもあるので、エラーにはしない
             return Ok(());
         }
 
