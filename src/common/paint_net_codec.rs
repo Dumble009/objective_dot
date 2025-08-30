@@ -27,7 +27,7 @@ fn convert_hex_char_into_num(hex_char: char) -> Result<u8, String> {
 fn convert_str_into_color_value(s: &str) -> Result<u8, String> {
     if s.len() != 2 {
         return Err(format!(
-            "convert_str_into_color_value error. lenght of string is invalid : {s}."
+            "convert_str_into_color_value error. length of string is invalid : {s}."
         ));
     }
 
