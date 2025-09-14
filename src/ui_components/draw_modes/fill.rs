@@ -47,18 +47,19 @@ impl DrawMode for Fill {
         }
 
         let target_color = canvas[mouse_pos.1][mouse_pos.0]; // 塗りつぶし対象の色
-        let fill_color = drawing.get_palette().get_current_selected_idx()?; // 塗りつぶし後の色
+        let fill_color = drawing.get_palette().borrow().get_current_selected_idx()?; // 塗りつぶし後の色
 
         if target_color == fill_color {
             // 塗りつぶし前後の色が同じ場合は何もする必要なし
             return Ok(());
         }
 
-        let grid = drawing.get_grid_mut();
+        let grid = drawing.get_grid();
 
         let mut q = VecDeque::from([*mouse_pos]);
         canvas[mouse_pos.1][mouse_pos.0] = fill_color;
-        grid.set_color(mouse_pos.0, mouse_pos.1, fill_color)?;
+        grid.borrow_mut()
+            .set_color(mouse_pos.0, mouse_pos.1, fill_color)?;
 
         while !q.is_empty() {
             let current = q.pop_front().unwrap(); // !is_empty なので絶対成功する
@@ -85,7 +86,8 @@ impl DrawMode for Fill {
                 }
 
                 canvas[next_point.1][next_point.0] = fill_color;
-                grid.set_color(next_point.0, next_point.1, fill_color)?;
+                grid.borrow_mut()
+                    .set_color(next_point.0, next_point.1, fill_color)?;
                 q.push_back(*next_point);
             }
         }

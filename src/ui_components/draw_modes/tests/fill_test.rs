@@ -10,12 +10,15 @@ mod tests {
         let mut canvas = vec![vec![0; 5]; 5];
         let canvas_size = (5, 5);
         let mut drawing = DrawingMock::new();
-        let palette = drawing.get_palette_mut();
-        assert!(palette.add_color(ODColor::new(0, 0, 0)).is_ok());
-        palette.select_color(1).unwrap();
-        let grid = drawing.get_grid_mut();
-        assert!(grid.set_grid_width(5).is_ok());
-        assert!(grid.set_grid_height(5).is_ok());
+        let palette = drawing.get_palette();
+        assert!(palette
+            .borrow_mut()
+            .add_color(ODColor::new(0, 0, 0))
+            .is_ok());
+        palette.borrow_mut().select_color(1).unwrap();
+        let grid = drawing.get_grid();
+        assert!(grid.borrow_mut().set_grid_width(5).is_ok());
+        assert!(grid.borrow_mut().set_grid_height(5).is_ok());
 
         // Draw filled rectangle from (1,1) to (3,3)
         fill.on_mouse_down(&mut canvas, &canvas_size, &mut drawing, &(1, 1))
@@ -27,7 +30,7 @@ mod tests {
         for y in 0..5 {
             for x in 0..5 {
                 assert_eq!(canvas[y][x], 1);
-                assert_eq!(drawing.get_grid().get_color(x, y).unwrap(), 1);
+                assert_eq!(drawing.get_grid().borrow().get_color(x, y).unwrap(), 1);
             }
         }
     }
@@ -39,25 +42,31 @@ mod tests {
         let mut canvas = vec![vec![0; 5]; 5];
         let canvas_size = (5, 5);
         let mut drawing = DrawingMock::new();
-        let palette = drawing.get_palette_mut();
-        assert!(palette.add_color(ODColor::new(0, 0, 0)).is_ok());
-        assert!(palette.add_color(ODColor::new(1, 1, 1)).is_ok());
-        palette.select_color(1).unwrap();
-        let grid = drawing.get_grid_mut();
-        assert!(grid.set_grid_width(5).is_ok());
-        assert!(grid.set_grid_height(5).is_ok());
-        assert!(grid.set_color(2, 0, 2).is_ok());
-        assert!(grid.set_color(1, 1, 2).is_ok());
-        assert!(grid.set_color(0, 2, 2).is_ok());
-        assert!(grid.set_color(1, 3, 2).is_ok());
-        assert!(grid.set_color(2, 4, 2).is_ok());
-        assert!(grid.set_color(3, 3, 2).is_ok());
-        assert!(grid.set_color(4, 2, 2).is_ok());
-        assert!(grid.set_color(3, 1, 2).is_ok());
+        let palette = drawing.get_palette();
+        assert!(palette
+            .borrow_mut()
+            .add_color(ODColor::new(0, 0, 0))
+            .is_ok());
+        assert!(palette
+            .borrow_mut()
+            .add_color(ODColor::new(1, 1, 1))
+            .is_ok());
+        palette.borrow_mut().select_color(1).unwrap();
+        let grid = drawing.get_grid();
+        assert!(grid.borrow_mut().set_grid_width(5).is_ok());
+        assert!(grid.borrow_mut().set_grid_height(5).is_ok());
+        assert!(grid.borrow_mut().set_color(2, 0, 2).is_ok());
+        assert!(grid.borrow_mut().set_color(1, 1, 2).is_ok());
+        assert!(grid.borrow_mut().set_color(0, 2, 2).is_ok());
+        assert!(grid.borrow_mut().set_color(1, 3, 2).is_ok());
+        assert!(grid.borrow_mut().set_color(2, 4, 2).is_ok());
+        assert!(grid.borrow_mut().set_color(3, 3, 2).is_ok());
+        assert!(grid.borrow_mut().set_color(4, 2, 2).is_ok());
+        assert!(grid.borrow_mut().set_color(3, 1, 2).is_ok());
 
         for y in 0..5 {
             for x in 0..5 {
-                canvas[y][x] = grid.get_color(x, y).unwrap();
+                canvas[y][x] = grid.borrow().get_color(x, y).unwrap();
             }
         }
 
@@ -75,10 +84,10 @@ mod tests {
                     || x == 3 && y == 2
                 {
                     assert_eq!(canvas[y][x], 1);
-                    assert_eq!(drawing.get_grid().get_color(x, y).unwrap(), 1);
+                    assert_eq!(drawing.get_grid().borrow().get_color(x, y).unwrap(), 1);
                 } else {
                     assert_ne!(canvas[y][x], 1);
-                    assert_ne!(drawing.get_grid().get_color(x, y).unwrap(), 1);
+                    assert_ne!(drawing.get_grid().borrow().get_color(x, y).unwrap(), 1);
                 }
             }
         }
@@ -91,21 +100,27 @@ mod tests {
         let mut canvas = vec![vec![0; 5]; 5];
         let canvas_size = (5, 5);
         let mut drawing = DrawingMock::new();
-        let palette = drawing.get_palette_mut();
-        assert!(palette.add_color(ODColor::new(0, 0, 0)).is_ok());
-        assert!(palette.add_color(ODColor::new(1, 1, 1)).is_ok());
-        palette.select_color(1).unwrap();
-        let grid = drawing.get_grid_mut();
-        assert!(grid.set_grid_width(5).is_ok());
-        assert!(grid.set_grid_height(5).is_ok());
-        assert!(grid.set_color(1, 2, 2).is_ok());
-        assert!(grid.set_color(2, 1, 2).is_ok());
-        assert!(grid.set_color(3, 2, 2).is_ok());
-        assert!(grid.set_color(2, 3, 2).is_ok());
+        let palette = drawing.get_palette();
+        assert!(palette
+            .borrow_mut()
+            .add_color(ODColor::new(0, 0, 0))
+            .is_ok());
+        assert!(palette
+            .borrow_mut()
+            .add_color(ODColor::new(1, 1, 1))
+            .is_ok());
+        palette.borrow_mut().select_color(1).unwrap();
+        let grid = drawing.get_grid();
+        assert!(grid.borrow_mut().set_grid_width(5).is_ok());
+        assert!(grid.borrow_mut().set_grid_height(5).is_ok());
+        assert!(grid.borrow_mut().set_color(1, 2, 2).is_ok());
+        assert!(grid.borrow_mut().set_color(2, 1, 2).is_ok());
+        assert!(grid.borrow_mut().set_color(3, 2, 2).is_ok());
+        assert!(grid.borrow_mut().set_color(2, 3, 2).is_ok());
 
         for y in 0..5 {
             for x in 0..5 {
-                canvas[y][x] = grid.get_color(x, y).unwrap();
+                canvas[y][x] = grid.borrow().get_color(x, y).unwrap();
             }
         }
 
@@ -118,10 +133,10 @@ mod tests {
             for x in 0..5 {
                 if x == 2 && y == 2 {
                     assert_eq!(canvas[y][x], 1);
-                    assert_eq!(drawing.get_grid().get_color(x, y).unwrap(), 1);
+                    assert_eq!(drawing.get_grid().borrow().get_color(x, y).unwrap(), 1);
                 } else {
                     assert_ne!(canvas[y][x], 1);
-                    assert_ne!(drawing.get_grid().get_color(x, y).unwrap(), 1);
+                    assert_ne!(drawing.get_grid().borrow().get_color(x, y).unwrap(), 1);
                 }
             }
         }
@@ -134,11 +149,11 @@ mod tests {
         let mut canvas = vec![vec![0; 5]; 5];
         let canvas_size = (5, 5);
         let mut drawing = DrawingMock::new();
-        let palette = drawing.get_palette_mut();
-        palette.select_color(0).unwrap();
-        let grid = drawing.get_grid_mut();
-        assert!(grid.set_grid_width(5).is_ok());
-        assert!(grid.set_grid_height(5).is_ok());
+        let palette = drawing.get_palette();
+        palette.borrow_mut().select_color(0).unwrap();
+        let grid = drawing.get_grid();
+        assert!(grid.borrow_mut().set_grid_width(5).is_ok());
+        assert!(grid.borrow_mut().set_grid_height(5).is_ok());
 
         fill.on_mouse_down(&mut canvas, &canvas_size, &mut drawing, &(1, 1))
             .unwrap();
@@ -148,7 +163,7 @@ mod tests {
         for y in 0..5 {
             for x in 0..5 {
                 assert_eq!(canvas[y][x], 0);
-                assert_eq!(drawing.get_grid().get_color(x, y).unwrap(), 0);
+                assert_eq!(drawing.get_grid().borrow().get_color(x, y).unwrap(), 0);
             }
         }
     }
@@ -160,12 +175,15 @@ mod tests {
         let mut canvas = vec![vec![0; 5]; 5];
         let canvas_size = (5, 5);
         let mut drawing = DrawingMock::new();
-        let palette = drawing.get_palette_mut();
-        assert!(palette.add_color(ODColor::new(0, 0, 0)).is_ok());
-        palette.select_color(1).unwrap();
-        let grid = drawing.get_grid_mut();
-        assert!(grid.set_grid_width(5).is_ok());
-        assert!(grid.set_grid_height(5).is_ok());
+        let palette = drawing.get_palette();
+        assert!(palette
+            .borrow_mut()
+            .add_color(ODColor::new(0, 0, 0))
+            .is_ok());
+        palette.borrow_mut().select_color(1).unwrap();
+        let grid = drawing.get_grid();
+        assert!(grid.borrow_mut().set_grid_width(5).is_ok());
+        assert!(grid.borrow_mut().set_grid_height(5).is_ok());
 
         fill.on_mouse_down(&mut canvas, &canvas_size, &mut drawing, &(6, 6))
             .unwrap();
@@ -175,7 +193,7 @@ mod tests {
         for y in 0..5 {
             for x in 0..5 {
                 assert_eq!(canvas[y][x], 0);
-                assert_eq!(drawing.get_grid().get_color(x, y).unwrap(), 0);
+                assert_eq!(drawing.get_grid().borrow().get_color(x, y).unwrap(), 0);
             }
         }
     }

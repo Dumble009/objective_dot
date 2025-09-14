@@ -125,7 +125,8 @@ impl DrawMode for Line {
         let mut out_points = Vec::new();
         self.calc_line(mouse_pos, &mut out_points);
 
-        let current_selected_color_idx = drawing.get_palette().get_current_selected_idx()?;
+        let current_selected_color_idx =
+            drawing.get_palette().borrow().get_current_selected_idx()?;
         for (x, y) in out_points {
             if x < canvas_size.0 && y < canvas_size.1 {
                 canvas[y][x] = current_selected_color_idx;
@@ -148,7 +149,8 @@ impl DrawMode for Line {
         let mut out_points = Vec::new();
         self.calc_line(mouse_pos, &mut out_points);
 
-        let current_selected_color_idx = drawing.get_palette().get_current_selected_idx()?;
+        let current_selected_color_idx =
+            drawing.get_palette().borrow().get_current_selected_idx()?;
         for (x, y) in out_points {
             println!("point: ({x}, {y})");
             if x < canvas_size.0 && y < canvas_size.1 {
@@ -172,12 +174,14 @@ impl DrawMode for Line {
         let mut out_points = Vec::new();
         self.calc_line(mouse_pos, &mut out_points);
 
-        let current_selected_color_idx = drawing.get_palette().get_current_selected_idx()?;
+        let current_selected_color_idx =
+            drawing.get_palette().borrow().get_current_selected_idx()?;
         for (x, y) in out_points {
             if x < canvas_size.0 && y < canvas_size.1 {
                 canvas[y][x] = current_selected_color_idx;
                 drawing
-                    .get_grid_mut()
+                    .get_grid()
+                    .borrow_mut()
                     .set_color(x, y, current_selected_color_idx)?;
             }
         }

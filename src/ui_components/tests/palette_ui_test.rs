@@ -8,13 +8,13 @@ mod test {
     fn add_color_test() {
         let color = ODColor::new(1, 2, 3);
         let mut palette_ui = PaletteUi::new();
-        let mut palette = PaletteMock::new();
+        let palette = Rc::new(RefCell::new(PaletteMock::new()));
 
-        assert!(palette_ui.add_color(color, &mut palette).is_ok());
+        assert!(palette_ui.add_color(color, palette.clone()).is_ok());
 
-        assert_eq!(palette.get_color_count(), 2);
+        assert_eq!(palette.borrow().get_color_count(), 2);
 
-        let added_color = palette.get_color(1).unwrap();
+        let added_color = palette.borrow().get_color(1).unwrap();
         assert_eq!(added_color, color);
     }
 }

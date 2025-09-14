@@ -1,3 +1,6 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+
 use crate::common::drawing::Drawing;
 
 use super::grid_mock::GridMock;
@@ -7,8 +10,8 @@ use crate::common::canvas_grid::Grid;
 use crate::common::palette::Palette;
 
 pub struct DrawingMock {
-    pub grid: GridMock,
-    pub palette: PaletteMock,
+    pub grid: Rc<RefCell<GridMock>>,
+    pub palette: Rc<RefCell<PaletteMock>>,
 }
 
 impl DrawingMock {
@@ -16,26 +19,18 @@ impl DrawingMock {
     #[allow(dead_code)]
     pub fn new() -> Self {
         DrawingMock {
-            grid: GridMock::new(),
-            palette: PaletteMock::new(),
+            grid: Rc::new(RefCell::new(GridMock::new())),
+            palette: Rc::new(RefCell::new(PaletteMock::new())),
         }
     }
 }
 
 impl Drawing for DrawingMock {
-    fn get_grid(&self) -> &dyn Grid {
-        &self.grid
+    fn get_grid(&self) -> Rc<RefCell<dyn Grid>> {
+        self.grid.clone()
     }
 
-    fn get_grid_mut(&mut self) -> &mut dyn Grid {
-        &mut self.grid
-    }
-
-    fn get_palette(&self) -> &dyn Palette {
-        &self.palette
-    }
-
-    fn get_palette_mut(&mut self) -> &mut dyn Palette {
-        &mut self.palette
+    fn get_palette(&self) -> Rc<RefCell<dyn Palette>> {
+        self.palette.clone()
     }
 }

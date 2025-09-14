@@ -1,6 +1,7 @@
 #![warn(clippy::all)]
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
 
+mod action;
 mod common;
 mod ui_components;
 
@@ -42,8 +43,8 @@ impl eframe::App for ObjectiveDot {
     fn save(&mut self, _storage: &mut dyn eframe::Storage) {}
     fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
         self.save_drawing_ui.update(ctx, &mut self.drawing);
-        self.palette_ui.update(ctx, self.drawing.get_palette_mut());
-        self.canvas_menu_ui.update(ctx, self.drawing.get_grid_mut());
+        self.palette_ui.update(ctx, self.drawing.get_palette());
+        self.canvas_menu_ui.update(ctx, self.drawing.get_grid());
         self.drawing_preview_ui.update(ctx, &self.drawing);
 
         let top_menu_bar_items: Vec<&mut dyn TopMenuBarItem> = vec![

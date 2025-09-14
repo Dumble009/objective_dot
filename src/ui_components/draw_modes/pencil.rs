@@ -24,11 +24,14 @@ impl Pencil {
             return Ok(());
         }
 
-        let current_selected_color_idx = drawing.get_palette().get_current_selected_idx()?;
+        let current_selected_color_idx =
+            drawing.get_palette().borrow().get_current_selected_idx()?;
         canvas[mouse_pos.1][mouse_pos.0] = current_selected_color_idx;
-        drawing
-            .get_grid_mut()
-            .set_color(mouse_pos.0, mouse_pos.1, current_selected_color_idx)?;
+        drawing.get_grid().borrow_mut().set_color(
+            mouse_pos.0,
+            mouse_pos.1,
+            current_selected_color_idx,
+        )?;
 
         Ok(())
     }

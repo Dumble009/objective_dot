@@ -1,3 +1,5 @@
+use std::{cell::RefCell, rc::Rc};
+
 use eframe::egui::*;
 
 use crate::common::palette::{Palette, PaletteColorIndex};
@@ -7,7 +9,7 @@ pub trait GridRenderer {
         &self,
         ui: &mut Ui,
         canvas: &[Vec<PaletteColorIndex>],
-        palette: &dyn Palette,
+        palette: Rc<RefCell<dyn Palette>>,
         square_root_pos: Pos2,
         square_size: f32,
         offset: Vec2,
@@ -27,7 +29,7 @@ impl GridRenderer for SimpleGridRenderer {
         &self,
         ui: &mut Ui,
         canvas: &[Vec<PaletteColorIndex>],
-        palette: &dyn Palette,
+        palette: Rc<RefCell<dyn Palette>>,
         square_root_pos: Pos2,
         square_size: f32,
         offset: Vec2,
@@ -42,7 +44,7 @@ impl GridRenderer for SimpleGridRenderer {
                     square_pos + Vec2::new(square_size, square_size),
                 );
 
-                let color = palette.get_color(*color_idx)?;
+                let color = palette.borrow().get_color(*color_idx)?;
                 let fill_color = color.to_color32();
 
                 let stroke_color = Color32::from_rgb(

@@ -33,10 +33,10 @@ pub fn encode(drawing: &dyn Drawing, out: &mut Vec<u8>) -> Result<(), String> {
 
     // パレットのエンコード
     let palette = drawing.get_palette();
-    let color_count = palette.get_color_count();
+    let color_count = palette.borrow().get_color_count();
     append!(out, color_count);
-    for i in 0..palette.get_color_count() {
-        let color = palette.get_color(i)?.to_color32();
+    for i in 0..palette.borrow().get_color_count() {
+        let color = palette.borrow().get_color(i)?.to_color32();
         append!(out, color.r());
         append!(out, color.g());
         append!(out, color.b());
@@ -44,13 +44,13 @@ pub fn encode(drawing: &dyn Drawing, out: &mut Vec<u8>) -> Result<(), String> {
 
     // グリッドのエンコード
     let grid = drawing.get_grid();
-    let width = grid.get_grid_width();
-    let height = grid.get_grid_height();
+    let width = grid.borrow().get_grid_width();
+    let height = grid.borrow().get_grid_height();
     append!(out, width);
     append!(out, height);
     for y in 0..height {
         for x in 0..width {
-            let color = grid.get_color(x, y)?;
+            let color = grid.borrow().get_color(x, y)?;
             append!(out, color);
         }
     }
@@ -72,18 +72,18 @@ pub fn decode(input: &[u8], drawing: &mut dyn Drawing) -> Result<(), String> {
     // パレットのデコード
     let color_count: usize = pop!(input, pos, 8, usize);
     println!("color_count : {color_count}");
-    let palette = drawing.get_palette_mut();
-    palette.reset();
+    let palette = drawing.get_palette();
+    palette.borrow_mut().reset();
     for i in 0..color_count {
         let r: u8 = pop!(input, pos, 1, u8);
         let g: u8 = pop!(input, pos, 1, u8);
         let b: u8 = pop!(input, pos, 1, u8);
 
         let color = ODColor::new(r, g, b);
-        if palette.get_color_count() <= i {
-            palette.add_color(color)?;
+        if palette.borrow().get_color_count() <= i {
+            palette.borrow_mut().add_color(color)?;
         } else {
-            palette.change_color(i, color)?;
+            palette.borrow_mut().change_color(i, color)?;
         }
     }
 
@@ -91,14 +91,14 @@ pub fn decode(input: &[u8], drawing: &mut dyn Drawing) -> Result<(), String> {
     let width: usize = pop!(input, pos, 8, usize);
     let height: usize = pop!(input, pos, 8, usize);
 
-    let grid = drawing.get_grid_mut();
-    grid.set_grid_width(width)?;
-    grid.set_grid_height(height)?;
+    let grid = drawing.get_grid();
+    grid.borrow_mut().set_grid_width(width)?;
+    grid.borrow_mut().set_grid_height(height)?;
 
     for y in 0..height {
         for x in 0..width {
             let color: PaletteColorIndex = pop!(input, pos, 8, PaletteColorIndex);
-            grid.set_color(x, y, color)?;
+            grid.borrow_mut().set_color(x, y, color)?;
         }
     }
 

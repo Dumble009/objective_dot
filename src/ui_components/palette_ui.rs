@@ -4,7 +4,9 @@ use crate::common::palette::Palette;
 use crate::ui_components::color_picker_ui::{ColorPickMode, ColorPickResult, ColorPickerUi};
 use eframe::egui::*;
 use rfd::FileDialog;
+use std::cell::RefCell;
 use std::fs;
+use std::rc::Rc;
 
 use super::top_menu_bar_item::TopMenuBarItem;
 
@@ -21,11 +23,15 @@ impl PaletteUi {
         }
     }
 
-    fn add_color(&mut self, color: ODColor, palette: &mut dyn Palette) -> Result<(), String> {
-        palette.add_color(color)
+    fn add_color(
+        &mut self,
+        color: ODColor,
+        palette: Rc<RefCell<dyn Palette>>,
+    ) -> Result<(), String> {
+        palette.borrow_mut().add_color(color)
     }
 
-    fn load_color(&mut self, palette: &mut dyn Palette) -> Result<(), String> {
+    fn load_color(&mut self, palette: Rc<RefCell<dyn Palette>>) -> Result<(), String> {
         let palette_file = FileDialog::new()
             .add_filter("text", &["txt"])
             .set_directory("/")
@@ -45,22 +51,22 @@ impl PaletteUi {
         } else if let Ok(content) = content {
             let mut colorset = vec![];
             decode(content, &mut colorset)?;
-            palette.override_by_colorset(&colorset)?;
+            palette.borrow_mut().override_by_colorset(&colorset)?;
         }
 
         Ok(())
     }
 
-    fn draw(&mut self, ctx: &Context, ui: &mut Ui, palette: &mut dyn Palette) {
+    fn draw(&mut self, ctx: &Context, ui: &mut Ui, palette: Rc<RefCell<dyn Palette>>) {
         if self.color_picker.is_showing() {
             self.color_picker.draw(ctx);
             let result = self.color_picker.get_color();
 
             if let ColorPickResult::AddNewColor(color) = result {
-                self.add_color(color, palette).unwrap();
+                self.add_color(color, palette.clone()).unwrap();
                 self.color_picker.hide();
             } else if let ColorPickResult::ChangeColor(idx, color) = result {
-                palette.change_color(idx, color).unwrap();
+                palette.borrow_mut().change_color(idx, color).unwrap();
                 self.color_picker.hide();
             } else if result == ColorPickResult::Canceled {
                 self.color_picker.hide();
@@ -73,7 +79,7 @@ impl PaletteUi {
         }
 
         if ui.button("Load Palette").clicked() {
-            let res = self.load_color(palette);
+            let res = self.load_color(palette.clone());
             if let Err(err) = res {
                 println!("filed to load_color. {err}");
                 return;
@@ -82,17 +88,17 @@ impl PaletteUi {
 
         let mut layout = Layout::left_to_right(Align::Min);
         layout.main_wrap = true;
-        ui.with_layout(layout, |ui| self.draw_color_boxes(ui, palette));
+        ui.with_layout(layout, |ui| self.draw_color_boxes(ui, palette.clone()));
     }
 
-    fn draw_color_boxes(&mut self, ui: &mut Ui, palette: &mut dyn Palette) {
-        for idx in 0..palette.get_color_count() {
-            let color_i = palette.get_color(idx).unwrap();
+    fn draw_color_boxes(&mut self, ui: &mut Ui, palette: Rc<RefCell<dyn Palette>>) {
+        for idx in 0..palette.borrow().get_color_count() {
+            let color_i = palette.borrow().get_color(idx).unwrap();
             let button = Button::new("").fill(color_i.to_color32());
             let button_add_res = ui.add(button);
 
             if button_add_res.clicked_by(PointerButton::Primary) {
-                if let Err(msg) = palette.select_color(idx) {
+                if let Err(msg) = palette.borrow_mut().select_color(idx) {
                     println!("Palette Error: {msg}");
                 }
             } else if button_add_res.clicked_by(PointerButton::Secondary) {
@@ -102,7 +108,7 @@ impl PaletteUi {
         }
     }
 
-    pub fn update(&mut self, ctx: &Context, palette: &mut dyn Palette) {
+    pub fn update(&mut self, ctx: &Context, palette: Rc<RefCell<dyn Palette>>) {
         if !self.is_showing {
             return;
         }
