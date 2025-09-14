@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::action::action::Action;
+use crate::actions::action::Action;
 use crate::common::color::ODColor;
 use crate::common::palette::{Palette, PaletteColorIndex};
 

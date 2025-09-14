@@ -1,4 +1,4 @@
-use crate::action::palette_color_change_action::PaletteColorChangeAction;
+use crate::actions::palette_color_change_action::PaletteColorChangeAction;
 use crate::common::color::ODColor;
 use crate::common::paint_net_codec::decode;
 use crate::common::palette::Palette;

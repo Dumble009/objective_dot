@@ -1,7 +1,7 @@
 #![warn(clippy::all)]
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")] // hide console window on Windows in release
 
-mod action;
+mod actions;
 mod common;
 mod ui_components;
 
@@ -19,7 +19,7 @@ use ui_components::file_menu_ui::FileMenuUi;
 use ui_components::palette_ui::*;
 use ui_components::top_menu_bar_item::TopMenuBarItem;
 
-use action::action::Action;
+use actions::action::Action;
 
 pub struct ObjectiveDot {
     canvas_ui: CanvasUi,
