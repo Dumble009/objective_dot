@@ -1,4 +1,4 @@
 pub trait Action {
-    fn run(&mut self);
-    fn undo(&mut self);
+    fn run(&mut self) -> Result<(), String>;
+    fn undo(&mut self) -> Result<(), String>;
 }

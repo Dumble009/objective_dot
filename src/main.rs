@@ -51,7 +51,7 @@ impl eframe::App for ObjectiveDot {
         self.palette_ui
             .update(ctx, self.drawing.get_palette(), &mut action_q);
         for action in action_q.iter_mut() {
-            action.run();
+            action.run().unwrap();
         }
         self.canvas_menu_ui.update(ctx, self.drawing.get_grid());
         self.drawing_preview_ui.update(ctx, &self.drawing);

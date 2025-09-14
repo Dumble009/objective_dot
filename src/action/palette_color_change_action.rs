@@ -29,16 +29,16 @@ impl PaletteColorChangeAction {
 }
 
 impl Action for PaletteColorChangeAction {
-    fn run(&mut self) {
+    fn run(&mut self) -> Result<(), String> {
         self.palette
             .borrow_mut()
-            .change_color(self.idx, self.after_color);
+            .change_color(self.idx, self.after_color)
     }
 
-    fn undo(&mut self) {
+    fn undo(&mut self) -> Result<(), String> {
         self.palette
             .borrow_mut()
-            .change_color(self.idx, self.before_color);
+            .change_color(self.idx, self.before_color)
     }
 }
 
