@@ -1,3 +1,4 @@
+use crate::action::palette_color_change_action::PaletteColorChangeAction;
 use crate::common::color::ODColor;
 use crate::common::paint_net_codec::decode;
 use crate::common::palette::Palette;
@@ -5,6 +6,7 @@ use crate::ui_components::color_picker_ui::{ColorPickMode, ColorPickResult, Colo
 use eframe::egui::*;
 use rfd::FileDialog;
 use std::cell::RefCell;
+use std::collections::VecDeque;
 use std::fs;
 use std::rc::Rc;
 
@@ -57,7 +59,13 @@ impl PaletteUi {
         Ok(())
     }
 
-    fn draw(&mut self, ctx: &Context, ui: &mut Ui, palette: Rc<RefCell<dyn Palette>>) {
+    fn draw(
+        &mut self,
+        ctx: &Context,
+        ui: &mut Ui,
+        palette: Rc<RefCell<dyn Palette>>,
+        action_q: &mut VecDeque<PaletteColorChangeAction>,
+    ) {
         if self.color_picker.is_showing() {
             self.color_picker.draw(ctx);
             let result = self.color_picker.get_color();
@@ -66,7 +74,11 @@ impl PaletteUi {
                 self.add_color(color, palette.clone()).unwrap();
                 self.color_picker.hide();
             } else if let ColorPickResult::ChangeColor(idx, color) = result {
-                palette.borrow_mut().change_color(idx, color).unwrap();
+                let before_color = palette.borrow().get_color(idx).unwrap();
+                let action =
+                    PaletteColorChangeAction::new(palette.clone(), idx, before_color, color);
+                action_q.push_front(action);
+                // palette.borrow_mut().change_color(idx, color).unwrap();
                 self.color_picker.hide();
             } else if result == ColorPickResult::Canceled {
                 self.color_picker.hide();
@@ -92,7 +104,8 @@ impl PaletteUi {
     }
 
     fn draw_color_boxes(&mut self, ui: &mut Ui, palette: Rc<RefCell<dyn Palette>>) {
-        for idx in 0..palette.borrow().get_color_count() {
+        let color_count = palette.borrow().get_color_count();
+        for idx in 0..color_count {
             let color_i = palette.borrow().get_color(idx).unwrap();
             let button = Button::new("").fill(color_i.to_color32());
             let button_add_res = ui.add(button);
@@ -108,7 +121,12 @@ impl PaletteUi {
         }
     }
 
-    pub fn update(&mut self, ctx: &Context, palette: Rc<RefCell<dyn Palette>>) {
+    pub fn update(
+        &mut self,
+        ctx: &Context,
+        palette: Rc<RefCell<dyn Palette>>,
+        action_q: &mut VecDeque<PaletteColorChangeAction>,
+    ) {
         if !self.is_showing {
             return;
         }
@@ -119,7 +137,7 @@ impl PaletteUi {
         let mut is_showing = self.is_showing;
         Window::new("Palette")
             .open(&mut is_showing)
-            .show(ctx, |ui| self.draw(ctx, ui, palette));
+            .show(ctx, |ui| self.draw(ctx, ui, palette, action_q));
 
         self.is_showing = is_showing;
     }

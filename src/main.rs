@@ -8,6 +8,8 @@ mod ui_components;
 #[cfg(test)]
 mod mock;
 
+use std::collections::VecDeque;
+
 use common::drawing::{Drawing, ObjectDrawing};
 use eframe::egui::*;
 use ui_components::canvas_menu_ui::CanvasMenuUi;
@@ -16,6 +18,8 @@ use ui_components::drawing_preview_ui::DrawingPreviewUi;
 use ui_components::file_menu_ui::FileMenuUi;
 use ui_components::palette_ui::*;
 use ui_components::top_menu_bar_item::TopMenuBarItem;
+
+use action::action::Action;
 
 pub struct ObjectiveDot {
     canvas_ui: CanvasUi,
@@ -43,7 +47,12 @@ impl eframe::App for ObjectiveDot {
     fn save(&mut self, _storage: &mut dyn eframe::Storage) {}
     fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
         self.save_drawing_ui.update(ctx, &mut self.drawing);
-        self.palette_ui.update(ctx, self.drawing.get_palette());
+        let mut action_q = VecDeque::new();
+        self.palette_ui
+            .update(ctx, self.drawing.get_palette(), &mut action_q);
+        for action in action_q.iter_mut() {
+            action.run();
+        }
         self.canvas_menu_ui.update(ctx, self.drawing.get_grid());
         self.drawing_preview_ui.update(ctx, &self.drawing);
 
