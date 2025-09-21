@@ -20,7 +20,7 @@ impl ActionRunner {
     }
 
     pub fn undo_action(&mut self) -> Result<(), String> {
-        if self.actions.len() == 0 {
+        if self.actions.is_empty() {
             return Ok(());
         }
 
