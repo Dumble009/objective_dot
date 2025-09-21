@@ -19,7 +19,7 @@ use ui_components::file_menu_ui::FileMenuUi;
 use ui_components::palette_ui::*;
 use ui_components::top_menu_bar_item::TopMenuBarItem;
 
-use actions::action::Action;
+use actions::action_runner::ActionRunner;
 
 pub struct ObjectiveDot {
     canvas_ui: CanvasUi,
@@ -28,6 +28,7 @@ pub struct ObjectiveDot {
     save_drawing_ui: FileMenuUi,
     drawing: ObjectDrawing,
     drawing_preview_ui: DrawingPreviewUi,
+    action_runner: ActionRunner,
 }
 
 impl ObjectiveDot {
@@ -39,6 +40,7 @@ impl ObjectiveDot {
             save_drawing_ui: FileMenuUi::new(),
             drawing: ObjectDrawing::new(),
             drawing_preview_ui: DrawingPreviewUi::new(),
+            action_runner: ActionRunner::new(),
         }
     }
 }
@@ -50,9 +52,6 @@ impl eframe::App for ObjectiveDot {
         let mut action_q = VecDeque::new();
         self.palette_ui
             .update(ctx, self.drawing.get_palette(), &mut action_q);
-        for action in action_q.iter_mut() {
-            action.run().unwrap();
-        }
         self.canvas_menu_ui.update(ctx, self.drawing.get_grid());
         self.drawing_preview_ui.update(ctx, &self.drawing);
 
@@ -64,6 +63,20 @@ impl eframe::App for ObjectiveDot {
         ];
         self.canvas_ui
             .update(ctx, top_menu_bar_items, &mut self.drawing);
+
+        for action in action_q {
+            if let Err(msg) = self.action_runner.run_action(Box::new(action)) {
+                println!("run_action failed: {msg}");
+            }
+        }
+
+        ctx.input(|i| {
+            if i.modifiers.ctrl && i.key_pressed(Key::Z) {
+                if let Err(msg) = self.action_runner.undo_action() {
+                    println!("undo_action failed: {msg}");
+                }
+            }
+        });
     }
 }
 
