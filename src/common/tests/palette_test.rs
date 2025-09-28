@@ -133,4 +133,22 @@ mod test {
         let res = palette.override_by_colorset(&colorset);
         assert!(res.is_err());
     }
+
+    #[test]
+    fn remove_last_color_test() {
+        let mut palette = ObjectPalette::new();
+
+        let res = palette.add_color(ODColor::new(1, 1, 1));
+        assert!(res.is_ok());
+        assert_eq!(2, palette.get_color_count());
+
+        let res = palette.remove_last_color();
+        assert!(res.is_ok());
+        assert_eq!(1, palette.get_color_count());
+
+        // 残り一色の状態で remove しようとするとエラーが返る。色の除去も行われない
+        let res = palette.remove_last_color();
+        assert!(res.is_err());
+        assert_eq!(1, palette.get_color_count());
+    }
 }

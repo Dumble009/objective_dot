@@ -11,6 +11,7 @@ pub trait Palette {
     fn change_color(&mut self, idx: PaletteColorIndex, new_color: ODColor) -> Result<(), String>;
     fn reset(&mut self);
     fn override_by_colorset(&mut self, colorset: &[ODColor]) -> Result<(), String>;
+    fn remove_last_color(&mut self) -> Result<(), String>;
 }
 
 #[derive(Clone)]
@@ -93,6 +94,18 @@ impl Palette for ObjectPalette {
         for color in colorset {
             self.colors.push(*color);
         }
+
+        Ok(())
+    }
+
+    fn remove_last_color(&mut self) -> Result<(), String> {
+        if self.colors.len() <= 1 {
+            return Err(String::from(
+                "Called remove when there is only one color remaining.",
+            ));
+        }
+
+        self.colors.pop();
 
         Ok(())
     }

@@ -53,4 +53,9 @@ impl Palette for PaletteMock {
     fn override_by_colorset(&mut self, _colorset: &[ODColor]) -> Result<(), String> {
         Ok(())
     }
+
+    fn remove_last_color(&mut self) -> Result<(), String> {
+        self.colors.pop();
+        Ok(())
+    }
 }
