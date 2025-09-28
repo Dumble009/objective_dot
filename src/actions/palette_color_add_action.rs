@@ -14,7 +14,7 @@ impl PaletteColorAddAction {
     pub fn new(palette: Rc<RefCell<dyn Palette>>, color: ODColor) -> Self {
         PaletteColorAddAction {
             palette: palette.clone(),
-            color: color,
+            color,
         }
     }
 }

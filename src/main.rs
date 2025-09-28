@@ -65,7 +65,7 @@ impl eframe::App for ObjectiveDot {
             .update(ctx, top_menu_bar_items, &mut self.drawing);
 
         for action in action_q {
-            if let Err(msg) = self.action_runner.run_action(Box::new(action)) {
+            if let Err(msg) = self.action_runner.run_action(action) {
                 println!("run_action failed: {msg}");
             }
         }

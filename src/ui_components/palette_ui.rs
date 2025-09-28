@@ -1,5 +1,6 @@
+use crate::actions::action::Action;
+use crate::actions::palette_color_add_action::PaletteColorAddAction;
 use crate::actions::palette_color_change_action::PaletteColorChangeAction;
-use crate::common::color::ODColor;
 use crate::common::paint_net_codec::decode;
 use crate::common::palette::Palette;
 use crate::ui_components::color_picker_ui::{ColorPickMode, ColorPickResult, ColorPickerUi};
@@ -23,14 +24,6 @@ impl PaletteUi {
             color_picker: ColorPickerUi::new(),
             is_showing: false,
         }
-    }
-
-    fn add_color(
-        &mut self,
-        color: ODColor,
-        palette: Rc<RefCell<dyn Palette>>,
-    ) -> Result<(), String> {
-        palette.borrow_mut().add_color(color)
     }
 
     fn load_color(&mut self, palette: Rc<RefCell<dyn Palette>>) -> Result<(), String> {
@@ -64,20 +57,21 @@ impl PaletteUi {
         ctx: &Context,
         ui: &mut Ui,
         palette: Rc<RefCell<dyn Palette>>,
-        action_q: &mut VecDeque<PaletteColorChangeAction>,
+        action_q: &mut VecDeque<Box<dyn Action>>,
     ) {
         if self.color_picker.is_showing() {
             self.color_picker.draw(ctx);
             let result = self.color_picker.get_color();
 
             if let ColorPickResult::AddNewColor(color) = result {
-                self.add_color(color, palette.clone()).unwrap();
+                let action = PaletteColorAddAction::new(palette.clone(), color);
+                action_q.push_front(Box::new(action));
                 self.color_picker.hide();
             } else if let ColorPickResult::ChangeColor(idx, color) = result {
                 let before_color = palette.borrow().get_color(idx).unwrap();
                 let action =
                     PaletteColorChangeAction::new(palette.clone(), idx, before_color, color);
-                action_q.push_front(action);
+                action_q.push_front(Box::new(action));
                 // palette.borrow_mut().change_color(idx, color).unwrap();
                 self.color_picker.hide();
             } else if result == ColorPickResult::Canceled {
@@ -125,7 +119,7 @@ impl PaletteUi {
         &mut self,
         ctx: &Context,
         palette: Rc<RefCell<dyn Palette>>,
-        action_q: &mut VecDeque<PaletteColorChangeAction>,
+        action_q: &mut VecDeque<Box<dyn Action>>,
     ) {
         if !self.is_showing {
             return;
@@ -150,5 +144,3 @@ impl TopMenuBarItem for PaletteUi {
         }
     }
 }
-
-include!("tests/palette_ui_test.rs");
