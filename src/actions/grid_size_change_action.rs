@@ -18,7 +18,7 @@ impl GridSizeChangeAction {
                 canvas.borrow().get_grid_width(),
                 canvas.borrow().get_grid_height(),
             ),
-            after_size: after_size,
+            after_size,
         }
     }
 }
