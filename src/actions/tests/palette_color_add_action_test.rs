@@ -1,5 +1,5 @@
 #[cfg(test)]
-mod tests {
+mod test {
     use super::*;
     use crate::common::palette::Palette;
     use crate::mock::palette_mock::PaletteMock;
