@@ -4,7 +4,7 @@ use std::rc::Rc;
 use crate::actions::action::Action;
 use crate::common::canvas_grid::Grid;
 
-struct GridSizeChangeAction {
+pub struct GridSizeChangeAction {
     grid: Rc<RefCell<dyn Grid>>,
     before_size: (usize, usize),
     after_size: (usize, usize),
