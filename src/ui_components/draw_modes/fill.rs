@@ -3,6 +3,7 @@ use crate::{
     ui_components::draw_modes::draw_mode::DrawMode,
 };
 
+use crate::actions::action::Action;
 use std::collections::VecDeque;
 
 #[derive(Clone)]
@@ -41,9 +42,9 @@ impl DrawMode for Fill {
         canvas_size: &(usize, usize),
         drawing: &mut dyn Drawing,
         mouse_pos: &(usize, usize),
-    ) -> Result<(), String> {
+    ) -> Result<Option<Box<dyn Action>>, String> {
         if mouse_pos.0 >= canvas_size.0 || mouse_pos.1 >= canvas_size.1 {
-            return Ok(());
+            return Ok(None);
         }
 
         let target_color = canvas[mouse_pos.1][mouse_pos.0]; // 塗りつぶし対象の色
@@ -51,7 +52,7 @@ impl DrawMode for Fill {
 
         if target_color == fill_color {
             // 塗りつぶし前後の色が同じ場合は何もする必要なし
-            return Ok(());
+            return Ok(None);
         }
 
         let grid = drawing.get_grid();
@@ -92,7 +93,7 @@ impl DrawMode for Fill {
             }
         }
 
-        Ok(())
+        Ok(None)
     }
 
     fn get_button_label(&self) -> &str {

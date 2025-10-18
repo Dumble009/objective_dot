@@ -3,6 +3,8 @@ use crate::{
     ui_components::draw_modes::draw_mode::DrawMode,
 };
 
+use crate::actions::action::Action;
+
 #[derive(Clone)]
 pub struct Line {
     is_drawing: bool,
@@ -166,9 +168,9 @@ impl DrawMode for Line {
         canvas_size: &(usize, usize),
         drawing: &mut dyn Drawing,
         mouse_pos: &(usize, usize),
-    ) -> Result<(), String> {
+    ) -> Result<Option<Box<dyn Action>>, String> {
         if !self.is_drawing {
-            return Ok(());
+            return Ok(None);
         }
 
         let mut out_points = Vec::new();
@@ -186,7 +188,7 @@ impl DrawMode for Line {
             }
         }
 
-        Ok(())
+        Ok(None)
     }
 
     fn get_button_label(&self) -> &str {

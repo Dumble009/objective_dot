@@ -1,3 +1,4 @@
+use crate::actions::action::Action;
 use crate::common::drawing::Drawing;
 use crate::common::palette::PaletteColorIndex;
 
@@ -22,7 +23,7 @@ pub trait DrawMode: DrawModeClone {
         canvas_size: &(usize, usize),
         drawing: &mut dyn Drawing,
         mouse_pos: &(usize, usize),
-    ) -> Result<(), String>;
+    ) -> Result<Option<Box<dyn Action>>, String>;
 
     fn get_button_label(&self) -> &str;
 }

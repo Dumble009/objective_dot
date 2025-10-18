@@ -3,6 +3,8 @@ use crate::{
     ui_components::draw_modes::draw_mode::DrawMode,
 };
 
+use crate::actions::action::Action;
+
 #[derive(Clone)]
 pub struct Pencil {
     is_drawing: bool,
@@ -84,9 +86,9 @@ impl DrawMode for Pencil {
         _canvas_size: &(usize, usize),
         _drawing: &mut dyn Drawing,
         _mouse_pos: &(usize, usize),
-    ) -> Result<(), String> {
+    ) -> Result<Option<Box<dyn Action>>, String> {
         self.is_drawing = false;
-        Ok(())
+        Ok(None)
     }
 
     fn get_button_label(&self) -> &str {

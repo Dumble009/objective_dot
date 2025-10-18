@@ -44,8 +44,9 @@ mod test {
 
         // Finish drawing the line
         let mouse_pos = (9, 9);
+
         assert!(line
-            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
+            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos,)
             .is_ok());
         // マウスを離した時点で本当のグリッドに反映される
         for i in 0..10 {
@@ -95,7 +96,7 @@ mod test {
         // Finish drawing the line
         let mouse_pos_end = (0, 0);
         assert!(line
-            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos_end)
+            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos_end,)
             .is_ok());
         // マウスを離した時点で本当のグリッドに反映される
         for i in 0..10 {
@@ -143,7 +144,7 @@ mod test {
         // Finish drawing the line
         let mouse_pos = (0, 9);
         assert!(line
-            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
+            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos,)
             .is_ok());
         // マウスを離した時点で本当のグリッドに反映される
         for i in 0..10 {
@@ -202,7 +203,7 @@ mod test {
         // Finish drawing the line
         let mouse_pos_end = (9, 0);
         assert!(line
-            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos_end)
+            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos_end,)
             .is_ok());
         // マウスを離した時点で本当のグリッドに反映される
         for i in 0..10 {

@@ -72,6 +72,7 @@ mod tests {
 
         fill.on_mouse_down(&mut canvas, &canvas_size, &mut drawing, &(2, 2))
             .unwrap();
+
         fill.on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(2, 2))
             .unwrap();
 
@@ -126,6 +127,7 @@ mod tests {
 
         fill.on_mouse_down(&mut canvas, &canvas_size, &mut drawing, &(2, 2))
             .unwrap();
+
         fill.on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(2, 2))
             .unwrap();
 
@@ -157,6 +159,7 @@ mod tests {
 
         fill.on_mouse_down(&mut canvas, &canvas_size, &mut drawing, &(1, 1))
             .unwrap();
+
         fill.on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(1, 1))
             .unwrap();
 
@@ -187,6 +190,7 @@ mod tests {
 
         fill.on_mouse_down(&mut canvas, &canvas_size, &mut drawing, &(6, 6))
             .unwrap();
+
         fill.on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(6, 6))
             .unwrap();
 

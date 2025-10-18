@@ -3,6 +3,8 @@ use crate::{
     ui_components::draw_modes::draw_mode::DrawMode,
 };
 
+use crate::actions::action::Action;
+
 #[derive(Clone)]
 pub struct RectFill {
     is_drawing: bool,
@@ -86,9 +88,9 @@ impl DrawMode for RectFill {
         canvas_size: &(usize, usize),
         drawing: &mut dyn Drawing,
         mouse_pos: &(usize, usize),
-    ) -> Result<(), String> {
+    ) -> Result<Option<Box<dyn Action>>, String> {
         if !self.is_drawing {
-            return Ok(());
+            return Ok(None);
         }
         let mut out_points = Vec::new();
         self.calc_rect_points(mouse_pos, &mut out_points);
@@ -106,7 +108,7 @@ impl DrawMode for RectFill {
         }
         self.is_drawing = false;
         self.drawing_start_pos = None;
-        Ok(())
+        Ok(None)
     }
 
     fn get_button_label(&self) -> &str {
