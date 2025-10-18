@@ -44,10 +44,13 @@ mod test {
 
         // Finish drawing the line
         let mouse_pos = (9, 9);
+        let res = line.on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos);
+        assert!(res.is_ok());
+        let option = res.unwrap();
+        assert!(option.is_some());
+        let mut action = option.unwrap();
+        assert!(action.run().is_ok());
 
-        assert!(line
-            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos,)
-            .is_ok());
         // マウスを離した時点で本当のグリッドに反映される
         for i in 0..10 {
             assert_eq!(canvas[i][i], 1);
@@ -95,9 +98,12 @@ mod test {
 
         // Finish drawing the line
         let mouse_pos_end = (0, 0);
-        assert!(line
-            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos_end,)
-            .is_ok());
+        let res = line.on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos_end);
+        assert!(res.is_ok());
+        let option = res.unwrap();
+        assert!(option.is_some());
+        let mut action = option.unwrap();
+        assert!(action.run().is_ok());
         // マウスを離した時点で本当のグリッドに反映される
         for i in 0..10 {
             assert_eq!(canvas[i][i], 1);
@@ -143,9 +149,12 @@ mod test {
 
         // Finish drawing the line
         let mouse_pos = (0, 9);
-        assert!(line
-            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos,)
-            .is_ok());
+        let res = line.on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos);
+        assert!(res.is_ok());
+        let option = res.unwrap();
+        assert!(option.is_some());
+        let mut action = option.unwrap();
+        assert!(action.run().is_ok());
         // マウスを離した時点で本当のグリッドに反映される
         for i in 0..10 {
             assert_eq!(canvas[i][9 - i], 1);
@@ -202,9 +211,12 @@ mod test {
 
         // Finish drawing the line
         let mouse_pos_end = (9, 0);
-        assert!(line
-            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos_end,)
-            .is_ok());
+        let res = line.on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos_end);
+        assert!(res.is_ok());
+        let option = res.unwrap();
+        assert!(option.is_some());
+        let mut action = option.unwrap();
+        assert!(action.run().is_ok());
         // マウスを離した時点で本当のグリッドに反映される
         for i in 0..10 {
             assert_eq!(canvas[9 - i][i], 1);
@@ -255,9 +267,12 @@ mod test {
             );
         }
 
-        assert!(line
-            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
-            .is_ok());
+        let res = line.on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos);
+        assert!(res.is_ok());
+        let option = res.unwrap();
+        assert!(option.is_some());
+        let mut action = option.unwrap();
+        assert!(action.run().is_ok());
         for i in 0..2 {
             assert_eq!(canvas[9 - i][8 + i], 1);
             assert_eq!(
