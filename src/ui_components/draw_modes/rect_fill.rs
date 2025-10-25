@@ -1,5 +1,3 @@
-use std::thread::current;
-
 use crate::{
     common::{drawing::Drawing, palette::PaletteColorIndex},
     ui_components::draw_modes::draw_mode::DrawMode,
