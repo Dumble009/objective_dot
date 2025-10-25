@@ -4,6 +4,7 @@ use crate::{
 };
 
 use crate::actions::action::Action;
+use crate::actions::draw_action::DrawAction;
 
 #[derive(Clone)]
 pub struct RectLine {
@@ -99,18 +100,21 @@ impl DrawMode for RectLine {
 
         let current_selected_color_idx =
             drawing.get_palette().borrow().get_current_selected_idx()?;
+        let mut drawn_cells = vec![];
         for (x, y) in out_points {
             if x < canvas_size.0 && y < canvas_size.1 {
+                drawn_cells.push((x, y));
                 preview_canvas[y][x] = current_selected_color_idx;
-                drawing
-                    .get_grid()
-                    .borrow_mut()
-                    .set_color(x, y, current_selected_color_idx)?;
             }
         }
+        let action = Box::new(DrawAction::new(
+            drawing.get_grid(),
+            drawn_cells,
+            current_selected_color_idx,
+        ));
         self.is_drawing = false;
         self.drawing_start_pos = None;
-        Ok(None)
+        Ok(Some(action))
     }
 
     fn get_button_label(&self) -> &str {
