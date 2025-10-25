@@ -189,10 +189,11 @@ impl CanvasUi {
                     &(mouse_idx_x as usize, mouse_idx_y as usize),
                 );
                 match res {
-                    Ok(opt) => match opt {
-                        Some(action) => action_q.push_back(action),
-                        None => {}
-                    },
+                    Ok(opt) => {
+                        if let Some(action) = opt {
+                            action_q.push_back(action);
+                        }
+                    }
                     Err(msg) => println!("Error!: {msg}"),
                 }
             }

@@ -26,8 +26,8 @@ impl DrawAction {
 
         DrawAction {
             canvas: canvas.clone(),
-            drawn_cells: drawn_cells,
-            after_color_index: after_color_index,
+            drawn_cells,
+            after_color_index,
         }
     }
 }
