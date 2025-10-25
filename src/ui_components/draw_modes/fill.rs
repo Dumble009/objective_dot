@@ -1,4 +1,5 @@
 use crate::{
+    actions::draw_action::DrawAction,
     common::{drawing::Drawing, palette::PaletteColorIndex},
     ui_components::draw_modes::draw_mode::DrawMode,
 };
@@ -55,12 +56,12 @@ impl DrawMode for Fill {
             return Ok(None);
         }
 
-        let grid = drawing.get_grid();
-
         let mut q = VecDeque::from([*mouse_pos]);
+        // 以降のループの前提条件はキュー内の点は全て塗りつぶし後になっていることなので、
+        // まずクリックされた点を塗る
         preview_canvas[mouse_pos.1][mouse_pos.0] = fill_color;
-        grid.borrow_mut()
-            .set_color(mouse_pos.0, mouse_pos.1, fill_color)?;
+        let mut drawn_cells = vec![];
+        drawn_cells.push(*mouse_pos);
 
         while !q.is_empty() {
             let current = q.pop_front().unwrap(); // !is_empty なので絶対成功する
@@ -86,14 +87,16 @@ impl DrawMode for Fill {
                     continue;
                 }
 
+                // 塗りつぶし前の色と塗りつぶし後の色が異なることが保証されているので、
+                // 塗りつぶしてしまえば同じ座標をもう一度見ることはない
                 preview_canvas[next_point.1][next_point.0] = fill_color;
-                grid.borrow_mut()
-                    .set_color(next_point.0, next_point.1, fill_color)?;
+                drawn_cells.push(*next_point);
                 q.push_back(*next_point);
             }
         }
 
-        Ok(None)
+        let action = Box::new(DrawAction::new(drawing.get_grid(), drawn_cells, fill_color));
+        Ok(Some(action))
     }
 
     fn get_button_label(&self) -> &str {

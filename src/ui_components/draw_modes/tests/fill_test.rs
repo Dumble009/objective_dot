@@ -24,8 +24,12 @@ mod tests {
         fill.on_mouse_down(&mut canvas, &canvas_size, &mut drawing, &(1, 1))
             .unwrap();
 
-        fill.on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(1, 1))
+        let mut action = fill
+            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(1, 1))
+            .unwrap()
             .unwrap();
+
+        assert!(action.run().is_ok());
 
         for y in 0..5 {
             for x in 0..5 {
@@ -53,6 +57,11 @@ mod tests {
             .is_ok());
         palette.borrow_mut().select_color(1).unwrap();
         let grid = drawing.get_grid();
+        // □ □ * □ □
+        // □ * □ * □
+        // * □ □ □ *
+        // □ * □ * □
+        // □ □ * □ □
         assert!(grid.borrow_mut().set_grid_width(5).is_ok());
         assert!(grid.borrow_mut().set_grid_height(5).is_ok());
         assert!(grid.borrow_mut().set_color(2, 0, 2).is_ok());
@@ -73,8 +82,12 @@ mod tests {
         fill.on_mouse_down(&mut canvas, &canvas_size, &mut drawing, &(2, 2))
             .unwrap();
 
-        fill.on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(2, 2))
+        let mut action = fill
+            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(2, 2))
+            .unwrap()
             .unwrap();
+
+        assert!(action.run().is_ok());
 
         for y in 0..5 {
             for x in 0..5 {
@@ -88,6 +101,23 @@ mod tests {
                     assert_eq!(drawing.get_grid().borrow().get_color(x, y).unwrap(), 1);
                 } else {
                     assert_ne!(canvas[y][x], 1);
+                    assert_ne!(drawing.get_grid().borrow().get_color(x, y).unwrap(), 1);
+                }
+            }
+        }
+
+        // 塗りつぶしを開始した点が undo できないバグがあったのでその確認
+        assert!(action.undo().is_ok());
+        for y in 0..5 {
+            for x in 0..5 {
+                if x == 2 && y == 2
+                    || x == 1 && y == 2
+                    || x == 2 && y == 1
+                    || x == 2 && y == 3
+                    || x == 3 && y == 2
+                {
+                    assert_eq!(drawing.get_grid().borrow().get_color(x, y).unwrap(), 0);
+                } else {
                     assert_ne!(drawing.get_grid().borrow().get_color(x, y).unwrap(), 1);
                 }
             }
@@ -128,8 +158,12 @@ mod tests {
         fill.on_mouse_down(&mut canvas, &canvas_size, &mut drawing, &(2, 2))
             .unwrap();
 
-        fill.on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(2, 2))
+        let mut action = fill
+            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(2, 2))
+            .unwrap()
             .unwrap();
+
+        assert!(action.run().is_ok());
 
         for y in 0..5 {
             for x in 0..5 {
@@ -160,8 +194,11 @@ mod tests {
         fill.on_mouse_down(&mut canvas, &canvas_size, &mut drawing, &(1, 1))
             .unwrap();
 
-        fill.on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(1, 1))
+        let opt = fill
+            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(1, 1))
             .unwrap();
+
+        assert!(opt.is_none());
 
         for y in 0..5 {
             for x in 0..5 {
@@ -191,8 +228,11 @@ mod tests {
         fill.on_mouse_down(&mut canvas, &canvas_size, &mut drawing, &(6, 6))
             .unwrap();
 
-        fill.on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(6, 6))
+        let opt = fill
+            .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(6, 6))
             .unwrap();
+
+        assert!(opt.is_none());
 
         for y in 0..5 {
             for x in 0..5 {
