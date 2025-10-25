@@ -18,7 +18,7 @@ impl Fill {
 impl DrawMode for Fill {
     fn on_mouse_down(
         &mut self,
-        _canvas: &mut [Vec<PaletteColorIndex>],
+        _preview_canvas: &mut [Vec<PaletteColorIndex>],
         _canvas_size: &(usize, usize),
         _drawing: &mut dyn Drawing,
         _mouse_pos: &(usize, usize),
@@ -28,7 +28,7 @@ impl DrawMode for Fill {
 
     fn on_mouse_drag(
         &mut self,
-        _canvas: &mut [Vec<PaletteColorIndex>],
+        _preview_canvas: &mut [Vec<PaletteColorIndex>],
         _canvas_size: &(usize, usize),
         _drawing: &mut dyn Drawing,
         _mouse_pos: &(usize, usize),
@@ -38,7 +38,7 @@ impl DrawMode for Fill {
 
     fn on_mouse_up(
         &mut self,
-        canvas: &mut [Vec<PaletteColorIndex>],
+        preview_canvas: &mut [Vec<PaletteColorIndex>],
         canvas_size: &(usize, usize),
         drawing: &mut dyn Drawing,
         mouse_pos: &(usize, usize),
@@ -47,7 +47,7 @@ impl DrawMode for Fill {
             return Ok(None);
         }
 
-        let target_color = canvas[mouse_pos.1][mouse_pos.0]; // 塗りつぶし対象の色
+        let target_color = preview_canvas[mouse_pos.1][mouse_pos.0]; // 塗りつぶし対象の色
         let fill_color = drawing.get_palette().borrow().get_current_selected_idx()?; // 塗りつぶし後の色
 
         if target_color == fill_color {
@@ -58,7 +58,7 @@ impl DrawMode for Fill {
         let grid = drawing.get_grid();
 
         let mut q = VecDeque::from([*mouse_pos]);
-        canvas[mouse_pos.1][mouse_pos.0] = fill_color;
+        preview_canvas[mouse_pos.1][mouse_pos.0] = fill_color;
         grid.borrow_mut()
             .set_color(mouse_pos.0, mouse_pos.1, fill_color)?;
 
@@ -82,11 +82,11 @@ impl DrawMode for Fill {
             }
 
             for next_point in &next_points {
-                if canvas[next_point.1][next_point.0] != target_color {
+                if preview_canvas[next_point.1][next_point.0] != target_color {
                     continue;
                 }
 
-                canvas[next_point.1][next_point.0] = fill_color;
+                preview_canvas[next_point.1][next_point.0] = fill_color;
                 grid.borrow_mut()
                     .set_color(next_point.0, next_point.1, fill_color)?;
                 q.push_back(*next_point);

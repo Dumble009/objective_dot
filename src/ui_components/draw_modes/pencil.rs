@@ -17,7 +17,7 @@ impl Pencil {
 
     fn put_color_on_cell(
         &self,
-        canvas: &mut [Vec<PaletteColorIndex>],
+        preview_canvas: &mut [Vec<PaletteColorIndex>],
         canvas_size: &(usize, usize),
         drawing: &mut dyn Drawing,
         mouse_pos: &(usize, usize),
@@ -28,7 +28,7 @@ impl Pencil {
 
         let current_selected_color_idx =
             drawing.get_palette().borrow().get_current_selected_idx()?;
-        canvas[mouse_pos.1][mouse_pos.0] = current_selected_color_idx;
+        preview_canvas[mouse_pos.1][mouse_pos.0] = current_selected_color_idx;
         drawing.get_grid().borrow_mut().set_color(
             mouse_pos.0,
             mouse_pos.1,
@@ -42,7 +42,7 @@ impl Pencil {
 impl DrawMode for Pencil {
     fn on_mouse_down(
         &mut self,
-        canvas: &mut [Vec<PaletteColorIndex>],
+        preview_canvas: &mut [Vec<PaletteColorIndex>],
         canvas_size: &(usize, usize),
         drawing: &mut dyn Drawing,
         mouse_pos: &(usize, usize),
@@ -54,14 +54,14 @@ impl DrawMode for Pencil {
             return Ok(());
         }
 
-        self.put_color_on_cell(canvas, canvas_size, drawing, mouse_pos)?;
+        self.put_color_on_cell(preview_canvas, canvas_size, drawing, mouse_pos)?;
 
         Ok(())
     }
 
     fn on_mouse_drag(
         &mut self,
-        canvas: &mut [Vec<PaletteColorIndex>],
+        preview_canvas: &mut [Vec<PaletteColorIndex>],
         canvas_size: &(usize, usize),
         drawing: &mut dyn Drawing,
         mouse_pos: &(usize, usize),
@@ -75,14 +75,14 @@ impl DrawMode for Pencil {
             return Ok(());
         }
 
-        self.put_color_on_cell(canvas, canvas_size, drawing, mouse_pos)?;
+        self.put_color_on_cell(preview_canvas, canvas_size, drawing, mouse_pos)?;
 
         Ok(())
     }
 
     fn on_mouse_up(
         &mut self,
-        _canvas: &mut [Vec<PaletteColorIndex>],
+        _preview_canvas: &mut [Vec<PaletteColorIndex>],
         _canvas_size: &(usize, usize),
         _drawing: &mut dyn Drawing,
         _mouse_pos: &(usize, usize),

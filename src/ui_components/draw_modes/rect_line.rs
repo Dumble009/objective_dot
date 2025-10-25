@@ -40,7 +40,7 @@ impl RectLine {
 impl DrawMode for RectLine {
     fn on_mouse_down(
         &mut self,
-        canvas: &mut [Vec<PaletteColorIndex>],
+        preview_canvas: &mut [Vec<PaletteColorIndex>],
         canvas_size: &(usize, usize),
         drawing: &mut dyn Drawing,
         mouse_pos: &(usize, usize),
@@ -55,7 +55,7 @@ impl DrawMode for RectLine {
             drawing.get_palette().borrow().get_current_selected_idx()?;
         for (x, y) in out_points {
             if x < canvas_size.0 && y < canvas_size.1 {
-                canvas[y][x] = current_selected_color_idx;
+                preview_canvas[y][x] = current_selected_color_idx;
             }
         }
         Ok(())
@@ -63,7 +63,7 @@ impl DrawMode for RectLine {
 
     fn on_mouse_drag(
         &mut self,
-        canvas: &mut [Vec<PaletteColorIndex>],
+        preview_canvas: &mut [Vec<PaletteColorIndex>],
         canvas_size: &(usize, usize),
         drawing: &mut dyn Drawing,
         mouse_pos: &(usize, usize),
@@ -78,7 +78,7 @@ impl DrawMode for RectLine {
             drawing.get_palette().borrow().get_current_selected_idx()?;
         for (x, y) in out_points {
             if x < canvas_size.0 && y < canvas_size.1 {
-                canvas[y][x] = current_selected_color_idx;
+                preview_canvas[y][x] = current_selected_color_idx;
             }
         }
         Ok(())
@@ -86,7 +86,7 @@ impl DrawMode for RectLine {
 
     fn on_mouse_up(
         &mut self,
-        canvas: &mut [Vec<PaletteColorIndex>],
+        preview_canvas: &mut [Vec<PaletteColorIndex>],
         canvas_size: &(usize, usize),
         drawing: &mut dyn Drawing,
         mouse_pos: &(usize, usize),
@@ -101,7 +101,7 @@ impl DrawMode for RectLine {
             drawing.get_palette().borrow().get_current_selected_idx()?;
         for (x, y) in out_points {
             if x < canvas_size.0 && y < canvas_size.1 {
-                canvas[y][x] = current_selected_color_idx;
+                preview_canvas[y][x] = current_selected_color_idx;
                 drawing
                     .get_grid()
                     .borrow_mut()
