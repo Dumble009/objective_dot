@@ -1,3 +1,6 @@
+use std::collections::VecDeque;
+
+use crate::actions::action::Action;
 use crate::common::drawing::Drawing;
 use crate::common::palette::PaletteColorIndex;
 use crate::ui_components::draw_modes::draw_mode::DrawMode;
@@ -131,7 +134,13 @@ impl CanvasUi {
         }
     }
 
-    fn draw(&mut self, ui: &mut Ui, ctx: &Context, drawing: &mut dyn Drawing) {
+    fn draw(
+        &mut self,
+        ui: &mut Ui,
+        ctx: &Context,
+        drawing: &mut dyn Drawing,
+        action_q: &mut VecDeque<Box<dyn Action>>,
+    ) {
         let (response, _) = ui.allocate_painter(
             ui.available_size_before_wrap(),
             Sense::drag() | Sense::click() | Sense::hover(),
@@ -173,13 +182,18 @@ impl CanvasUi {
             }
 
             if self.input_handler.is_mouse_up(PointerButton::Primary) {
-                if let Err(msg) = self.current_draw_mode.on_mouse_up(
+                let res = self.current_draw_mode.on_mouse_up(
                     &mut canvas,
                     &canvas_size,
                     drawing,
                     &(mouse_idx_x as usize, mouse_idx_y as usize),
-                ) {
-                    println!("Error!: {msg}");
+                );
+                match res {
+                    Ok(opt) => match opt {
+                        Some(action) => action_q.push_back(action),
+                        None => {}
+                    },
+                    Err(msg) => println!("Error!: {msg}"),
                 }
             }
 
@@ -215,11 +229,12 @@ impl CanvasUi {
         ctx: &Context,
         top_menu_bar_items: Vec<&mut dyn TopMenuBarItem>,
         drawing: &mut dyn Drawing,
+        action_q: &mut VecDeque<Box<dyn Action>>,
     ) {
         TopBottomPanel::top("wrap_app_top_bar")
             .show(ctx, |ui| self.draw_top_menu_bar(ui, top_menu_bar_items));
         TopBottomPanel::top("draw_mode_top_bar").show(ctx, |ui| self.draw_draw_mode_bar(ui));
-        CentralPanel::default().show(ctx, |ui| self.draw(ui, ctx, drawing));
+        CentralPanel::default().show(ctx, |ui| self.draw(ui, ctx, drawing, action_q));
     }
 }
 

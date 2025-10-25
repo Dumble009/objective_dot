@@ -63,7 +63,7 @@ impl eframe::App for ObjectiveDot {
             &mut self.drawing_preview_ui,
         ];
         self.canvas_ui
-            .update(ctx, top_menu_bar_items, &mut self.drawing);
+            .update(ctx, top_menu_bar_items, &mut self.drawing, &mut action_q);
 
         for action in action_q {
             if let Err(msg) = self.action_runner.run_action(action) {
