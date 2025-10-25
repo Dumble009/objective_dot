@@ -27,20 +27,24 @@ mod test {
             .on_mouse_down(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
             .is_ok());
         assert_eq!(canvas[0][0], 1);
-        assert_eq!(drawing.get_grid().borrow().get_color(0, 0).unwrap(), 1);
+        assert_eq!(drawing.get_grid().borrow().get_color(0, 0).unwrap(), 0);
 
         let mouse_pos = (0, 4);
         assert!(pencil
             .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
             .is_ok());
         assert_eq!(canvas[4][0], 1);
-        assert_eq!(drawing.get_grid().borrow().get_color(0, 4).unwrap(), 1);
+        assert_eq!(drawing.get_grid().borrow().get_color(0, 4).unwrap(), 0);
 
         let mouse_pos = (0, 9);
-        assert!(pencil
+        let mut action = pencil
             .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
-            .is_ok());
+            .unwrap()
+            .unwrap();
+        assert!(action.run().is_ok());
         assert_eq!(canvas[0][9], 0);
+        assert_eq!(drawing.get_grid().borrow().get_color(0, 0).unwrap(), 1);
+        assert_eq!(drawing.get_grid().borrow().get_color(0, 4).unwrap(), 1);
         assert_eq!(drawing.get_grid().borrow().get_color(0, 9).unwrap(), 0);
     }
 
@@ -70,20 +74,23 @@ mod test {
         // キャンバス外でマウスダウン→キャンバス内に戻ってくる
         let mouse_pos = (9, 9);
         assert!(pencil
-            .on_mouse_down(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
+            .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
             .is_ok());
         assert_eq!(canvas[9][9], 1);
-        assert_eq!(drawing.get_grid().borrow().get_color(9, 9).unwrap(), 1);
+        assert_eq!(drawing.get_grid().borrow().get_color(9, 9).unwrap(), 0);
 
         // 再びキャンバス外に出る
         let mouse_pos = (12, 13);
         assert!(pencil
-            .on_mouse_down(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
+            .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
             .is_ok());
 
         // そのままキャンバス外でマウスアップ
-        assert!(pencil
+        let mut action = pencil
             .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &mouse_pos)
-            .is_ok());
+            .unwrap()
+            .unwrap();
+        assert!(action.run().is_ok());
+        assert_eq!(drawing.get_grid().borrow().get_color(9, 9).unwrap(), 1);
     }
 }
