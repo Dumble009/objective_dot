@@ -29,9 +29,12 @@ mod tests {
         rect_fill
             .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &(3, 3))
             .unwrap();
-        rect_fill
+        let mut action = rect_fill
             .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(3, 3))
+            .unwrap()
             .unwrap();
+
+        assert!(action.run().is_ok());
 
         for y in 1..=3 {
             for x in 1..=3 {
@@ -70,9 +73,12 @@ mod tests {
         rect_fill
             .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &(1, 1))
             .unwrap();
-        rect_fill
+        let mut action = rect_fill
             .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(1, 1))
+            .unwrap()
             .unwrap();
+
+        assert!(action.run().is_ok());
 
         for y in 1..=3 {
             for x in 1..=3 {
@@ -105,9 +111,13 @@ mod tests {
         rect_fill
             .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &(2, 2))
             .unwrap();
-        rect_fill
+        let mut action = rect_fill
             .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(2, 2))
+            .unwrap()
             .unwrap();
+
+        assert!(action.run().is_ok());
+
         for y in 0..5 {
             for x in 0..5 {
                 if x == 2 && y == 2 {
@@ -144,9 +154,12 @@ mod tests {
         rect_fill
             .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &(2, 0))
             .unwrap();
-        rect_fill
+        let mut action = rect_fill
             .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(4, 0))
+            .unwrap()
             .unwrap();
+
+        assert!(action.run().is_ok());
 
         for x in 0..5 {
             assert_eq!(canvas[0][x], 1);
@@ -177,9 +190,12 @@ mod tests {
         rect_fill
             .on_mouse_drag(&mut canvas, &canvas_size, &mut drawing, &(0, 2))
             .unwrap();
-        rect_fill
+        let mut action = rect_fill
             .on_mouse_up(&mut canvas, &canvas_size, &mut drawing, &(0, 4))
+            .unwrap()
             .unwrap();
+
+        assert!(action.run().is_ok());
 
         for y in 0..5 {
             assert_eq!(canvas[y][0], 1);

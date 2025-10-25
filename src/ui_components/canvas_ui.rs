@@ -192,6 +192,7 @@ impl CanvasUi {
                     Ok(opt) => {
                         if let Some(action) = opt {
                             action_q.push_back(action);
+                            println!("push action");
                         }
                     }
                     Err(msg) => println!("Error!: {msg}"),
