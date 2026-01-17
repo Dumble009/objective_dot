@@ -24,9 +24,6 @@ impl CanvasMenuUi {
         grid: Rc<RefCell<dyn Grid>>,
         action_q: &mut VecDeque<Box<dyn Action>>,
     ) {
-        let mut layout = Layout::left_to_right(Align::Min);
-        layout.main_wrap = true;
-
         let mut width = grid.borrow().get_grid_width();
         let mut height = grid.borrow().get_grid_height();
         let before_width = width;
