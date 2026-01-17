@@ -14,60 +14,56 @@ impl FileMenuUi {
         FileMenuUi { is_showing: false }
     }
 
-    pub fn draw(&mut self, ui: &mut Ui, drawing: &mut dyn Drawing) {
+    fn save(&self, drawing: &mut dyn Drawing) -> Result<(), String> {
+        let mut encoded_binary = vec![];
+        ojd_file_codec::encode(drawing, &mut encoded_binary)?;
+
         let default_filename = "drawing.ojd";
+        let save_path = FileDialog::new()
+            .set_file_name(default_filename)
+            .set_directory("/")
+            .save_file();
+
+        if save_path.is_none() {
+            // 保存せずにダイアログを閉じたりした場合なので、特に何もせずに返る
+            return Ok(());
+        }
+
+        binary_file_io::write_binary_file(save_path.unwrap().to_str().unwrap(), &encoded_binary)?;
+        println!("Saved");
+        Ok(())
+    }
+
+    fn load(&self, drawing: &mut dyn Drawing) -> Result<(), String> {
+        let load_path = FileDialog::new()
+            .add_filter("ojd", &["ojd"])
+            .set_directory("/")
+            .pick_file();
+
+        if load_path.is_none() {
+            // ファイルを選択せずにダイアログを閉じたりした場合なので、特に何もせずに返る
+            return Ok(());
+        }
+
+        let decoded_binary =
+            binary_file_io::read_binary_file(load_path.unwrap().to_str().unwrap())?;
+        println!("Loaded");
+        ojd_file_codec::decode(&decoded_binary, drawing)
+    }
+
+    pub fn draw(&mut self, ui: &mut Ui, drawing: &mut dyn Drawing) {
         if ui.button("Save").clicked() {
-            let mut encoded_binary = vec![];
-            let res = ojd_file_codec::encode(drawing, &mut encoded_binary);
+            let res = self.save(drawing);
             if let Err(msg) = res {
-                println!("{msg}");
-                return;
+                println!("Save Drawing Error : {msg}");
             }
-
-            let save_path = FileDialog::new()
-                .set_file_name(default_filename)
-                .set_directory("/")
-                .save_file();
-
-            if save_path.is_none() {
-                // 保存せずにダイアログを閉じたりした場合なので、特に何もせずに返る
-                return;
-            }
-
-            let res = binary_file_io::write_binary_file(
-                save_path.unwrap().to_str().unwrap(),
-                &encoded_binary,
-            );
-            if let Err(msg) = res {
-                println!("{msg}");
-                return;
-            }
-            println!("Saved");
         }
 
         if ui.button("Load").clicked() {
-            let load_path = FileDialog::new()
-                .add_filter("ojd", &["ojd"])
-                .set_directory("/")
-                .pick_file();
-
-            if load_path.is_none() {
-                // ファイルを選択せずにダイアログを閉じたりした場合なので、特に何もせずに返る
-                return;
-            }
-
-            let res = binary_file_io::read_binary_file(load_path.unwrap().to_str().unwrap());
+            let res = self.load(drawing);
             if let Err(msg) = res {
-                println!("{msg}");
-                return;
-            } else if let Ok(decoded_binary) = res {
-                let res = ojd_file_codec::decode(&decoded_binary, drawing);
-                if let Err(msg) = res {
-                    println!("{msg}");
-                    return;
-                }
+                println!("Load Drawing Error : {msg}");
             }
-            println!("Loaded");
         }
     }
 
