@@ -1,4 +1,5 @@
 pub mod binary_file_io;
+pub mod bitmap;
 pub mod canvas_grid;
 pub mod color;
 pub mod drawing;
