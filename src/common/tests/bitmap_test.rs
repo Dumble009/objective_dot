@@ -2,7 +2,6 @@
 mod test {
     use crate::common::bitmap::Bitmap;
     use crate::common::canvas_grid::Grid;
-    use crate::common::drawing;
     use crate::common::palette::Palette;
     use crate::mock::drawing_mock::DrawingMock;
 
