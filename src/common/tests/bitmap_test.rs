@@ -46,5 +46,7 @@ mod test {
         assert_eq!(pixels[4..8], [255, 0, 0, 255]); // (1,0) Red
         assert_eq!(pixels[8..12], [0, 255, 0, 255]); // (0,1) Green
         assert_eq!(pixels[12..16], [0, 0, 255, 255]); // (1,1) Blue
+        assert_eq!(bitmap.width, 2);
+        assert_eq!(bitmap.height, 2);
     }
 }

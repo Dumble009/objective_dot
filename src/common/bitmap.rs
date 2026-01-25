@@ -2,6 +2,8 @@ use crate::common::drawing::Drawing;
 
 pub struct Bitmap {
     pub pixels: Vec<u8>, // RGBA format
+    pub width: usize,
+    pub height: usize,
 }
 
 impl Bitmap {
@@ -27,7 +29,11 @@ impl Bitmap {
             }
         }
 
-        Ok(Bitmap { pixels })
+        Ok(Bitmap {
+            pixels,
+            width,
+            height,
+        })
     }
 }
 

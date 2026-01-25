@@ -1,6 +1,6 @@
 use egui::{Context, Ui, Window};
 
-use crate::common::{binary_file_io, drawing::Drawing, ojd_file_codec};
+use crate::common::{binary_file_io, drawing::Drawing, ojd_file_codec, png_write};
 
 use super::top_menu_bar_item::TopMenuBarItem;
 use rfd::FileDialog;
@@ -47,8 +47,26 @@ impl FileMenuUi {
 
         let decoded_binary =
             binary_file_io::read_binary_file(load_path.unwrap().to_str().unwrap())?;
+        ojd_file_codec::decode(&decoded_binary, drawing)?;
         println!("Loaded");
-        ojd_file_codec::decode(&decoded_binary, drawing)
+        Ok(())
+    }
+
+    fn export_as_png(&self, drawing: &mut dyn Drawing) -> Result<(), String> {
+        let export_path = FileDialog::new()
+            .add_filter("png", &["png"])
+            .set_directory("/")
+            .save_file();
+
+        if export_path.is_none() {
+            // ファイルを選択せずにダイアログを閉じたりした場合なので、特に何もせずに返る
+            return Ok(());
+        }
+
+        let bitmap = crate::common::bitmap::Bitmap::from_drawing(drawing)?;
+        png_write::write_png(&bitmap, export_path.unwrap().to_str().unwrap())?;
+        println!("Exported as PNG");
+        Ok(())
     }
 
     pub fn draw(&mut self, ui: &mut Ui, drawing: &mut dyn Drawing) {
@@ -63,6 +81,13 @@ impl FileMenuUi {
             let res = self.load(drawing);
             if let Err(msg) = res {
                 println!("Load Drawing Error : {msg}");
+            }
+        }
+
+        if ui.button("Export as PNG").clicked() {
+            let res = self.export_as_png(drawing);
+            if let Err(msg) = res {
+                println!("Export as PNG Error : {msg}");
             }
         }
     }

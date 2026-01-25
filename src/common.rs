@@ -6,3 +6,4 @@ pub mod drawing;
 pub mod ojd_file_codec;
 pub mod paint_net_codec;
 pub mod palette;
+pub mod png_write;
