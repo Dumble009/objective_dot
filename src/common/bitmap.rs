@@ -7,7 +7,11 @@ pub struct Bitmap {
 }
 
 impl Bitmap {
-    pub fn from_drawing(drawing: &dyn Drawing, pixel_per_dot: usize) -> Result<Self, String> {
+    pub fn from_drawing(
+        drawing: &dyn Drawing,
+        pixel_per_dot: usize,
+        is_transparent_background: bool,
+    ) -> Result<Self, String> {
         let grid = drawing.get_grid();
         let palette = drawing.get_palette();
 
@@ -27,7 +31,13 @@ impl Bitmap {
                 pixels.push(color32.r());
                 pixels.push(color32.g());
                 pixels.push(color32.b());
-                pixels.push(255); // Alpha channel
+
+                // Alpha channel
+                if is_transparent_background && color_index == 0 {
+                    pixels.push(0);
+                } else {
+                    pixels.push(255);
+                }
             }
         }
 
