@@ -1,4 +1,4 @@
-use egui::{Context, Ui, Window};
+use egui::{Context, DragValue, Ui, Window};
 
 use crate::common::{binary_file_io, drawing::Drawing, ojd_file_codec, png_write};
 
@@ -7,11 +7,15 @@ use rfd::FileDialog;
 
 pub struct FileMenuUi {
     is_showing: bool,
+    pixel_per_dot_for_png_export: usize,
 }
 
 impl FileMenuUi {
     pub fn new() -> Self {
-        FileMenuUi { is_showing: false }
+        FileMenuUi {
+            is_showing: false,
+            pixel_per_dot_for_png_export: 100,
+        }
     }
 
     fn save(&self, drawing: &mut dyn Drawing) -> Result<(), String> {
@@ -52,7 +56,7 @@ impl FileMenuUi {
         Ok(())
     }
 
-    fn export_as_png(&self, drawing: &mut dyn Drawing) -> Result<(), String> {
+    fn export_as_png(&self, drawing: &mut dyn Drawing, pixel_per_dot: usize) -> Result<(), String> {
         let export_path = FileDialog::new()
             .add_filter("png", &["png"])
             .set_directory("/")
@@ -63,7 +67,7 @@ impl FileMenuUi {
             return Ok(());
         }
 
-        let bitmap = crate::common::bitmap::Bitmap::from_drawing(drawing, 1)?;
+        let bitmap = crate::common::bitmap::Bitmap::from_drawing(drawing, pixel_per_dot)?;
         png_write::write_png(&bitmap, export_path.unwrap().to_str().unwrap())?;
         println!("Exported as PNG");
         Ok(())
@@ -85,11 +89,17 @@ impl FileMenuUi {
         }
 
         if ui.button("Export as PNG").clicked() {
-            let res = self.export_as_png(drawing);
+            let res = self.export_as_png(drawing, self.pixel_per_dot_for_png_export);
             if let Err(msg) = res {
                 println!("Export as PNG Error : {msg}");
             }
         }
+        ui.horizontal(|ui| {
+            ui.label("Ratio : ");
+            ui.add(
+                DragValue::new(&mut self.pixel_per_dot_for_png_export).update_while_editing(false),
+            );
+        });
     }
 
     pub fn update(&mut self, ctx: &Context, drawing: &mut dyn Drawing) {
