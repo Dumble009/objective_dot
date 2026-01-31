@@ -63,7 +63,7 @@ impl FileMenuUi {
             return Ok(());
         }
 
-        let bitmap = crate::common::bitmap::Bitmap::from_drawing(drawing)?;
+        let bitmap = crate::common::bitmap::Bitmap::from_drawing(drawing, 1)?;
         png_write::write_png(&bitmap, export_path.unwrap().to_str().unwrap())?;
         println!("Exported as PNG");
         Ok(())
