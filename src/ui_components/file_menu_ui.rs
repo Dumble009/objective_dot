@@ -8,6 +8,7 @@ use rfd::FileDialog;
 pub struct FileMenuUi {
     is_showing: bool,
     pixel_per_dot_for_png_export: usize,
+    is_transparent_background_for_png_export: bool,
 }
 
 impl FileMenuUi {
@@ -15,6 +16,7 @@ impl FileMenuUi {
         FileMenuUi {
             is_showing: false,
             pixel_per_dot_for_png_export: 100,
+            is_transparent_background_for_png_export: false,
         }
     }
 
@@ -56,7 +58,7 @@ impl FileMenuUi {
         Ok(())
     }
 
-    fn export_as_png(&self, drawing: &mut dyn Drawing, pixel_per_dot: usize) -> Result<(), String> {
+    fn export_as_png(&self, drawing: &mut dyn Drawing) -> Result<(), String> {
         let export_path = FileDialog::new()
             .add_filter("png", &["png"])
             .set_directory("/")
@@ -67,7 +69,11 @@ impl FileMenuUi {
             return Ok(());
         }
 
-        let bitmap = crate::common::bitmap::Bitmap::from_drawing(drawing, pixel_per_dot, false)?;
+        let bitmap = crate::common::bitmap::Bitmap::from_drawing(
+            drawing,
+            self.pixel_per_dot_for_png_export,
+            self.is_transparent_background_for_png_export,
+        )?;
         png_write::write_png(&bitmap, export_path.unwrap().to_str().unwrap())?;
         println!("Exported as PNG");
         Ok(())
@@ -89,7 +95,7 @@ impl FileMenuUi {
         }
 
         if ui.button("Export as PNG").clicked() {
-            let res = self.export_as_png(drawing, self.pixel_per_dot_for_png_export);
+            let res = self.export_as_png(drawing);
             if let Err(msg) = res {
                 println!("Export as PNG Error : {msg}");
             }
@@ -99,6 +105,13 @@ impl FileMenuUi {
             ui.add(
                 DragValue::new(&mut self.pixel_per_dot_for_png_export).update_while_editing(false),
             );
+        });
+        ui.horizontal(|ui| {
+            ui.label("Is Transparent Background : ");
+            ui.add(egui::Checkbox::new(
+                &mut self.is_transparent_background_for_png_export,
+                "",
+            ));
         });
     }
 
