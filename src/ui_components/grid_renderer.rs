@@ -52,7 +52,7 @@ impl GridRenderer for SimpleGridRenderer {
                     255 - fill_color.g(),
                     255 - fill_color.b(),
                 );
-                let grid_stroke = Stroke::new(1.0, stroke_color);
+                let grid_stroke = Stroke::new(1.0_f32, stroke_color);
 
                 ui.painter()
                     .rect(square_rect, 0, fill_color, grid_stroke, StrokeKind::Middle);
