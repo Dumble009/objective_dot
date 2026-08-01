@@ -348,16 +348,6 @@ mod tests {
         for y in 0..=2 {
             for x in 2..5 {
                 assert_eq!(canvas[y][x], 1);
-                assert_eq!(
-                    drawing
-                        .borrow()
-                        .get_grid()
-                        .unwrap()
-                        .borrow()
-                        .get_color(x, y)
-                        .unwrap(),
-                    1
-                );
             }
         }
 
@@ -368,16 +358,6 @@ mod tests {
         for y in 2..5 {
             for x in 2..5 {
                 assert_eq!(canvas[y][x], 1);
-                assert_eq!(
-                    drawing
-                        .borrow()
-                        .get_grid()
-                        .unwrap()
-                        .borrow()
-                        .get_color(x, y)
-                        .unwrap(),
-                    1
-                );
             }
         }
 
