@@ -2,6 +2,9 @@ use crate::{common::drawing::Drawing, ui_components::top_menu_bar_item::TopMenuB
 use eframe::egui::Ui;
 use eframe::egui::*;
 
+use std::cell::RefCell;
+use std::rc::Rc;
+
 pub struct LayerWindowUi {
     is_showing: bool,
     window_size: Vec2,
@@ -15,18 +18,31 @@ impl LayerWindowUi {
         }
     }
 
-    fn draw(&mut self, ui: &mut Ui, drawing: &dyn Drawing) {
-        let layer_count = drawing.get_layer_count();
+    fn draw(&mut self, ui: &mut Ui, drawing: Rc<RefCell<dyn Drawing>>) {
+        let layer_count = drawing.borrow().get_layer_count();
         ScrollArea::vertical().max_height(300.0).show(ui, |ui| {
             for i in 0..layer_count {
-                self.draw_item(ui, drawing, i);
+                self.draw_item(ui, drawing.clone(), i);
+            }
+
+            if ui.button("Add Layer").clicked() {
+                drawing.borrow_mut().add_grid_layer();
             }
         });
     }
 
-    fn draw_item(&self, ui: &mut Ui, drawing: &dyn Drawing, layer_index: usize) {
+    fn draw_item(&self, ui: &mut Ui, drawing: Rc<RefCell<dyn Drawing>>, layer_index: usize) {
         ui.horizontal(|ui| {
-            ui.label(format!("Layer {}", layer_index));
+            ui.vertical(|ui| {
+                ui.label(format!("Layer {}", layer_index));
+                if ui.button("Set Active").clicked() {
+                    drawing
+                        .borrow_mut()
+                        .set_active_layer_idx(layer_index)
+                        .unwrap();
+                }
+            });
+
             ui.vertical(|ui| {
                 if ui.button("Up").clicked() {
                     println!("Move layer {} up", layer_index);
@@ -40,8 +56,8 @@ impl LayerWindowUi {
             let (_, painter) =
                 ui.allocate_painter(egui::vec2(PREVIEW_SIZE, PREVIEW_SIZE), egui::Sense::hover());
 
-            let width = drawing.get_grid_width();
-            let height = drawing.get_grid_height();
+            let width = drawing.borrow().get_grid_width();
+            let height = drawing.borrow().get_grid_height();
 
             let dot_width = PREVIEW_SIZE / width as f32;
             let dot_height = PREVIEW_SIZE / height as f32;
@@ -49,12 +65,14 @@ impl LayerWindowUi {
             for y in 0..height {
                 for x in 0..width {
                     let color_idx = drawing
+                        .borrow()
                         .get_grid_layer(layer_index)
                         .unwrap()
                         .borrow()
                         .get_color(x, y)
                         .unwrap_or(0);
                     let color = drawing
+                        .borrow()
                         .get_palette()
                         .borrow()
                         .get_color(color_idx)
@@ -70,7 +88,7 @@ impl LayerWindowUi {
         });
     }
 
-    pub fn update(&mut self, ctx: &Context, drawing: &dyn Drawing) {
+    pub fn update(&mut self, ctx: &Context, drawing: Rc<RefCell<dyn Drawing>>) {
         if !self.is_showing {
             return;
         }

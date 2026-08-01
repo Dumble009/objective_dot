@@ -60,7 +60,7 @@ impl eframe::App for ObjectiveDot {
         self.canvas_menu_ui
             .update(ctx, self.drawing.clone(), &mut action_q);
         self.drawing_preview_ui.update(ctx, &*self.drawing.borrow());
-        self.layer_window_ui.update(ctx, &*self.drawing.borrow());
+        self.layer_window_ui.update(ctx, self.drawing.clone());
 
         let top_menu_bar_items: Vec<&mut dyn TopMenuBarItem> = vec![
             &mut self.save_drawing_ui,
