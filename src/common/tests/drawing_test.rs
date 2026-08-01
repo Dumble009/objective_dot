@@ -45,7 +45,6 @@ mod test {
             25
         );
 
-        assert!(drawing.set_active_layer_idx(1).is_ok());
         drawing
             .get_grid_layer(1)
             .unwrap()
@@ -59,8 +58,6 @@ mod test {
             .set_color(1, 1, 1)
             .unwrap();
 
-        assert!(drawing.set_active_layer_idx(2).is_ok());
-
         drawing
             .get_grid_layer(2)
             .unwrap()
@@ -73,5 +70,17 @@ mod test {
 
         let color11 = drawing.get_grid().unwrap().get_color(1, 1).unwrap();
         assert_eq!(color11, 2);
+
+        assert_eq!(
+            drawing
+                .get_grid_layer(1)
+                .unwrap()
+                .borrow()
+                .get_color(1, 1)
+                .unwrap(),
+            1
+        );
+
+        assert!(drawing.get_grid_layer(3).is_none());
     }
 }
