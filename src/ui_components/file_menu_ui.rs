@@ -1,3 +1,6 @@
+use std::cell::{Ref, RefCell};
+use std::rc::Rc;
+
 use egui::{Context, DragValue, Ui, Window};
 
 use crate::common::{binary_file_io, drawing::Drawing, ojd_file_codec, png_write};
@@ -20,9 +23,9 @@ impl FileMenuUi {
         }
     }
 
-    fn save(&self, drawing: &mut dyn Drawing) -> Result<(), String> {
+    fn save(&self, drawing: Rc<RefCell<dyn Drawing>>) -> Result<(), String> {
         let mut encoded_binary = vec![];
-        ojd_file_codec::encode(drawing, &mut encoded_binary)?;
+        ojd_file_codec::encode(&*drawing.borrow(), &mut encoded_binary)?;
 
         let default_filename = "drawing.ojd";
         let save_path = FileDialog::new()
@@ -40,7 +43,7 @@ impl FileMenuUi {
         Ok(())
     }
 
-    fn load(&self, drawing: &mut dyn Drawing) -> Result<(), String> {
+    fn load(&self, drawing: Rc<RefCell<dyn Drawing>>) -> Result<(), String> {
         let load_path = FileDialog::new()
             .add_filter("ojd", &["ojd"])
             .set_directory("/")
@@ -58,7 +61,7 @@ impl FileMenuUi {
         Ok(())
     }
 
-    fn export_as_png(&self, drawing: &mut dyn Drawing) -> Result<(), String> {
+    fn export_as_png(&self, drawing: Rc<RefCell<dyn Drawing>>) -> Result<(), String> {
         let export_path = FileDialog::new()
             .add_filter("png", &["png"])
             .set_directory("/")
@@ -70,7 +73,7 @@ impl FileMenuUi {
         }
 
         let bitmap = crate::common::bitmap::Bitmap::from_drawing(
-            drawing,
+            &*drawing.borrow(),
             self.pixel_per_dot_for_png_export,
             self.is_transparent_background_for_png_export,
         )?;
@@ -79,23 +82,23 @@ impl FileMenuUi {
         Ok(())
     }
 
-    pub fn draw(&mut self, ui: &mut Ui, drawing: &mut dyn Drawing) {
+    pub fn draw(&mut self, ui: &mut Ui, drawing: Rc<RefCell<dyn Drawing>>) {
         if ui.button("Save").clicked() {
-            let res = self.save(drawing);
+            let res = self.save(drawing.clone());
             if let Err(msg) = res {
                 println!("Save Drawing Error : {msg}");
             }
         }
 
         if ui.button("Load").clicked() {
-            let res = self.load(drawing);
+            let res = self.load(drawing.clone());
             if let Err(msg) = res {
                 println!("Load Drawing Error : {msg}");
             }
         }
 
         if ui.button("Export as PNG").clicked() {
-            let res = self.export_as_png(drawing);
+            let res = self.export_as_png(drawing.clone());
             if let Err(msg) = res {
                 println!("Export as PNG Error : {msg}");
             }
@@ -115,7 +118,7 @@ impl FileMenuUi {
         });
     }
 
-    pub fn update(&mut self, ctx: &Context, drawing: &mut dyn Drawing) {
+    pub fn update(&mut self, ctx: &Context, drawing: Rc<RefCell<dyn Drawing>>) {
         if !self.is_showing {
             return;
         }

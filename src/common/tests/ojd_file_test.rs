@@ -4,6 +4,7 @@ mod test {
         common::{
             canvas_grid::Grid,
             color::ODColor,
+            drawing::Drawing,
             ojd_file_codec::{decode, encode},
             palette::Palette,
         },
@@ -46,33 +47,53 @@ mod test {
         let mut encoded = vec![];
         encode(&drawing1, &mut encoded).unwrap();
 
-        let mut drawing2 = DrawingMock::new();
-        drawing2.grid.borrow_mut().set_grid_width(w + 10).unwrap();
-        drawing2.grid.borrow_mut().set_grid_height(h + 10).unwrap();
-        drawing2.palette.borrow_mut().add_color(color1).unwrap();
-        drawing2.palette.borrow_mut().add_color(color2).unwrap();
-        drawing2.palette.borrow_mut().add_color(color3).unwrap();
+        let mut drawing2 = Rc::new(RefCell::new(DrawingMock::new()));
+        drawing2.borrow_mut().set_grid_width(w + 10).unwrap();
+        drawing2.borrow_mut().set_grid_height(h + 10).unwrap();
+        drawing2
+            .borrow_mut()
+            .palette
+            .borrow_mut()
+            .add_color(color1)
+            .unwrap();
+        drawing2
+            .borrow_mut()
+            .palette
+            .borrow_mut()
+            .add_color(color2)
+            .unwrap();
+        drawing2
+            .borrow_mut()
+            .palette
+            .borrow_mut()
+            .add_color(color3)
+            .unwrap();
 
         let color4 = ODColor::new(3, 3, 3);
-        drawing2.palette.borrow_mut().add_color(color4).unwrap();
-        decode(&encoded, &mut drawing2).unwrap();
+        drawing2
+            .borrow_mut()
+            .palette
+            .borrow_mut()
+            .add_color(color4)
+            .unwrap();
+        decode(&encoded, drawing2.clone()).unwrap();
 
-        assert_eq_grid(drawing1.grid, drawing2.grid);
-        assert_eq_palette(drawing1.palette, drawing2.palette);
+        assert_eq_grid(
+            &*drawing1.grid.borrow(),
+            &*drawing2.borrow().get_grid().unwrap().borrow(),
+        );
+        assert_eq_palette(drawing1.palette, drawing2.borrow_mut().get_palette());
     }
 
-    fn assert_eq_grid(g1: Rc<RefCell<dyn Grid>>, g2: Rc<RefCell<dyn Grid>>) {
-        let w = g1.borrow().get_grid_width();
-        let h = g1.borrow().get_grid_height();
-        assert_eq!(w, g2.borrow().get_grid_width());
-        assert_eq!(h, g2.borrow().get_grid_height());
+    fn assert_eq_grid(g1: &dyn Grid, g2: &dyn Grid) {
+        let w = g1.get_grid_width();
+        let h = g1.get_grid_height();
+        assert_eq!(w, g2.get_grid_width());
+        assert_eq!(h, g2.get_grid_height());
 
         for x in 0..w {
             for y in 0..h {
-                assert_eq!(
-                    g1.borrow().get_color(x, y).unwrap(),
-                    g2.borrow().get_color(x, y).unwrap()
-                );
+                assert_eq!(g1.get_color(x, y).unwrap(), g2.get_color(x, y).unwrap());
             }
         }
     }

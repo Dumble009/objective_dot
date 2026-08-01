@@ -5,6 +5,7 @@ use eframe::egui::*;
 use crate::actions::action::Action;
 use crate::actions::grid_size_change_action::GridSizeChangeAction;
 use crate::common::canvas_grid::Grid;
+use crate::common::drawing::Drawing;
 
 use super::top_menu_bar_item::TopMenuBarItem;
 use std::collections::VecDeque;
@@ -21,11 +22,11 @@ impl CanvasMenuUi {
     fn draw(
         &mut self,
         ui: &mut Ui,
-        grid: Rc<RefCell<dyn Grid>>,
+        drawing: Rc<RefCell<dyn Drawing>>,
         action_q: &mut VecDeque<Box<dyn Action>>,
     ) {
-        let mut width = grid.borrow().get_grid_width();
-        let mut height = grid.borrow().get_grid_height();
+        let mut width = drawing.borrow().get_grid_width();
+        let mut height = drawing.borrow().get_grid_height();
         let before_width = width;
         let before_height = height;
 
@@ -41,22 +42,23 @@ impl CanvasMenuUi {
 
         // アクションキューを無駄に消費しないように、値の変更が確定した時だけキューに積む
         if before_width != width || before_height != height {
-            let action = GridSizeChangeAction::new(grid.clone(), (width, height));
+            let action = GridSizeChangeAction::new(drawing, (width, height));
             action_q.push_front(Box::new(action));
         }
 
         if ui.button("split").clicked() {
-            let res = grid.borrow_mut().split();
-            if let Err(msg) = res {
-                println!("split error: {msg}");
-            }
+            // TODO split を実装
+            // let res = grid.split();
+            // if let Err(msg) = res {
+            //     println!("split error: {msg}");
+            // }
         }
     }
 
     pub fn update(
         &mut self,
         ctx: &Context,
-        grid: Rc<RefCell<dyn Grid>>,
+        drawing: Rc<RefCell<dyn Drawing>>,
         action_q: &mut VecDeque<Box<dyn Action>>,
     ) {
         if !self.is_showing {
@@ -66,7 +68,7 @@ impl CanvasMenuUi {
         let mut is_showing = self.is_showing;
         Window::new("Canvas Menu")
             .open(&mut is_showing)
-            .show(ctx, |ui| self.draw(ui, grid, action_q));
+            .show(ctx, |ui| self.draw(ui, drawing, action_q));
 
         self.is_showing = is_showing;
     }

@@ -7,6 +7,9 @@ use crate::{
 use crate::actions::action::Action;
 use std::collections::VecDeque;
 
+use std::cell::RefCell;
+use std::rc::Rc;
+
 #[derive(Clone)]
 pub struct Fill {}
 
@@ -21,7 +24,7 @@ impl DrawMode for Fill {
         &mut self,
         _preview_canvas: &mut [Vec<PaletteColorIndex>],
         _canvas_size: &(usize, usize),
-        _drawing: &mut dyn Drawing,
+        _drawing: Rc<RefCell<dyn Drawing>>,
         _mouse_pos: &(usize, usize),
     ) -> Result<(), String> {
         Ok(())
@@ -31,7 +34,7 @@ impl DrawMode for Fill {
         &mut self,
         _preview_canvas: &mut [Vec<PaletteColorIndex>],
         _canvas_size: &(usize, usize),
-        _drawing: &mut dyn Drawing,
+        _drawing: Rc<RefCell<dyn Drawing>>,
         _mouse_pos: &(usize, usize),
     ) -> Result<(), String> {
         Ok(())
@@ -41,7 +44,7 @@ impl DrawMode for Fill {
         &mut self,
         preview_canvas: &mut [Vec<PaletteColorIndex>],
         canvas_size: &(usize, usize),
-        drawing: &mut dyn Drawing,
+        drawing: Rc<RefCell<dyn Drawing>>,
         mouse_pos: &(usize, usize),
     ) -> Result<Option<Box<dyn Action>>, String> {
         if mouse_pos.0 >= canvas_size.0 || mouse_pos.1 >= canvas_size.1 {
@@ -49,7 +52,11 @@ impl DrawMode for Fill {
         }
 
         let target_color = preview_canvas[mouse_pos.1][mouse_pos.0]; // 塗りつぶし対象の色
-        let fill_color = drawing.get_palette().borrow().get_current_selected_idx()?; // 塗りつぶし後の色
+        let fill_color = drawing
+            .borrow()
+            .get_palette()
+            .borrow()
+            .get_current_selected_idx()?; // 塗りつぶし後の色
 
         if target_color == fill_color {
             // 塗りつぶし前後の色が同じ場合は何もする必要なし
@@ -95,7 +102,11 @@ impl DrawMode for Fill {
             }
         }
 
-        let action = Box::new(DrawAction::new(drawing.get_grid(), drawn_cells, fill_color));
+        let action = Box::new(DrawAction::new(
+            drawing.borrow().get_grid()?,
+            drawn_cells,
+            fill_color,
+        ));
         Ok(Some(action))
     }
 

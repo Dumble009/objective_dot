@@ -1,3 +1,6 @@
+use std::cell::RefCell;
+use std::rc::Rc;
+
 use crate::common::color::ODColor;
 
 use super::{drawing::Drawing, palette::PaletteColorIndex};
@@ -43,14 +46,13 @@ pub fn encode(drawing: &dyn Drawing, out: &mut Vec<u8>) -> Result<(), String> {
     }
 
     // グリッドのエンコード
-    let grid = drawing.get_grid();
-    let width = grid.borrow().get_grid_width();
-    let height = grid.borrow().get_grid_height();
+    let width = drawing.get_grid()?.borrow().get_grid_width();
+    let height = drawing.get_grid()?.borrow().get_grid_height();
     append!(out, width);
     append!(out, height);
     for y in 0..height {
         for x in 0..width {
-            let color = grid.borrow().get_color(x, y)?;
+            let color = drawing.get_grid()?.borrow().get_color(x, y)?;
             append!(out, color);
         }
     }
@@ -58,7 +60,7 @@ pub fn encode(drawing: &dyn Drawing, out: &mut Vec<u8>) -> Result<(), String> {
     Ok(())
 }
 
-pub fn decode(input: &[u8], drawing: &mut dyn Drawing) -> Result<(), String> {
+pub fn decode(input: &[u8], drawing: Rc<RefCell<dyn Drawing>>) -> Result<(), String> {
     let mut pos = 0;
     // マジックの確認
     let magic1: u8 = pop!(input, pos, 1, u8);
@@ -72,7 +74,8 @@ pub fn decode(input: &[u8], drawing: &mut dyn Drawing) -> Result<(), String> {
     // パレットのデコード
     let color_count: usize = pop!(input, pos, 8, usize);
     println!("color_count : {color_count}");
-    let palette = drawing.get_palette();
+    let mut drawing_ref = drawing.borrow_mut();
+    let palette = drawing_ref.get_palette();
     palette.borrow_mut().reset();
     for i in 0..color_count {
         let r: u8 = pop!(input, pos, 1, u8);
@@ -91,14 +94,15 @@ pub fn decode(input: &[u8], drawing: &mut dyn Drawing) -> Result<(), String> {
     let width: usize = pop!(input, pos, 8, usize);
     let height: usize = pop!(input, pos, 8, usize);
 
-    let grid = drawing.get_grid();
-    grid.borrow_mut().set_grid_width(width)?;
-    grid.borrow_mut().set_grid_height(height)?;
+    let grid = drawing_ref.get_grid();
+    drawing_ref.set_grid_width(width)?;
+    drawing_ref.set_grid_height(height)?;
 
     for y in 0..height {
         for x in 0..width {
             let color: PaletteColorIndex = pop!(input, pos, 8, PaletteColorIndex);
-            grid.borrow_mut().set_color(x, y, color)?;
+            // TODO: レイヤーごとに色を設定する
+            // grid.borrow_mut().set_color(x, y, color)?;
         }
     }
 

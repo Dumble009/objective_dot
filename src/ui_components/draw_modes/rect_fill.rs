@@ -6,6 +6,9 @@ use crate::{
 use crate::actions::action::Action;
 use crate::actions::draw_action::DrawAction;
 
+use std::cell::RefCell;
+use std::rc::Rc;
+
 #[derive(Clone)]
 pub struct RectFill {
     is_drawing: bool,
@@ -41,7 +44,7 @@ impl DrawMode for RectFill {
         &mut self,
         preview_canvas: &mut [Vec<PaletteColorIndex>],
         canvas_size: &(usize, usize),
-        drawing: &mut dyn Drawing,
+        drawing: Rc<RefCell<dyn Drawing>>,
         mouse_pos: &(usize, usize),
     ) -> Result<(), String> {
         self.is_drawing = true;
@@ -50,8 +53,11 @@ impl DrawMode for RectFill {
         let mut out_points = Vec::new();
         self.calc_rect_points(mouse_pos, &mut out_points);
 
-        let current_selected_color_idx =
-            drawing.get_palette().borrow().get_current_selected_idx()?;
+        let current_selected_color_idx = drawing
+            .borrow()
+            .get_palette()
+            .borrow()
+            .get_current_selected_idx()?;
         for (x, y) in out_points {
             if x < canvas_size.0 && y < canvas_size.1 {
                 preview_canvas[y][x] = current_selected_color_idx;
@@ -64,7 +70,7 @@ impl DrawMode for RectFill {
         &mut self,
         preview_canvas: &mut [Vec<PaletteColorIndex>],
         canvas_size: &(usize, usize),
-        drawing: &mut dyn Drawing,
+        drawing: Rc<RefCell<dyn Drawing>>,
         mouse_pos: &(usize, usize),
     ) -> Result<(), String> {
         if !self.is_drawing {
@@ -73,8 +79,11 @@ impl DrawMode for RectFill {
         let mut out_points = Vec::new();
         self.calc_rect_points(mouse_pos, &mut out_points);
 
-        let current_selected_color_idx =
-            drawing.get_palette().borrow().get_current_selected_idx()?;
+        let current_selected_color_idx = drawing
+            .borrow()
+            .get_palette()
+            .borrow()
+            .get_current_selected_idx()?;
         for (x, y) in out_points {
             if x < canvas_size.0 && y < canvas_size.1 {
                 preview_canvas[y][x] = current_selected_color_idx;
@@ -87,7 +96,7 @@ impl DrawMode for RectFill {
         &mut self,
         preview_canvas: &mut [Vec<PaletteColorIndex>],
         canvas_size: &(usize, usize),
-        drawing: &mut dyn Drawing,
+        drawing: Rc<RefCell<dyn Drawing>>,
         mouse_pos: &(usize, usize),
     ) -> Result<Option<Box<dyn Action>>, String> {
         if !self.is_drawing {
@@ -96,8 +105,11 @@ impl DrawMode for RectFill {
         let mut out_points = Vec::new();
         self.calc_rect_points(mouse_pos, &mut out_points);
 
-        let current_selected_color_idx =
-            drawing.get_palette().borrow().get_current_selected_idx()?;
+        let current_selected_color_idx = drawing
+            .borrow()
+            .get_palette()
+            .borrow()
+            .get_current_selected_idx()?;
         let mut drawn_cells = vec![];
         for (x, y) in out_points {
             if x < canvas_size.0 && y < canvas_size.1 {
@@ -106,7 +118,7 @@ impl DrawMode for RectFill {
             }
         }
         let action = Box::new(DrawAction::new(
-            drawing.get_grid(),
+            drawing.borrow().get_grid()?,
             drawn_cells,
             current_selected_color_idx,
         ));

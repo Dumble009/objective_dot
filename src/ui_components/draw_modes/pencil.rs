@@ -6,6 +6,9 @@ use crate::{
 
 use crate::actions::action::Action;
 
+use std::cell::RefCell;
+use std::rc::Rc;
+
 #[derive(Clone)]
 pub struct Pencil {
     is_drawing: bool,
@@ -34,11 +37,14 @@ impl Pencil {
 
     fn apply_current_drawn_cells_to_preview_canvas(
         &self,
-        drawing: &mut dyn Drawing,
+        drawing: Rc<RefCell<dyn Drawing>>,
         preview_canvas: &mut [Vec<PaletteColorIndex>],
     ) -> Result<(), String> {
-        let current_selected_color_idx =
-            drawing.get_palette().borrow().get_current_selected_idx()?;
+        let current_selected_color_idx = drawing
+            .borrow()
+            .get_palette()
+            .borrow()
+            .get_current_selected_idx()?;
 
         for cell in self.drawn_cells.iter() {
             preview_canvas[cell.1][cell.0] = current_selected_color_idx;
@@ -53,7 +59,7 @@ impl DrawMode for Pencil {
         &mut self,
         preview_canvas: &mut [Vec<PaletteColorIndex>],
         canvas_size: &(usize, usize),
-        drawing: &mut dyn Drawing,
+        drawing: Rc<RefCell<dyn Drawing>>,
         mouse_pos: &(usize, usize),
     ) -> Result<(), String> {
         self.is_drawing = true;
@@ -69,7 +75,7 @@ impl DrawMode for Pencil {
         &mut self,
         preview_canvas: &mut [Vec<PaletteColorIndex>],
         canvas_size: &(usize, usize),
-        drawing: &mut dyn Drawing,
+        drawing: Rc<RefCell<dyn Drawing>>,
         mouse_pos: &(usize, usize),
     ) -> Result<(), String> {
         if !self.is_drawing {
@@ -86,15 +92,23 @@ impl DrawMode for Pencil {
         &mut self,
         preview_canvas: &mut [Vec<PaletteColorIndex>],
         _canvas_size: &(usize, usize),
-        drawing: &mut dyn Drawing,
+        drawing: Rc<RefCell<dyn Drawing>>,
         _mouse_pos: &(usize, usize),
     ) -> Result<Option<Box<dyn Action>>, String> {
         self.is_drawing = false;
 
-        let current_selected_color_idx =
-            drawing.get_palette().borrow().get_current_selected_idx()?;
+        let current_selected_color_idx = drawing
+            .borrow()
+            .get_palette()
+            .borrow()
+            .get_current_selected_idx()?;
+        drawing
+            .borrow()
+            .get_palette()
+            .borrow()
+            .get_current_selected_idx()?;
         let action = Box::new(DrawAction::new(
-            drawing.get_grid(),
+            drawing.borrow().get_grid()?,
             self.drawn_cells.clone(),
             current_selected_color_idx,
         ));

@@ -1,4 +1,6 @@
+use std::cell::RefCell;
 use std::collections::VecDeque;
+use std::rc::Rc;
 
 use crate::actions::action::Action;
 use crate::common::drawing::Drawing;
@@ -68,13 +70,18 @@ impl CanvasUi {
         &self,
         grid_x: i32,
         grid_y: i32,
-        drawing: &mut dyn Drawing,
+        drawing: Rc<RefCell<dyn Drawing>>,
     ) -> Result<(), String> {
         let color_idx = drawing
-            .get_grid()
+            .borrow()
+            .get_grid()?
             .borrow()
             .get_color(grid_x as usize, grid_y as usize)?;
-        drawing.get_palette().borrow_mut().select_color(color_idx)?;
+        drawing
+            .borrow()
+            .get_palette()
+            .borrow_mut()
+            .select_color(color_idx)?;
 
         Ok(())
     }
@@ -124,9 +131,9 @@ impl CanvasUi {
     fn set_current_drawing_to_canvas(
         &self,
         canvas: &mut [Vec<PaletteColorIndex>],
-        drawing: &dyn Drawing,
+        drawing: Rc<RefCell<dyn Drawing>>,
     ) {
-        let grid = drawing.get_grid();
+        let grid = drawing.borrow().get_grid().unwrap();
         for (y, row) in canvas.iter_mut().enumerate() {
             for (x, color_idx) in row.iter_mut().enumerate() {
                 *color_idx = grid.borrow().get_color(x, y).unwrap_or(0);
@@ -138,7 +145,7 @@ impl CanvasUi {
         &mut self,
         ui: &mut Ui,
         ctx: &Context,
-        drawing: &mut dyn Drawing,
+        drawing: Rc<RefCell<dyn Drawing>>,
         action_q: &mut VecDeque<Box<dyn Action>>,
     ) {
         let (response, _) = ui.allocate_painter(
@@ -147,12 +154,12 @@ impl CanvasUi {
         );
         self.input_handler.update(&response, ctx);
 
-        let grid = drawing.get_grid();
+        let grid = drawing.borrow().get_grid().unwrap();
         let mut canvas = vec![
             vec![PaletteColorIndex::default(); grid.borrow().get_grid_width()];
             grid.borrow().get_grid_height()
         ];
-        self.set_current_drawing_to_canvas(&mut canvas, drawing);
+        self.set_current_drawing_to_canvas(&mut canvas, drawing.clone());
 
         if let Ok((mouse_idx_x, mouse_idx_y)) = self.get_current_mouse_pos_in_idx() {
             let canvas_size = (
@@ -163,7 +170,7 @@ impl CanvasUi {
                 if let Err(msg) = self.current_draw_mode.on_mouse_down(
                     &mut canvas,
                     &canvas_size,
-                    drawing,
+                    drawing.clone(),
                     &(mouse_idx_x as usize, mouse_idx_y as usize),
                 ) {
                     println!("Error!: {msg}");
@@ -174,7 +181,7 @@ impl CanvasUi {
                 if let Err(msg) = self.current_draw_mode.on_mouse_drag(
                     &mut canvas,
                     &canvas_size,
-                    drawing,
+                    drawing.clone(),
                     &(mouse_idx_x as usize, mouse_idx_y as usize),
                 ) {
                     println!("Error!: {msg}");
@@ -185,7 +192,7 @@ impl CanvasUi {
                 let res = self.current_draw_mode.on_mouse_up(
                     &mut canvas,
                     &canvas_size,
-                    drawing,
+                    drawing.clone(),
                     &(mouse_idx_x as usize, mouse_idx_y as usize),
                 );
                 match res {
@@ -200,7 +207,9 @@ impl CanvasUi {
             }
 
             if self.input_handler.is_clicked_by(PointerButton::Secondary) {
-                if let Err(msg) = self.choose_color_from_grid(mouse_idx_x, mouse_idx_y, drawing) {
+                if let Err(msg) =
+                    self.choose_color_from_grid(mouse_idx_x, mouse_idx_y, drawing.clone())
+                {
                     println!("Error!: {msg}");
                 }
             }
@@ -217,7 +226,7 @@ impl CanvasUi {
         if let Err(msg) = self.grid_renderer.draw(
             ui,
             &canvas,
-            drawing.get_palette(),
+            drawing.borrow().get_palette(),
             self.square_root_pos,
             self.square_size,
             Vec2::new(0.0, TOP_MENU_BAR_HEIGHT as f32),
@@ -230,7 +239,7 @@ impl CanvasUi {
         &mut self,
         ctx: &Context,
         top_menu_bar_items: Vec<&mut dyn TopMenuBarItem>,
-        drawing: &mut dyn Drawing,
+        drawing: Rc<RefCell<dyn Drawing>>,
         action_q: &mut VecDeque<Box<dyn Action>>,
     ) {
         TopBottomPanel::top("wrap_app_top_bar")

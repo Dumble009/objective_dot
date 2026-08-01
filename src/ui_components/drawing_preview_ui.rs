@@ -22,14 +22,19 @@ impl DrawingPreviewUi {
         let _ = ui.allocate_space(ui.available_size());
 
         let window_rect = ui.max_rect();
-        let grid_w = drawing.get_grid().borrow().get_grid_width();
-        let grid_h = drawing.get_grid().borrow().get_grid_height();
+        let grid_w = drawing.get_grid().unwrap().borrow().get_grid_width();
+        let grid_h = drawing.get_grid().unwrap().borrow().get_grid_height();
 
         let (pos, cell_size) = self.calc_drawing_element(window_rect, grid_w, grid_h);
 
         for y in 0..grid_h {
             for x in 0..grid_w {
-                let color_idx = drawing.get_grid().borrow().get_color(x, y).unwrap_or(0);
+                let color_idx = drawing
+                    .get_grid()
+                    .unwrap()
+                    .borrow()
+                    .get_color(x, y)
+                    .unwrap_or(0);
                 let color = drawing
                     .get_palette()
                     .borrow()

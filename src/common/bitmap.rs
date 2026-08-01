@@ -12,7 +12,7 @@ impl Bitmap {
         pixel_per_dot: usize,
         is_transparent_background: bool,
     ) -> Result<Self, String> {
-        let grid = drawing.get_grid();
+        let grid = drawing.get_grid()?;
         let palette = drawing.get_palette();
 
         let width = grid.borrow().get_grid_width() * pixel_per_dot;

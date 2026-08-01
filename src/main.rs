@@ -8,7 +8,9 @@ mod ui_components;
 #[cfg(test)]
 mod mock;
 
+use std::cell::RefCell;
 use std::collections::VecDeque;
+use std::rc::Rc;
 
 use common::drawing::{Drawing, ObjectDrawing};
 use eframe::egui::*;
@@ -16,6 +18,7 @@ use ui_components::canvas_menu_ui::CanvasMenuUi;
 use ui_components::canvas_ui::*;
 use ui_components::drawing_preview_ui::DrawingPreviewUi;
 use ui_components::file_menu_ui::FileMenuUi;
+use ui_components::layer_window_ui::LayerWindowUi;
 use ui_components::palette_ui::*;
 use ui_components::top_menu_bar_item::TopMenuBarItem;
 
@@ -26,8 +29,9 @@ pub struct ObjectiveDot {
     palette_ui: PaletteUi,
     canvas_menu_ui: CanvasMenuUi,
     save_drawing_ui: FileMenuUi,
-    drawing: ObjectDrawing,
+    drawing: Rc<RefCell<dyn Drawing>>,
     drawing_preview_ui: DrawingPreviewUi,
+    layer_window_ui: LayerWindowUi,
     action_runner: ActionRunner,
 }
 
@@ -38,8 +42,9 @@ impl ObjectiveDot {
             palette_ui: PaletteUi::new(),
             canvas_menu_ui: CanvasMenuUi::new(),
             save_drawing_ui: FileMenuUi::new(),
-            drawing: ObjectDrawing::new(),
+            drawing: Rc::new(RefCell::new(ObjectDrawing::new())),
             drawing_preview_ui: DrawingPreviewUi::new(),
+            layer_window_ui: LayerWindowUi::new(),
             action_runner: ActionRunner::new(),
         }
     }
@@ -48,19 +53,21 @@ impl ObjectiveDot {
 impl eframe::App for ObjectiveDot {
     fn save(&mut self, _storage: &mut dyn eframe::Storage) {}
     fn update(&mut self, ctx: &Context, _frame: &mut eframe::Frame) {
-        self.save_drawing_ui.update(ctx, &mut self.drawing);
+        self.save_drawing_ui.update(ctx, self.drawing.clone());
         let mut action_q = VecDeque::new();
         self.palette_ui
-            .update(ctx, self.drawing.get_palette(), &mut action_q);
+            .update(ctx, self.drawing.borrow().get_palette(), &mut action_q);
         self.canvas_menu_ui
-            .update(ctx, self.drawing.get_grid(), &mut action_q);
-        self.drawing_preview_ui.update(ctx, &self.drawing);
+            .update(ctx, self.drawing.clone(), &mut action_q);
+        self.drawing_preview_ui.update(ctx, &*self.drawing.borrow());
+        self.layer_window_ui.update(ctx, &*self.drawing.borrow());
 
         let top_menu_bar_items: Vec<&mut dyn TopMenuBarItem> = vec![
             &mut self.save_drawing_ui,
             &mut self.palette_ui,
             &mut self.canvas_menu_ui,
             &mut self.drawing_preview_ui,
+            &mut self.layer_window_ui,
         ];
         self.canvas_ui
             .update(ctx, top_menu_bar_items, &mut self.drawing, &mut action_q);
