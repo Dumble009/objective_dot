@@ -19,6 +19,7 @@ impl DrawingPreviewUi {
     }
 
     fn draw(&mut self, ui: &mut Ui, drawing: &dyn Drawing) {
+        // この一文が無いと、ウインドウが最小のサイズになってしまい、プレビューがはみ出る
         let _ = ui.allocate_space(ui.available_size());
 
         let window_rect = ui.max_rect();

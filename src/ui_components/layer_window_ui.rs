@@ -15,22 +15,57 @@ impl LayerWindowUi {
         }
     }
 
-    fn draw(&mut self, ui: &mut Ui, _drawing: &dyn Drawing) {
+    fn draw(&mut self, ui: &mut Ui, drawing: &dyn Drawing) {
+        let layer_count = drawing.get_layer_count();
         ScrollArea::vertical().max_height(300.0).show(ui, |ui| {
-            for i in 0..10 {
-                ui.group(|ui| {
-                    ui.horizontal(|ui| {
-                        ui.label(format!("Layer {}", i));
-                        ui.vertical(|ui| {
-                            if ui.button("Up").clicked() {
-                                println!("Move layer {} up", i);
-                            }
-                            if ui.button("Down").clicked() {
-                                println!("Move layer {} down", i);
-                            }
-                        })
-                    });
-                });
+            for i in 0..layer_count {
+                self.draw_item(ui, drawing, i);
+            }
+        });
+    }
+
+    fn draw_item(&self, ui: &mut Ui, drawing: &dyn Drawing, layer_index: usize) {
+        ui.horizontal(|ui| {
+            ui.label(format!("Layer {}", layer_index));
+            ui.vertical(|ui| {
+                if ui.button("Up").clicked() {
+                    println!("Move layer {} up", layer_index);
+                }
+                if ui.button("Down").clicked() {
+                    println!("Move layer {} down", layer_index);
+                }
+            });
+
+            const PREVIEW_SIZE: f32 = 64.0_f32;
+            let (_, painter) =
+                ui.allocate_painter(egui::vec2(PREVIEW_SIZE, PREVIEW_SIZE), egui::Sense::hover());
+
+            let width = drawing.get_grid_width();
+            let height = drawing.get_grid_height();
+
+            let dot_width = PREVIEW_SIZE / width as f32;
+            let dot_height = PREVIEW_SIZE / height as f32;
+
+            for y in 0..height {
+                for x in 0..width {
+                    let color_idx = drawing
+                        .get_grid_layer(layer_index)
+                        .unwrap()
+                        .borrow()
+                        .get_color(x, y)
+                        .unwrap_or(0);
+                    let color = drawing
+                        .get_palette()
+                        .borrow()
+                        .get_color(color_idx)
+                        .unwrap_or_default();
+                    let rect = Rect::from_min_size(
+                        painter.clip_rect().min
+                            + egui::vec2(x as f32 * dot_width, y as f32 * dot_height),
+                        egui::vec2(dot_width, dot_height),
+                    );
+                    painter.rect_filled(rect, 0.0, color.to_color32());
+                }
             }
         });
     }
