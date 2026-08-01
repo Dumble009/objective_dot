@@ -70,7 +70,7 @@ impl eframe::App for ObjectiveDot {
             &mut self.layer_window_ui,
         ];
         self.canvas_ui
-            .update(ctx, top_menu_bar_items, &mut self.drawing, &mut action_q);
+            .update(ctx, top_menu_bar_items, self.drawing.clone(), &mut action_q);
 
         for action in action_q {
             if let Err(msg) = self.action_runner.run_action(action) {
