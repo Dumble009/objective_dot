@@ -94,7 +94,7 @@ pub fn decode(input: &[u8], drawing: Rc<RefCell<dyn Drawing>>) -> Result<(), Str
     let width: usize = pop!(input, pos, 8, usize);
     let height: usize = pop!(input, pos, 8, usize);
 
-    let grid = drawing_ref.get_grid();
+    let grid = drawing_ref.get_active_layer();
     drawing_ref.set_grid_width(width)?;
     drawing_ref.set_grid_height(height)?;
 
@@ -102,7 +102,7 @@ pub fn decode(input: &[u8], drawing: Rc<RefCell<dyn Drawing>>) -> Result<(), Str
         for x in 0..width {
             let color: PaletteColorIndex = pop!(input, pos, 8, PaletteColorIndex);
             // TODO: レイヤーごとに色を設定する
-            // grid.borrow_mut().set_color(x, y, color)?;
+            grid.borrow_mut().set_color(x, y, color)?;
         }
     }
 
