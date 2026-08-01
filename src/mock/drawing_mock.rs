@@ -78,4 +78,8 @@ impl Drawing for DrawingMock {
     fn get_active_layer(&self) -> Rc<RefCell<dyn Grid>> {
         self.grid.clone()
     }
+
+    fn set_active_layer_idx(&mut self, _layer_index: usize) -> Result<(), String> {
+        Ok(())
+    }
 }

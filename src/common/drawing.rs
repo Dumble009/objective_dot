@@ -15,6 +15,7 @@ pub trait Drawing {
     fn set_grid_height(&mut self, h: usize) -> Result<(), String>;
     fn get_layer_count(&self) -> usize;
     fn get_active_layer(&self) -> Rc<RefCell<dyn Grid>>;
+    fn set_active_layer_idx(&mut self, layer_index: usize) -> Result<(), String>;
 }
 
 pub struct ObjectDrawing {
@@ -22,6 +23,7 @@ pub struct ObjectDrawing {
     palette: Rc<RefCell<ObjectPalette>>,
     width: usize,
     height: usize,
+    active_layer_index: usize,
 }
 
 impl ObjectDrawing {
@@ -31,6 +33,7 @@ impl ObjectDrawing {
             palette: Rc::new(RefCell::new(ObjectPalette::new())),
             width: 10,
             height: 10,
+            active_layer_index: 0,
         }
     }
 }
@@ -71,8 +74,10 @@ impl Drawing for ObjectDrawing {
     }
 
     fn add_grid_layer(&mut self) {
-        self.grid_layers
-            .push(Rc::new(RefCell::new(CanvasGrid::new())));
+        let mut grid = CanvasGrid::new();
+        grid.set_grid_width(self.width).unwrap();
+        grid.set_grid_height(self.height).unwrap();
+        self.grid_layers.push(Rc::new(RefCell::new(grid)));
     }
 
     fn get_palette(&self) -> Rc<RefCell<dyn Palette>> {
@@ -91,6 +96,7 @@ impl Drawing for ObjectDrawing {
         for layer in &self.grid_layers {
             layer.borrow_mut().set_grid_width(w)?;
         }
+        self.width = w;
         Ok(())
     }
 
@@ -98,6 +104,7 @@ impl Drawing for ObjectDrawing {
         for layer in &self.grid_layers {
             layer.borrow_mut().set_grid_height(h)?;
         }
+        self.height = h;
         Ok(())
     }
 
@@ -106,6 +113,21 @@ impl Drawing for ObjectDrawing {
     }
 
     fn get_active_layer(&self) -> Rc<RefCell<dyn Grid>> {
-        self.grid_layers.last().unwrap().clone()
+        self.grid_layers[self.active_layer_index].clone()
+    }
+
+    fn set_active_layer_idx(&mut self, layer_index: usize) -> Result<(), String> {
+        if layer_index < self.grid_layers.len() {
+            self.active_layer_index = layer_index;
+            Ok(())
+        } else {
+            Err(format!(
+                "Layer index {} is out of bounds. Total layers: {}",
+                layer_index,
+                self.grid_layers.len()
+            ))
+        }
     }
 }
+
+include!("tests/drawing_test.rs");
