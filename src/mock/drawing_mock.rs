@@ -74,4 +74,8 @@ impl Drawing for DrawingMock {
     fn get_layer_count(&self) -> usize {
         1
     }
+
+    fn get_active_layer(&self) -> Rc<RefCell<dyn Grid>> {
+        self.grid.clone()
+    }
 }

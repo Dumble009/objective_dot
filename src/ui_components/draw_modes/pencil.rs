@@ -108,7 +108,7 @@ impl DrawMode for Pencil {
             .borrow()
             .get_current_selected_idx()?;
         let action = Box::new(DrawAction::new(
-            drawing.borrow().get_grid()?,
+            drawing.borrow().get_active_layer(),
             self.drawn_cells.clone(),
             current_selected_color_idx,
         ));

@@ -14,6 +14,7 @@ pub trait Drawing {
     fn set_grid_width(&mut self, w: usize) -> Result<(), String>;
     fn set_grid_height(&mut self, h: usize) -> Result<(), String>;
     fn get_layer_count(&self) -> usize;
+    fn get_active_layer(&self) -> Rc<RefCell<dyn Grid>>;
 }
 
 pub struct ObjectDrawing {
@@ -102,5 +103,9 @@ impl Drawing for ObjectDrawing {
 
     fn get_layer_count(&self) -> usize {
         self.grid_layers.len()
+    }
+
+    fn get_active_layer(&self) -> Rc<RefCell<dyn Grid>> {
+        self.grid_layers.last().unwrap().clone()
     }
 }

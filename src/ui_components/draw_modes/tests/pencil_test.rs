@@ -28,20 +28,8 @@ mod test {
             .select_color(1)
             .is_ok());
 
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_width(10)
-            .is_ok());
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_height(10)
-            .is_ok());
+        assert!(drawing.borrow_mut().set_grid_width(10).is_ok());
+        assert!(drawing.borrow_mut().set_grid_height(10).is_ok());
         let mouse_pos = (0, 0);
 
         assert!(pencil
@@ -134,20 +122,8 @@ mod test {
             .select_color(1)
             .is_ok());
 
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_width(10)
-            .is_ok());
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_height(10)
-            .is_ok());
+        assert!(drawing.borrow_mut().set_grid_width(10).is_ok());
+        assert!(drawing.borrow_mut().set_grid_height(10).is_ok());
 
         // マウス位置がキャンバス外
         let mouse_pos = (11, 11);

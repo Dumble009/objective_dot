@@ -166,20 +166,8 @@ mod tests {
             .select_color(1)
             .unwrap();
 
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_width(5)
-            .is_ok());
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_height(5)
-            .is_ok());
+        assert!(drawing.borrow_mut().set_grid_width(5).is_ok());
+        assert!(drawing.borrow_mut().set_grid_height(5).is_ok());
 
         rect_fill
             .on_mouse_down(&mut canvas, &canvas_size, drawing.clone(), &(2, 2))
@@ -245,20 +233,8 @@ mod tests {
             .select_color(1)
             .unwrap();
 
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_width(5)
-            .is_ok());
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_height(5)
-            .is_ok());
+        assert!(drawing.borrow_mut().set_grid_width(5).is_ok());
+        assert!(drawing.borrow_mut().set_grid_height(5).is_ok());
 
         rect_fill
             .on_mouse_down(&mut canvas, &canvas_size, drawing.clone(), &(0, 0))
@@ -308,20 +284,8 @@ mod tests {
             .select_color(1)
             .unwrap();
 
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_width(5)
-            .is_ok());
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_height(5)
-            .is_ok());
+        assert!(drawing.borrow_mut().set_grid_width(5).is_ok());
+        assert!(drawing.borrow_mut().set_grid_height(5).is_ok());
 
         rect_fill
             .on_mouse_down(&mut canvas, &canvas_size, drawing.clone(), &(0, 0))
@@ -371,20 +335,8 @@ mod tests {
             .select_color(1)
             .unwrap();
 
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_width(5)
-            .is_ok());
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_height(5)
-            .is_ok());
+        assert!(drawing.borrow_mut().set_grid_width(5).is_ok());
+        assert!(drawing.borrow_mut().set_grid_height(5).is_ok());
 
         rect_fill
             .on_mouse_down(&mut canvas, &canvas_size, drawing.clone(), &(2, 2))

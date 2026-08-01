@@ -28,20 +28,8 @@ mod tests {
             .select_color(1)
             .unwrap();
 
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_width(5)
-            .is_ok());
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_height(5)
-            .is_ok());
+        assert!(drawing.borrow_mut().set_grid_width(5).is_ok());
+        assert!(drawing.borrow_mut().set_grid_height(5).is_ok());
 
         // Draw filled rectangle from (1,1) to (3,3)
         rect_line
@@ -194,20 +182,8 @@ mod tests {
             .select_color(1)
             .unwrap();
 
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_width(5)
-            .is_ok());
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_height(5)
-            .is_ok());
+        assert!(drawing.borrow_mut().set_grid_width(5).is_ok());
+        assert!(drawing.borrow_mut().set_grid_height(5).is_ok());
 
         rect_line
             .on_mouse_down(&mut canvas, &canvas_size, drawing.clone(), &(2, 2))
@@ -273,20 +249,8 @@ mod tests {
             .select_color(1)
             .unwrap();
 
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_width(5)
-            .is_ok());
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_height(5)
-            .is_ok());
+        assert!(drawing.borrow_mut().set_grid_width(5).is_ok());
+        assert!(drawing.borrow_mut().set_grid_height(5).is_ok());
 
         rect_line
             .on_mouse_down(&mut canvas, &canvas_size, drawing.clone(), &(0, 0))
@@ -336,20 +300,8 @@ mod tests {
             .select_color(1)
             .unwrap();
 
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_width(5)
-            .is_ok());
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_height(5)
-            .is_ok());
+        assert!(drawing.borrow_mut().set_grid_width(5).is_ok());
+        assert!(drawing.borrow_mut().set_grid_height(5).is_ok());
 
         rect_line
             .on_mouse_down(&mut canvas, &canvas_size, drawing.clone(), &(0, 0))
@@ -399,20 +351,8 @@ mod tests {
             .select_color(1)
             .unwrap();
 
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_width(5)
-            .is_ok());
-        assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
-            .borrow_mut()
-            .set_grid_height(5)
-            .is_ok());
+        assert!(drawing.borrow_mut().set_grid_width(5).is_ok());
+        assert!(drawing.borrow_mut().set_grid_height(5).is_ok());
 
         rect_line
             .on_mouse_down(&mut canvas, &canvas_size, drawing.clone(), &(2, 2))

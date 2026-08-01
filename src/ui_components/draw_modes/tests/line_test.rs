@@ -264,16 +264,10 @@ mod test {
             .is_ok());
 
         assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
             .borrow_mut()
             .set_grid_width(CANVAS_EDGE_SIZE)
             .is_ok());
         assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
             .borrow_mut()
             .set_grid_height(CANVAS_EDGE_SIZE)
             .is_ok());
@@ -360,16 +354,10 @@ mod test {
             .is_ok());
 
         assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
             .borrow_mut()
             .set_grid_width(CANVAS_EDGE_SIZE)
             .is_ok());
         assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
             .borrow_mut()
             .set_grid_height(CANVAS_EDGE_SIZE)
             .is_ok());
@@ -440,16 +428,10 @@ mod test {
             .is_ok());
 
         assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
             .borrow_mut()
             .set_grid_width(CANVAS_EDGE_SIZE)
             .is_ok());
         assert!(drawing
-            .borrow()
-            .get_grid()
-            .unwrap()
             .borrow_mut()
             .set_grid_height(CANVAS_EDGE_SIZE)
             .is_ok());

@@ -163,11 +163,7 @@ impl DrawMode for Line {
             .get_palette()
             .borrow()
             .get_current_selected_idx()?;
-        drawing
-            .borrow()
-            .get_palette()
-            .borrow()
-            .get_current_selected_idx()?;
+
         for (x, y) in out_points {
             println!("point: ({x}, {y})");
             if x < canvas_size.0 && y < canvas_size.1 {
@@ -204,7 +200,7 @@ impl DrawMode for Line {
             }
         }
         let action = Box::new(DrawAction::new(
-            drawing.borrow().get_grid()?,
+            drawing.borrow().get_active_layer(),
             drawn_cells,
             current_selected_color_idx,
         ));

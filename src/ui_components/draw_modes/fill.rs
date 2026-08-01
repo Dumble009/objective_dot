@@ -103,7 +103,7 @@ impl DrawMode for Fill {
         }
 
         let action = Box::new(DrawAction::new(
-            drawing.borrow().get_grid()?,
+            drawing.borrow().get_active_layer(),
             drawn_cells,
             fill_color,
         ));

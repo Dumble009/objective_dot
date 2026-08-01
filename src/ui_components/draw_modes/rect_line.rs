@@ -120,7 +120,7 @@ impl DrawMode for RectLine {
             }
         }
         let action = Box::new(DrawAction::new(
-            drawing.borrow().get_grid()?,
+            drawing.borrow().get_active_layer(),
             drawn_cells,
             current_selected_color_idx,
         ));
