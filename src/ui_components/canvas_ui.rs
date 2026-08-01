@@ -75,7 +75,6 @@ impl CanvasUi {
         let color_idx = drawing
             .borrow()
             .get_grid()?
-            .borrow()
             .get_color(grid_x as usize, grid_y as usize)?;
         drawing
             .borrow()
@@ -136,7 +135,7 @@ impl CanvasUi {
         let grid = drawing.borrow().get_grid().unwrap();
         for (y, row) in canvas.iter_mut().enumerate() {
             for (x, color_idx) in row.iter_mut().enumerate() {
-                *color_idx = grid.borrow().get_color(x, y).unwrap_or(0);
+                *color_idx = grid.get_color(x, y).unwrap_or(0);
             }
         }
     }
@@ -155,17 +154,12 @@ impl CanvasUi {
         self.input_handler.update(&response, ctx);
 
         let grid = drawing.borrow().get_grid().unwrap();
-        let mut canvas = vec![
-            vec![PaletteColorIndex::default(); grid.borrow().get_grid_width()];
-            grid.borrow().get_grid_height()
-        ];
+        let mut canvas =
+            vec![vec![PaletteColorIndex::default(); grid.get_grid_width()]; grid.get_grid_height()];
         self.set_current_drawing_to_canvas(&mut canvas, drawing.clone());
 
         if let Ok((mouse_idx_x, mouse_idx_y)) = self.get_current_mouse_pos_in_idx() {
-            let canvas_size = (
-                grid.borrow().get_grid_width(),
-                grid.borrow().get_grid_height(),
-            );
+            let canvas_size = (grid.get_grid_width(), grid.get_grid_height());
             if self.input_handler.is_mouse_down(PointerButton::Primary) {
                 if let Err(msg) = self.current_draw_mode.on_mouse_down(
                     &mut canvas,

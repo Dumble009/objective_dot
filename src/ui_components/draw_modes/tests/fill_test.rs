@@ -19,9 +19,9 @@ mod tests {
             .add_color(ODColor::new(0, 0, 0))
             .is_ok());
         palette.borrow_mut().select_color(1).unwrap();
-        let grid = drawing.borrow().get_grid().unwrap();
-        assert!(grid.borrow_mut().set_grid_width(5).is_ok());
-        assert!(grid.borrow_mut().set_grid_height(5).is_ok());
+
+        assert!(drawing.borrow_mut().set_grid_width(5).is_ok());
+        assert!(drawing.borrow_mut().set_grid_height(5).is_ok());
 
         // Draw filled rectangle from (1,1) to (3,3)
         fill.on_mouse_down(&mut canvas, &canvas_size, drawing.clone(), &(1, 1))
@@ -42,7 +42,6 @@ mod tests {
                         .borrow()
                         .get_grid()
                         .unwrap()
-                        .borrow()
                         .get_color(x, y)
                         .unwrap(),
                     1
@@ -68,14 +67,14 @@ mod tests {
             .add_color(ODColor::new(1, 1, 1))
             .is_ok());
         palette.borrow_mut().select_color(1).unwrap();
-        let grid = drawing.borrow().get_grid().unwrap();
+        let grid = drawing.borrow().get_active_layer();
         // □ □ * □ □
         // □ * □ * □
         // * □ □ □ *
         // □ * □ * □
         // □ □ * □ □
-        assert!(grid.borrow_mut().set_grid_width(5).is_ok());
-        assert!(grid.borrow_mut().set_grid_height(5).is_ok());
+        assert!(drawing.borrow_mut().set_grid_width(5).is_ok());
+        assert!(drawing.borrow_mut().set_grid_height(5).is_ok());
         assert!(grid.borrow_mut().set_color(2, 0, 2).is_ok());
         assert!(grid.borrow_mut().set_color(1, 1, 2).is_ok());
         assert!(grid.borrow_mut().set_color(0, 2, 2).is_ok());
@@ -115,7 +114,6 @@ mod tests {
                             .borrow()
                             .get_grid()
                             .unwrap()
-                            .borrow()
                             .get_color(x, y)
                             .unwrap(),
                         1
@@ -127,7 +125,6 @@ mod tests {
                             .borrow()
                             .get_grid()
                             .unwrap()
-                            .borrow()
                             .get_color(x, y)
                             .unwrap(),
                         1
@@ -151,7 +148,6 @@ mod tests {
                             .borrow()
                             .get_grid()
                             .unwrap()
-                            .borrow()
                             .get_color(x, y)
                             .unwrap(),
                         0
@@ -162,7 +158,6 @@ mod tests {
                             .borrow()
                             .get_grid()
                             .unwrap()
-                            .borrow()
                             .get_color(x, y)
                             .unwrap(),
                         1
@@ -189,7 +184,7 @@ mod tests {
             .add_color(ODColor::new(1, 1, 1))
             .is_ok());
         palette.borrow_mut().select_color(1).unwrap();
-        let grid = drawing.borrow().get_grid().unwrap();
+        let grid = drawing.borrow().get_active_layer();
         assert!(grid.borrow_mut().set_grid_width(5).is_ok());
         assert!(grid.borrow_mut().set_grid_height(5).is_ok());
         assert!(grid.borrow_mut().set_color(1, 2, 2).is_ok());
@@ -222,7 +217,6 @@ mod tests {
                             .borrow()
                             .get_grid()
                             .unwrap()
-                            .borrow()
                             .get_color(x, y)
                             .unwrap(),
                         1
@@ -234,7 +228,6 @@ mod tests {
                             .borrow()
                             .get_grid()
                             .unwrap()
-                            .borrow()
                             .get_color(x, y)
                             .unwrap(),
                         1
@@ -253,7 +246,7 @@ mod tests {
         let drawing = Rc::new(RefCell::new(DrawingMock::new()));
         let palette = drawing.borrow().get_palette();
         palette.borrow_mut().select_color(0).unwrap();
-        let grid = drawing.borrow().get_grid().unwrap();
+        let grid = drawing.borrow().get_active_layer();
         assert!(grid.borrow_mut().set_grid_width(5).is_ok());
         assert!(grid.borrow_mut().set_grid_height(5).is_ok());
 
@@ -274,7 +267,6 @@ mod tests {
                         .borrow()
                         .get_grid()
                         .unwrap()
-                        .borrow()
                         .get_color(x, y)
                         .unwrap(),
                     0
@@ -296,7 +288,7 @@ mod tests {
             .add_color(ODColor::new(0, 0, 0))
             .is_ok());
         palette.borrow_mut().select_color(1).unwrap();
-        let grid = drawing.borrow().get_grid().unwrap();
+        let grid = drawing.borrow().get_active_layer();
         assert!(grid.borrow_mut().set_grid_width(5).is_ok());
         assert!(grid.borrow_mut().set_grid_height(5).is_ok());
 
@@ -317,7 +309,6 @@ mod tests {
                         .borrow()
                         .get_grid()
                         .unwrap()
-                        .borrow()
                         .get_color(x, y)
                         .unwrap(),
                     0

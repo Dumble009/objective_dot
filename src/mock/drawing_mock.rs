@@ -26,15 +26,15 @@ impl DrawingMock {
 }
 
 impl Drawing for DrawingMock {
-    fn get_grid(&self) -> Result<Rc<RefCell<dyn Grid>>, String> {
-        let grid = Rc::new(RefCell::new(GridMock::new()));
-        grid.borrow_mut().set_grid_width(self.get_grid_width())?;
-        grid.borrow_mut().set_grid_height(self.get_grid_height())?;
+    fn get_grid(&self) -> Result<Box<dyn Grid>, String> {
+        let mut grid = Box::new(GridMock::new());
+        grid.set_grid_width(self.get_grid_width())?;
+        grid.set_grid_height(self.get_grid_height())?;
 
         for y in 0..self.get_grid_height() {
             for x in 0..self.get_grid_width() {
                 let color = self.grid.borrow().get_color(x, y)?;
-                grid.borrow_mut().set_color(x, y, color)?;
+                grid.set_color(x, y, color)?;
             }
         }
 

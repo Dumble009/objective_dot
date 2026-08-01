@@ -46,13 +46,13 @@ pub fn encode(drawing: &dyn Drawing, out: &mut Vec<u8>) -> Result<(), String> {
     }
 
     // グリッドのエンコード
-    let width = drawing.get_grid()?.borrow().get_grid_width();
-    let height = drawing.get_grid()?.borrow().get_grid_height();
+    let width = drawing.get_grid()?.get_grid_width();
+    let height = drawing.get_grid()?.get_grid_height();
     append!(out, width);
     append!(out, height);
     for y in 0..height {
         for x in 0..width {
-            let color = drawing.get_grid()?.borrow().get_color(x, y)?;
+            let color = drawing.get_grid()?.get_color(x, y)?;
             append!(out, color);
         }
     }

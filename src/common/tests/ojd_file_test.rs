@@ -80,7 +80,7 @@ mod test {
 
         assert_eq_grid(
             &*drawing1.grid.borrow(),
-            &*drawing2.borrow().get_grid().unwrap().borrow(),
+            &*drawing2.borrow().get_grid().unwrap(),
         );
         assert_eq_palette(drawing1.palette, drawing2.borrow_mut().get_palette());
     }

@@ -30,15 +30,13 @@ mod tests {
 
         assert!(drawing
             .borrow()
-            .get_grid()
-            .unwrap()
+            .get_active_layer()
             .borrow_mut()
             .set_grid_width(5)
             .is_ok());
         assert!(drawing
             .borrow()
-            .get_grid()
-            .unwrap()
+            .get_active_layer()
             .borrow_mut()
             .set_grid_height(5)
             .is_ok());
@@ -65,7 +63,6 @@ mod tests {
                         .borrow()
                         .get_grid()
                         .unwrap()
-                        .borrow()
                         .get_color(x, y)
                         .unwrap(),
                     1
@@ -102,15 +99,13 @@ mod tests {
 
         drawing
             .borrow()
-            .get_grid()
-            .unwrap()
+            .get_active_layer()
             .borrow_mut()
             .set_grid_width(4)
             .unwrap();
         drawing
             .borrow()
-            .get_grid()
-            .unwrap()
+            .get_active_layer()
             .borrow_mut()
             .set_grid_height(4)
             .unwrap();
@@ -137,7 +132,6 @@ mod tests {
                         .borrow()
                         .get_grid()
                         .unwrap()
-                        .borrow()
                         .get_color(x, y)
                         .unwrap(),
                     2
@@ -191,7 +185,6 @@ mod tests {
                             .borrow()
                             .get_grid()
                             .unwrap()
-                            .borrow()
                             .get_color(x, y)
                             .unwrap(),
                         1
@@ -203,7 +196,6 @@ mod tests {
                             .borrow()
                             .get_grid()
                             .unwrap()
-                            .borrow()
                             .get_color(x, y)
                             .unwrap(),
                         0
@@ -256,7 +248,6 @@ mod tests {
                     .borrow()
                     .get_grid()
                     .unwrap()
-                    .borrow()
                     .get_color(x, 0)
                     .unwrap(),
                 1
@@ -307,7 +298,6 @@ mod tests {
                     .borrow()
                     .get_grid()
                     .unwrap()
-                    .borrow()
                     .get_color(0, y)
                     .unwrap(),
                 1

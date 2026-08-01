@@ -5,7 +5,7 @@ use super::canvas_grid::{CanvasGrid, Grid};
 use super::palette::{ObjectPalette, Palette};
 
 pub trait Drawing {
-    fn get_grid(&self) -> Result<Rc<RefCell<dyn Grid>>, String>;
+    fn get_grid(&self) -> Result<Box<dyn Grid>, String>;
     fn get_grid_layer(&self, layer_index: usize) -> Option<Rc<RefCell<dyn Grid>>>;
     fn add_grid_layer(&mut self);
     fn get_palette(&self) -> Rc<RefCell<dyn Palette>>;
@@ -36,7 +36,7 @@ impl ObjectDrawing {
 }
 
 impl Drawing for ObjectDrawing {
-    fn get_grid(&self) -> Result<Rc<RefCell<dyn Grid>>, String> {
+    fn get_grid(&self) -> Result<Box<dyn Grid>, String> {
         let mut result_grid = CanvasGrid::new();
         result_grid.set_grid_width(self.width)?;
         result_grid.set_grid_height(self.height)?;
@@ -59,7 +59,7 @@ impl Drawing for ObjectDrawing {
                 }
             }
         }
-        Ok(Rc::new(RefCell::new(result_grid)))
+        Ok(Box::new(result_grid))
     }
 
     fn get_grid_layer(&self, layer_index: usize) -> Option<Rc<RefCell<dyn Grid>>> {

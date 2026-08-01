@@ -41,7 +41,6 @@ mod test {
                 .borrow()
                 .get_grid()
                 .unwrap()
-                .borrow()
                 .get_color(0, 0)
                 .unwrap(),
             0
@@ -57,7 +56,6 @@ mod test {
                 .borrow()
                 .get_grid()
                 .unwrap()
-                .borrow()
                 .get_color(0, 4)
                 .unwrap(),
             0
@@ -75,7 +73,6 @@ mod test {
                 .borrow()
                 .get_grid()
                 .unwrap()
-                .borrow()
                 .get_color(0, 0)
                 .unwrap(),
             1
@@ -85,7 +82,6 @@ mod test {
                 .borrow()
                 .get_grid()
                 .unwrap()
-                .borrow()
                 .get_color(0, 4)
                 .unwrap(),
             1
@@ -95,7 +91,6 @@ mod test {
                 .borrow()
                 .get_grid()
                 .unwrap()
-                .borrow()
                 .get_color(0, 9)
                 .unwrap(),
             0
@@ -142,7 +137,6 @@ mod test {
                 .borrow()
                 .get_grid()
                 .unwrap()
-                .borrow()
                 .get_color(9, 9)
                 .unwrap(),
             0
@@ -165,7 +159,6 @@ mod test {
                 .borrow()
                 .get_grid()
                 .unwrap()
-                .borrow()
                 .get_color(9, 9)
                 .unwrap(),
             1
