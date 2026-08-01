@@ -32,17 +32,29 @@ mod test {
         drawing.set_grid_width(15).unwrap();
         drawing.set_grid_height(25).unwrap();
 
-        assert_eq!(drawing.get_active_layer().borrow().get_grid_width(), 15);
-        assert_eq!(drawing.get_active_layer().borrow().get_grid_height(), 25);
+        assert_eq!(
+            drawing.get_grid_layer(1).unwrap().borrow().get_grid_width(),
+            15
+        );
+        assert_eq!(
+            drawing
+                .get_grid_layer(2)
+                .unwrap()
+                .borrow()
+                .get_grid_height(),
+            25
+        );
 
         assert!(drawing.set_active_layer_idx(1).is_ok());
         drawing
-            .get_active_layer()
+            .get_grid_layer(1)
+            .unwrap()
             .borrow_mut()
             .set_color(0, 0, 1)
             .unwrap();
         drawing
-            .get_active_layer()
+            .get_grid_layer(1)
+            .unwrap()
             .borrow_mut()
             .set_color(1, 1, 1)
             .unwrap();
@@ -50,7 +62,8 @@ mod test {
         assert!(drawing.set_active_layer_idx(2).is_ok());
 
         drawing
-            .get_active_layer()
+            .get_grid_layer(2)
+            .unwrap()
             .borrow_mut()
             .set_color(1, 1, 2)
             .unwrap();
