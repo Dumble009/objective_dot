@@ -15,7 +15,7 @@ impl LayerWindowUi {
         }
     }
 
-    fn draw(&mut self, ui: &mut Ui, drawing: &dyn Drawing) {
+    fn draw(&mut self, ui: &mut Ui, _drawing: &dyn Drawing) {
         ScrollArea::vertical().max_height(300.0).show(ui, |ui| {
             for i in 0..10 {
                 ui.group(|ui| {

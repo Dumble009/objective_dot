@@ -4,7 +4,6 @@ use eframe::egui::*;
 
 use crate::actions::action::Action;
 use crate::actions::grid_size_change_action::GridSizeChangeAction;
-use crate::common::canvas_grid::Grid;
 use crate::common::drawing::Drawing;
 
 use super::top_menu_bar_item::TopMenuBarItem;
