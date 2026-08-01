@@ -47,16 +47,14 @@ impl LayerWindowUi {
             ui.vertical(|ui| {
                 let min_size = egui::vec2(50.0, 20.0);
 
-                if layer_index != drawing.borrow().get_layer_count() - 1 {
-                    if ui.add_sized(min_size, egui::Button::new("Up")).clicked() {
-                        drawing.borrow_mut().move_layer_up(layer_index).unwrap();
-                    }
+                if layer_index != drawing.borrow().get_layer_count() - 1
+                    && ui.add_sized(min_size, egui::Button::new("Up")).clicked()
+                {
+                    drawing.borrow_mut().move_layer_up(layer_index).unwrap();
                 }
 
-                if layer_index != 0 {
-                    if ui.add_sized(min_size, egui::Button::new("Down")).clicked() {
-                        drawing.borrow_mut().move_layer_down(layer_index).unwrap();
-                    }
+                if layer_index != 0 && ui.add_sized(min_size, egui::Button::new("Down")).clicked() {
+                    drawing.borrow_mut().move_layer_down(layer_index).unwrap();
                 }
             });
 

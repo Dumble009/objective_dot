@@ -83,11 +83,11 @@ impl Drawing for DrawingMock {
         Ok(())
     }
 
-    fn move_layer_up(&mut self, layer_index: usize) -> Result<(), String> {
+    fn move_layer_up(&mut self, _layer_index: usize) -> Result<(), String> {
         Ok(())
     }
 
-    fn move_layer_down(&mut self, layer_index: usize) -> Result<(), String> {
+    fn move_layer_down(&mut self, _layer_index: usize) -> Result<(), String> {
         Ok(())
     }
 }
