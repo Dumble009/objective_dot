@@ -47,7 +47,7 @@ mod test {
         let mut encoded = vec![];
         encode(&drawing1, &mut encoded).unwrap();
 
-        let mut drawing2 = Rc::new(RefCell::new(DrawingMock::new()));
+        let drawing2 = Rc::new(RefCell::new(DrawingMock::new()));
         drawing2.borrow_mut().set_grid_width(w + 10).unwrap();
         drawing2.borrow_mut().set_grid_height(h + 10).unwrap();
         drawing2

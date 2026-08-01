@@ -27,7 +27,7 @@ impl DrawingMock {
 
 impl Drawing for DrawingMock {
     fn get_grid(&self) -> Result<Rc<RefCell<dyn Grid>>, String> {
-        let mut grid = Rc::new(RefCell::new(GridMock::new()));
+        let grid = Rc::new(RefCell::new(GridMock::new()));
         grid.borrow_mut().set_grid_width(self.get_grid_width())?;
         grid.borrow_mut().set_grid_height(self.get_grid_height())?;
 
