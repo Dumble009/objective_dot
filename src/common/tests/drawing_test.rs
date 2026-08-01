@@ -82,5 +82,13 @@ mod test {
         );
 
         assert!(drawing.get_grid_layer(3).is_none());
+
+        assert!(drawing.move_layer_up(1).is_ok());
+        let color11 = drawing.get_grid().unwrap().get_color(1, 1).unwrap();
+        assert_eq!(color11, 1);
+
+        assert!(drawing.move_layer_down(2).is_ok());
+        let color11 = drawing.get_grid().unwrap().get_color(1, 1).unwrap();
+        assert_eq!(color11, 2);
     }
 }

@@ -22,7 +22,8 @@ impl LayerWindowUi {
         let layer_count = drawing.borrow().get_layer_count();
         ScrollArea::vertical().max_height(300.0).show(ui, |ui| {
             for i in 0..layer_count {
-                self.draw_item(ui, drawing.clone(), i);
+                // 上のレイヤから順に表示するために、layer_count - i - 1 を使用する
+                self.draw_item(ui, drawing.clone(), layer_count - i - 1);
             }
 
             if ui.button("Add Layer").clicked() {
@@ -44,11 +45,18 @@ impl LayerWindowUi {
             });
 
             ui.vertical(|ui| {
-                if ui.button("Up").clicked() {
-                    println!("Move layer {} up", layer_index);
+                let min_size = egui::vec2(50.0, 20.0);
+
+                if layer_index != drawing.borrow().get_layer_count() - 1 {
+                    if ui.add_sized(min_size, egui::Button::new("Up")).clicked() {
+                        drawing.borrow_mut().move_layer_up(layer_index).unwrap();
+                    }
                 }
-                if ui.button("Down").clicked() {
-                    println!("Move layer {} down", layer_index);
+
+                if layer_index != 0 {
+                    if ui.add_sized(min_size, egui::Button::new("Down")).clicked() {
+                        drawing.borrow_mut().move_layer_down(layer_index).unwrap();
+                    }
                 }
             });
 

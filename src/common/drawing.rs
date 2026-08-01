@@ -16,6 +16,8 @@ pub trait Drawing {
     fn get_layer_count(&self) -> usize;
     fn get_active_layer(&self) -> Rc<RefCell<dyn Grid>>;
     fn set_active_layer_idx(&mut self, layer_index: usize) -> Result<(), String>;
+    fn move_layer_up(&mut self, layer_index: usize) -> Result<(), String>;
+    fn move_layer_down(&mut self, layer_index: usize) -> Result<(), String>;
 }
 
 pub struct ObjectDrawing {
@@ -127,6 +129,28 @@ impl Drawing for ObjectDrawing {
                 self.grid_layers.len()
             ))
         }
+    }
+
+    fn move_layer_up(&mut self, layer_index: usize) -> Result<(), String> {
+        if layer_index + 1 >= self.grid_layers.len() {
+            return Err(format!(
+                "Cannot move layer {} up. It is either the bottom layer or out of bounds.",
+                layer_index
+            ));
+        }
+        self.grid_layers.swap(layer_index, layer_index + 1);
+        Ok(())
+    }
+
+    fn move_layer_down(&mut self, layer_index: usize) -> Result<(), String> {
+        if layer_index == 0 || layer_index >= self.grid_layers.len() {
+            return Err(format!(
+                "Cannot move layer {} down. It is either the top layer or out of bounds.",
+                layer_index
+            ));
+        }
+        self.grid_layers.swap(layer_index, layer_index - 1);
+        Ok(())
     }
 }
 

@@ -82,4 +82,12 @@ impl Drawing for DrawingMock {
     fn set_active_layer_idx(&mut self, _layer_index: usize) -> Result<(), String> {
         Ok(())
     }
+
+    fn move_layer_up(&mut self, layer_index: usize) -> Result<(), String> {
+        Ok(())
+    }
+
+    fn move_layer_down(&mut self, layer_index: usize) -> Result<(), String> {
+        Ok(())
+    }
 }
