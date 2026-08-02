@@ -46,14 +46,24 @@ pub fn encode(drawing: &dyn Drawing, out: &mut Vec<u8>) -> Result<(), String> {
     }
 
     // グリッドのエンコード
-    let width = drawing.get_grid()?.get_grid_width();
-    let height = drawing.get_grid()?.get_grid_height();
+    let layer_count = drawing.get_layer_count();
+    append!(out, layer_count);
+
+    let width = drawing.get_grid_width();
+    let height = drawing.get_grid_height();
     append!(out, width);
     append!(out, height);
-    for y in 0..height {
-        for x in 0..width {
-            let color = drawing.get_grid()?.get_color(x, y)?;
-            append!(out, color);
+
+    for layer_index in 0..layer_count {
+        let layer = drawing
+            .get_grid_layer(layer_index)
+            .ok_or("Layer not found")?;
+
+        for y in 0..height {
+            for x in 0..width {
+                let color = layer.borrow().get_color(x, y)?;
+                append!(out, color);
+            }
         }
     }
 
@@ -91,18 +101,27 @@ pub fn decode(input: &[u8], drawing: Rc<RefCell<dyn Drawing>>) -> Result<(), Str
     }
 
     // グリッドのデコード
+    let layer_count = pop!(input, pos, 8, usize);
     let width: usize = pop!(input, pos, 8, usize);
     let height: usize = pop!(input, pos, 8, usize);
 
-    let grid = drawing_ref.get_active_layer();
     drawing_ref.set_grid_width(width)?;
     drawing_ref.set_grid_height(height)?;
 
-    for y in 0..height {
-        for x in 0..width {
-            let color: PaletteColorIndex = pop!(input, pos, 8, PaletteColorIndex);
-            // TODO: レイヤーごとに色を設定する
-            grid.borrow_mut().set_color(x, y, color)?;
+    for _ in 1..layer_count {
+        drawing_ref.add_grid_layer();
+    }
+
+    for layer_index in 0..layer_count {
+        let grid = drawing_ref
+            .get_grid_layer(layer_index)
+            .ok_or("Layer not found")?;
+
+        for y in 0..height {
+            for x in 0..width {
+                let color: PaletteColorIndex = pop!(input, pos, 8, PaletteColorIndex);
+                grid.borrow_mut().set_color(x, y, color)?;
+            }
         }
     }
 

@@ -16,12 +16,12 @@ mod test {
 
     #[test]
     fn encode_decode_test() {
-        let drawing1 = DrawingMock::new();
+        let mut drawing1 = DrawingMock::new();
 
         let w = 20;
         let h = 20;
-        drawing1.grid.borrow_mut().set_grid_width(w).unwrap();
-        drawing1.grid.borrow_mut().set_grid_height(h).unwrap();
+        drawing1.set_grid_width(w).unwrap();
+        drawing1.set_grid_height(h).unwrap();
 
         let color1 = ODColor::new(0, 0, 0);
         let color2 = ODColor::new(1, 1, 1);
@@ -30,10 +30,14 @@ mod test {
         drawing1.palette.borrow_mut().add_color(color2).unwrap();
         drawing1.palette.borrow_mut().add_color(color3).unwrap();
 
+        drawing1.add_grid_layer();
+        drawing1.add_grid_layer();
+
         for x in 0..w {
             for y in 0..h {
                 drawing1
-                    .grid
+                    .get_grid_layer(x % 3)
+                    .unwrap()
                     .borrow_mut()
                     .set_color(
                         x,
@@ -79,10 +83,21 @@ mod test {
         decode(&encoded, drawing2.clone()).unwrap();
 
         assert_eq_grid(
-            &*drawing1.grid.borrow(),
+            &*drawing1.get_grid().unwrap(),
             &*drawing2.borrow().get_grid().unwrap(),
         );
-        assert_eq_palette(drawing1.palette, drawing2.borrow_mut().get_palette());
+        assert_eq_palette(drawing1.get_palette(), drawing2.borrow_mut().get_palette());
+
+        assert_eq!(
+            drawing1.get_layer_count(),
+            drawing2.borrow().get_layer_count()
+        );
+
+        for layer_index in 0..drawing1.get_layer_count() {
+            let layer1 = drawing1.get_grid_layer(layer_index).unwrap();
+            let layer2 = drawing2.borrow().get_grid_layer(layer_index).unwrap();
+            assert_eq_grid(&*layer1.borrow(), &*layer2.borrow());
+        }
     }
 
     fn assert_eq_grid(g1: &dyn Grid, g2: &dyn Grid) {

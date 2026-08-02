@@ -10,7 +10,7 @@ use crate::common::canvas_grid::Grid;
 use crate::common::palette::Palette;
 
 pub struct DrawingMock {
-    pub grid: Rc<RefCell<GridMock>>,
+    pub layers: Vec<Rc<RefCell<GridMock>>>,
     pub palette: Rc<RefCell<PaletteMock>>,
 }
 
@@ -19,7 +19,7 @@ impl DrawingMock {
     #[allow(dead_code)]
     pub fn new() -> Self {
         DrawingMock {
-            grid: Rc::new(RefCell::new(GridMock::new())),
+            layers: vec![Rc::new(RefCell::new(GridMock::new()))],
             palette: Rc::new(RefCell::new(PaletteMock::new())),
         }
     }
@@ -33,7 +33,7 @@ impl Drawing for DrawingMock {
 
         for y in 0..self.get_grid_height() {
             for x in 0..self.get_grid_width() {
-                let color = self.grid.borrow().get_color(x, y)?;
+                let color = self.layers[0].borrow().get_color(x, y)?;
                 grid.set_color(x, y, color)?;
             }
         }
@@ -42,41 +42,52 @@ impl Drawing for DrawingMock {
     }
 
     fn get_grid_layer(&self, layer_index: usize) -> Option<Rc<RefCell<dyn Grid>>> {
-        if layer_index == 0 {
-            Some(self.grid.clone())
+        if layer_index < self.layers.len() {
+            Some(self.layers[layer_index].clone())
         } else {
             None
         }
     }
 
-    fn add_grid_layer(&mut self) {}
+    fn add_grid_layer(&mut self) {
+        let new_layer = Rc::new(RefCell::new(GridMock::new()));
+        new_layer
+            .borrow_mut()
+            .set_grid_width(self.get_grid_width())
+            .unwrap();
+        new_layer
+            .borrow_mut()
+            .set_grid_height(self.get_grid_height())
+            .unwrap();
+        self.layers.push(new_layer);
+    }
 
     fn get_palette(&self) -> Rc<RefCell<dyn Palette>> {
         self.palette.clone()
     }
 
     fn get_grid_width(&self) -> usize {
-        self.grid.borrow().get_grid_width()
+        self.layers[0].borrow().get_grid_width()
     }
 
     fn get_grid_height(&self) -> usize {
-        self.grid.borrow().get_grid_height()
+        self.layers[0].borrow().get_grid_height()
     }
 
     fn set_grid_width(&mut self, w: usize) -> Result<(), String> {
-        self.grid.borrow_mut().set_grid_width(w)
+        self.layers[0].borrow_mut().set_grid_width(w)
     }
 
     fn set_grid_height(&mut self, h: usize) -> Result<(), String> {
-        self.grid.borrow_mut().set_grid_height(h)
+        self.layers[0].borrow_mut().set_grid_height(h)
     }
 
     fn get_layer_count(&self) -> usize {
-        1
+        self.layers.len()
     }
 
     fn get_active_layer(&self) -> Rc<RefCell<dyn Grid>> {
-        self.grid.clone()
+        self.layers[0].clone()
     }
 
     fn set_active_layer_idx(&mut self, _layer_index: usize) -> Result<(), String> {

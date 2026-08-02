@@ -2,14 +2,15 @@
 mod test {
     use crate::common::bitmap::Bitmap;
     use crate::common::canvas_grid::Grid;
+    use crate::common::drawing::Drawing;
     use crate::common::palette::Palette;
     use crate::mock::drawing_mock::DrawingMock;
 
     #[test]
     fn simple_test() {
-        let drawing1 = DrawingMock::new();
-        drawing1.grid.borrow_mut().set_grid_width(2).unwrap();
-        drawing1.grid.borrow_mut().set_grid_height(2).unwrap();
+        let mut drawing1 = DrawingMock::new();
+        drawing1.set_grid_width(2).unwrap();
+        drawing1.set_grid_height(2).unwrap();
         drawing1
             .palette
             .borrow_mut()
@@ -30,10 +31,26 @@ mod test {
             .borrow_mut()
             .add_color(crate::common::color::ODColor::new(0, 0, 255))
             .unwrap();
-        drawing1.grid.borrow_mut().set_color(0, 0, 0).unwrap(); // Black
-        drawing1.grid.borrow_mut().set_color(1, 0, 1).unwrap(); // Red
-        drawing1.grid.borrow_mut().set_color(0, 1, 2).unwrap(); // Green
-        drawing1.grid.borrow_mut().set_color(1, 1, 3).unwrap(); // Blue
+        drawing1
+            .get_active_layer()
+            .borrow_mut()
+            .set_color(0, 0, 0)
+            .unwrap(); // Black
+        drawing1
+            .get_active_layer()
+            .borrow_mut()
+            .set_color(1, 0, 1)
+            .unwrap(); // Red
+        drawing1
+            .get_active_layer()
+            .borrow_mut()
+            .set_color(0, 1, 2)
+            .unwrap(); // Green
+        drawing1
+            .get_active_layer()
+            .borrow_mut()
+            .set_color(1, 1, 3)
+            .unwrap(); // Blue
 
         let bitmap_result = Bitmap::from_drawing(&drawing1, 1, false);
         assert!(bitmap_result.is_ok());
@@ -51,9 +68,9 @@ mod test {
 
     #[test]
     fn multiple_pixels_test() {
-        let drawing1 = DrawingMock::new();
-        drawing1.grid.borrow_mut().set_grid_width(2).unwrap();
-        drawing1.grid.borrow_mut().set_grid_height(2).unwrap();
+        let mut drawing1 = DrawingMock::new();
+        drawing1.set_grid_width(2).unwrap();
+        drawing1.set_grid_height(2).unwrap();
         drawing1
             .palette
             .borrow_mut()
@@ -74,10 +91,26 @@ mod test {
             .borrow_mut()
             .add_color(crate::common::color::ODColor::new(0, 0, 255))
             .unwrap();
-        drawing1.grid.borrow_mut().set_color(0, 0, 0).unwrap(); // Black
-        drawing1.grid.borrow_mut().set_color(1, 0, 1).unwrap(); // Red
-        drawing1.grid.borrow_mut().set_color(0, 1, 2).unwrap(); // Green
-        drawing1.grid.borrow_mut().set_color(1, 1, 3).unwrap(); // Blue
+        drawing1
+            .get_active_layer()
+            .borrow_mut()
+            .set_color(0, 0, 0)
+            .unwrap(); // Black
+        drawing1
+            .get_active_layer()
+            .borrow_mut()
+            .set_color(1, 0, 1)
+            .unwrap(); // Red
+        drawing1
+            .get_active_layer()
+            .borrow_mut()
+            .set_color(0, 1, 2)
+            .unwrap(); // Green
+        drawing1
+            .get_active_layer()
+            .borrow_mut()
+            .set_color(1, 1, 3)
+            .unwrap(); // Blue
 
         let bitmap_result = Bitmap::from_drawing(&drawing1, 4, false);
         assert!(bitmap_result.is_ok());
@@ -122,9 +155,9 @@ mod test {
 
     #[test]
     fn transparent_test() {
-        let drawing1 = DrawingMock::new();
-        drawing1.grid.borrow_mut().set_grid_width(2).unwrap();
-        drawing1.grid.borrow_mut().set_grid_height(2).unwrap();
+        let mut drawing1 = DrawingMock::new();
+        drawing1.set_grid_width(2).unwrap();
+        drawing1.set_grid_height(2).unwrap();
         drawing1
             .palette
             .borrow_mut()
@@ -145,10 +178,26 @@ mod test {
             .borrow_mut()
             .add_color(crate::common::color::ODColor::new(0, 0, 255))
             .unwrap();
-        drawing1.grid.borrow_mut().set_color(0, 0, 0).unwrap(); // Black
-        drawing1.grid.borrow_mut().set_color(1, 0, 1).unwrap(); // Red
-        drawing1.grid.borrow_mut().set_color(0, 1, 2).unwrap(); // Green
-        drawing1.grid.borrow_mut().set_color(1, 1, 3).unwrap(); // Blue
+        drawing1
+            .get_active_layer()
+            .borrow_mut()
+            .set_color(0, 0, 0)
+            .unwrap(); // Black
+        drawing1
+            .get_active_layer()
+            .borrow_mut()
+            .set_color(1, 0, 1)
+            .unwrap(); // Red
+        drawing1
+            .get_active_layer()
+            .borrow_mut()
+            .set_color(0, 1, 2)
+            .unwrap(); // Green
+        drawing1
+            .get_active_layer()
+            .borrow_mut()
+            .set_color(1, 1, 3)
+            .unwrap(); // Blue
 
         let bitmap_result = Bitmap::from_drawing(&drawing1, 1, true);
         assert!(bitmap_result.is_ok());
