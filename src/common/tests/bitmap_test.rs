@@ -1,7 +1,6 @@
 #[cfg(test)]
 mod test {
     use crate::common::bitmap::Bitmap;
-    use crate::common::canvas_grid::Grid;
     use crate::common::drawing::Drawing;
     use crate::common::palette::Palette;
     use crate::mock::drawing_mock::DrawingMock;
