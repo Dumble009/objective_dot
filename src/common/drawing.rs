@@ -15,6 +15,7 @@ pub trait Drawing {
     fn set_grid_height(&mut self, h: usize) -> Result<(), String>;
     fn get_layer_count(&self) -> usize;
     fn get_active_layer(&self) -> Rc<RefCell<dyn Grid>>;
+    fn get_active_layer_idx(&self) -> usize;
     fn set_active_layer_idx(&mut self, layer_index: usize) -> Result<(), String>;
     fn move_layer_up(&mut self, layer_index: usize) -> Result<(), String>;
     fn move_layer_down(&mut self, layer_index: usize) -> Result<(), String>;
@@ -116,6 +117,10 @@ impl Drawing for ObjectDrawing {
 
     fn get_active_layer(&self) -> Rc<RefCell<dyn Grid>> {
         self.grid_layers[self.active_layer_index].clone()
+    }
+
+    fn get_active_layer_idx(&self) -> usize {
+        self.active_layer_index
     }
 
     fn set_active_layer_idx(&mut self, layer_index: usize) -> Result<(), String> {

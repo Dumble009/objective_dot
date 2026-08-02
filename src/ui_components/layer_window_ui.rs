@@ -21,29 +21,48 @@ impl LayerWindowUi {
     fn draw(&mut self, ui: &mut Ui, drawing: Rc<RefCell<dyn Drawing>>) {
         let layer_count = drawing.borrow().get_layer_count();
         ScrollArea::vertical().max_height(300.0).show(ui, |ui| {
-            for i in 0..layer_count {
-                // 上のレイヤから順に表示するために、layer_count - i - 1 を使用する
-                self.draw_item(ui, drawing.clone(), layer_count - i - 1);
-            }
+            egui::Grid::new("layer_grid")
+                .spacing([8.0, 4.0])
+                .show(ui, |ui| {
+                    for i in 0..layer_count {
+                        // 上のレイヤから順に表示するために、layer_count - i - 1 を使用する
+                        self.draw_item(ui, drawing.clone(), layer_count - i - 1);
+                        ui.end_row();
+                    }
 
-            if ui.button("Add Layer").clicked() {
-                drawing.borrow_mut().add_grid_layer();
-            }
+                    if ui.button("Add Layer").clicked() {
+                        drawing.borrow_mut().add_grid_layer();
+                    }
+                });
         });
     }
 
     fn draw_item(&self, ui: &mut Ui, drawing: Rc<RefCell<dyn Drawing>>, layer_index: usize) {
-        ui.horizontal(|ui| {
+        const LABEL_WIDTH: f32 = 120.0_f32;
+        const UPDOWN_BUTTON_WIDTH: f32 = 60.0_f32;
+        const PREVIEW_SIZE: f32 = 64.0_f32;
+        const HEIGHT: f32 = 64.0_f32;
+        // レイヤ番号とアクティブレイヤの切り替えボタン
+        ui.allocate_ui(egui::vec2(LABEL_WIDTH, HEIGHT), |ui| {
             ui.vertical(|ui| {
-                ui.label(format!("Layer {}", layer_index));
-                if ui.button("Set Active").clicked() {
-                    drawing
-                        .borrow_mut()
-                        .set_active_layer_idx(layer_index)
-                        .unwrap();
+                let label_text = format!("Layer {}", layer_index);
+
+                if layer_index == drawing.borrow().get_active_layer_idx() {
+                    ui.label(RichText::new(label_text).strong());
+                } else {
+                    ui.label(label_text);
+                    if ui.button("Set Active").clicked() {
+                        drawing
+                            .borrow_mut()
+                            .set_active_layer_idx(layer_index)
+                            .unwrap();
+                    }
                 }
             });
+        });
 
+        // レイヤの上下移動ボタン
+        ui.allocate_ui(egui::vec2(UPDOWN_BUTTON_WIDTH, HEIGHT), |ui| {
             ui.vertical(|ui| {
                 let min_size = egui::vec2(50.0, 20.0);
 
@@ -57,8 +76,10 @@ impl LayerWindowUi {
                     drawing.borrow_mut().move_layer_down(layer_index).unwrap();
                 }
             });
+        });
 
-            const PREVIEW_SIZE: f32 = 64.0_f32;
+        // レイヤのプレビュー画像
+        ui.allocate_ui(egui::vec2(PREVIEW_SIZE, HEIGHT), |ui| {
             let (_, painter) =
                 ui.allocate_painter(egui::vec2(PREVIEW_SIZE, PREVIEW_SIZE), egui::Sense::hover());
 

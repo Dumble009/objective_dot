@@ -90,6 +90,10 @@ impl Drawing for DrawingMock {
         self.layers[0].clone()
     }
 
+    fn get_active_layer_idx(&self) -> usize {
+        0
+    }
+
     fn set_active_layer_idx(&mut self, _layer_index: usize) -> Result<(), String> {
         Ok(())
     }

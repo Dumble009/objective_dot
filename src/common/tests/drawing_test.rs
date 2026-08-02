@@ -36,14 +36,11 @@ mod test {
             drawing.get_grid_layer(1).unwrap().borrow().get_grid_width(),
             15
         );
-        assert_eq!(
-            drawing
-                .get_grid_layer(2)
-                .unwrap()
-                .borrow()
-                .get_grid_height(),
-            25
-        );
+
+        // active layer 経由での取得
+        drawing.set_active_layer_idx(2).unwrap();
+        assert_eq!(drawing.get_active_layer().borrow().get_grid_height(), 25);
+        assert_eq!(drawing.get_active_layer_idx(), 2);
 
         drawing
             .get_grid_layer(1)
