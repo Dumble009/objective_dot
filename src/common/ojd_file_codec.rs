@@ -39,7 +39,7 @@ pub fn encode(drawing: &dyn Drawing, out: &mut Vec<u8>) -> Result<(), String> {
     let color_count = palette.borrow().get_color_count();
     append!(out, color_count);
     for i in 0..palette.borrow().get_color_count() {
-        let color = palette.borrow().get_color(i)?.to_color32();
+        let color = palette.borrow().get_color((i, 0).into())?.to_color32();
         append!(out, color.r());
         append!(out, color.g());
         append!(out, color.b());
@@ -62,7 +62,7 @@ pub fn encode(drawing: &dyn Drawing, out: &mut Vec<u8>) -> Result<(), String> {
         for y in 0..height {
             for x in 0..width {
                 let color = layer.borrow().get_color(x, y)?;
-                append!(out, color);
+                append!(out, color.idx);
             }
         }
     }
@@ -96,7 +96,7 @@ pub fn decode(input: &[u8], drawing: Rc<RefCell<dyn Drawing>>) -> Result<(), Str
         if palette.borrow().get_color_count() <= i {
             palette.borrow_mut().add_color(color)?;
         } else {
-            palette.borrow_mut().change_color(i, color)?;
+            palette.borrow_mut().change_color((i, 0).into(), color)?;
         }
     }
 
@@ -119,7 +119,7 @@ pub fn decode(input: &[u8], drawing: Rc<RefCell<dyn Drawing>>) -> Result<(), Str
 
         for y in 0..height {
             for x in 0..width {
-                let color: PaletteColorIndex = pop!(input, pos, 8, PaletteColorIndex);
+                let color: PaletteColorIndex = (pop!(input, pos, 8, usize), 0).into();
                 grid.borrow_mut().set_color(x, y, color)?;
             }
         }

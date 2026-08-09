@@ -11,7 +11,7 @@ mod test {
     #[test]
     fn pencil_draw_test() {
         let mut pencil = Pencil::new();
-        let mut canvas = vec![vec![0; 10]; 10];
+        let mut canvas = vec![vec![(0, 0).into(); 10]; 10];
         let canvas_size = (10, 10);
         let drawing = Rc::new(RefCell::new(DrawingMock::new()));
 
@@ -25,7 +25,7 @@ mod test {
             .borrow()
             .get_palette()
             .borrow_mut()
-            .select_color(1)
+            .select_color((1, 0).into())
             .is_ok());
 
         assert!(drawing.borrow_mut().set_grid_width(10).is_ok());
@@ -35,7 +35,7 @@ mod test {
         assert!(pencil
             .on_mouse_down(&mut canvas, &canvas_size, drawing.clone(), &mouse_pos)
             .is_ok());
-        assert_eq!(canvas[0][0], 1);
+        assert_eq!(canvas[0][0], (1, 0));
         assert_eq!(
             drawing
                 .borrow()
@@ -43,14 +43,14 @@ mod test {
                 .unwrap()
                 .get_color(0, 0)
                 .unwrap(),
-            0
+            (0, 0)
         );
 
         let mouse_pos = (0, 4);
         assert!(pencil
             .on_mouse_drag(&mut canvas, &canvas_size, drawing.clone(), &mouse_pos)
             .is_ok());
-        assert_eq!(canvas[4][0], 1);
+        assert_eq!(canvas[4][0], (1, 0));
         assert_eq!(
             drawing
                 .borrow()
@@ -58,7 +58,7 @@ mod test {
                 .unwrap()
                 .get_color(0, 4)
                 .unwrap(),
-            0
+            (0, 0)
         );
 
         let mouse_pos = (0, 9);
@@ -67,7 +67,7 @@ mod test {
             .unwrap()
             .unwrap();
         assert!(action.run().is_ok());
-        assert_eq!(canvas[0][9], 0);
+        assert_eq!(canvas[0][9], (0, 0));
         assert_eq!(
             drawing
                 .borrow()
@@ -75,7 +75,7 @@ mod test {
                 .unwrap()
                 .get_color(0, 0)
                 .unwrap(),
-            1
+            (1, 0)
         );
         assert_eq!(
             drawing
@@ -84,7 +84,7 @@ mod test {
                 .unwrap()
                 .get_color(0, 4)
                 .unwrap(),
-            1
+            (1, 0)
         );
         assert_eq!(
             drawing
@@ -93,14 +93,14 @@ mod test {
                 .unwrap()
                 .get_color(0, 9)
                 .unwrap(),
-            0
+            (0, 0)
         );
     }
 
     #[test]
     fn pencil_outside_canvas_test() {
         let mut pencil = Pencil::new();
-        let mut canvas = vec![vec![0; 10]; 10];
+        let mut canvas = vec![vec![(0, 0).into(); 10]; 10];
         let canvas_size = (10, 10);
         let drawing = Rc::new(RefCell::new(DrawingMock::new()));
 
@@ -114,7 +114,7 @@ mod test {
             .borrow()
             .get_palette()
             .borrow_mut()
-            .select_color(1)
+            .select_color((1, 0).into())
             .is_ok());
 
         assert!(drawing.borrow_mut().set_grid_width(10).is_ok());
@@ -131,7 +131,7 @@ mod test {
         assert!(pencil
             .on_mouse_drag(&mut canvas, &canvas_size, drawing.clone(), &mouse_pos)
             .is_ok());
-        assert_eq!(canvas[9][9], 1);
+        assert_eq!(canvas[9][9], (1, 0));
         assert_eq!(
             drawing
                 .borrow()
@@ -139,7 +139,7 @@ mod test {
                 .unwrap()
                 .get_color(9, 9)
                 .unwrap(),
-            0
+            (0, 0)
         );
 
         // 再びキャンバス外に出る
@@ -161,7 +161,7 @@ mod test {
                 .unwrap()
                 .get_color(9, 9)
                 .unwrap(),
-            1
+            (1, 0)
         );
     }
 }

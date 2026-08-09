@@ -46,27 +46,27 @@ mod test {
             .get_grid_layer(1)
             .unwrap()
             .borrow_mut()
-            .set_color(0, 0, 1)
+            .set_color(0, 0, (1, 0).into())
             .unwrap();
         drawing
             .get_grid_layer(1)
             .unwrap()
             .borrow_mut()
-            .set_color(1, 1, 1)
+            .set_color(1, 1, (1, 0).into())
             .unwrap();
 
         drawing
             .get_grid_layer(2)
             .unwrap()
             .borrow_mut()
-            .set_color(1, 1, 2)
+            .set_color(1, 1, (2, 0).into())
             .unwrap();
 
         let color00 = drawing.get_grid().unwrap().get_color(0, 0).unwrap();
-        assert_eq!(color00, 1);
+        assert_eq!(color00, (1, 0));
 
         let color11 = drawing.get_grid().unwrap().get_color(1, 1).unwrap();
-        assert_eq!(color11, 2);
+        assert_eq!(color11, (2, 0));
 
         assert_eq!(
             drawing
@@ -75,17 +75,17 @@ mod test {
                 .borrow()
                 .get_color(1, 1)
                 .unwrap(),
-            1
+            (1, 0)
         );
 
         assert!(drawing.get_grid_layer(3).is_none());
 
         assert!(drawing.move_layer_up(1).is_ok());
         let color11 = drawing.get_grid().unwrap().get_color(1, 1).unwrap();
-        assert_eq!(color11, 1);
+        assert_eq!(color11, (1, 0));
 
         assert!(drawing.move_layer_down(2).is_ok());
         let color11 = drawing.get_grid().unwrap().get_color(1, 1).unwrap();
-        assert_eq!(color11, 2);
+        assert_eq!(color11, (2, 0));
     }
 }

@@ -31,7 +31,7 @@ impl Bitmap {
                 pixels.push(color32.b());
 
                 // Alpha channel
-                if is_transparent_background && color_index == 0 {
+                if is_transparent_background && color_index.idx == 0 {
                     pixels.push(0);
                 } else {
                     pixels.push(255);

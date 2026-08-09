@@ -13,7 +13,7 @@ mod test {
         drawing1
             .palette
             .borrow_mut()
-            .change_color(0, crate::common::color::ODColor::new(0, 0, 0))
+            .change_color((0, 0).into(), crate::common::color::ODColor::new(0, 0, 0))
             .unwrap();
         drawing1
             .palette
@@ -33,22 +33,22 @@ mod test {
         drawing1
             .get_active_layer()
             .borrow_mut()
-            .set_color(0, 0, 0)
+            .set_color(0, 0, (0, 0).into())
             .unwrap(); // Black
         drawing1
             .get_active_layer()
             .borrow_mut()
-            .set_color(1, 0, 1)
+            .set_color(1, 0, (1, 0).into())
             .unwrap(); // Red
         drawing1
             .get_active_layer()
             .borrow_mut()
-            .set_color(0, 1, 2)
+            .set_color(0, 1, (2, 0).into())
             .unwrap(); // Green
         drawing1
             .get_active_layer()
             .borrow_mut()
-            .set_color(1, 1, 3)
+            .set_color(1, 1, (3, 0).into())
             .unwrap(); // Blue
 
         let bitmap_result = Bitmap::from_drawing(&drawing1, 1, false);
@@ -73,7 +73,7 @@ mod test {
         drawing1
             .palette
             .borrow_mut()
-            .change_color(0, crate::common::color::ODColor::new(0, 0, 0))
+            .change_color((0, 0).into(), crate::common::color::ODColor::new(0, 0, 0))
             .unwrap();
         drawing1
             .palette
@@ -93,22 +93,22 @@ mod test {
         drawing1
             .get_active_layer()
             .borrow_mut()
-            .set_color(0, 0, 0)
+            .set_color(0, 0, (0, 0).into())
             .unwrap(); // Black
         drawing1
             .get_active_layer()
             .borrow_mut()
-            .set_color(1, 0, 1)
+            .set_color(1, 0, (1, 0).into())
             .unwrap(); // Red
         drawing1
             .get_active_layer()
             .borrow_mut()
-            .set_color(0, 1, 2)
+            .set_color(0, 1, (2, 0).into())
             .unwrap(); // Green
         drawing1
             .get_active_layer()
             .borrow_mut()
-            .set_color(1, 1, 3)
+            .set_color(1, 1, (3, 0).into())
             .unwrap(); // Blue
 
         let bitmap_result = Bitmap::from_drawing(&drawing1, 4, false);
@@ -160,7 +160,7 @@ mod test {
         drawing1
             .palette
             .borrow_mut()
-            .change_color(0, crate::common::color::ODColor::new(0, 0, 0))
+            .change_color((0, 0).into(), crate::common::color::ODColor::new(0, 0, 0))
             .unwrap();
         drawing1
             .palette
@@ -180,22 +180,22 @@ mod test {
         drawing1
             .get_active_layer()
             .borrow_mut()
-            .set_color(0, 0, 0)
+            .set_color(0, 0, (0, 0).into())
             .unwrap(); // Black
         drawing1
             .get_active_layer()
             .borrow_mut()
-            .set_color(1, 0, 1)
+            .set_color(1, 0, (1, 0).into())
             .unwrap(); // Red
         drawing1
             .get_active_layer()
             .borrow_mut()
-            .set_color(0, 1, 2)
+            .set_color(0, 1, (2, 0).into())
             .unwrap(); // Green
         drawing1
             .get_active_layer()
             .borrow_mut()
-            .set_color(1, 1, 3)
+            .set_color(1, 1, (3, 0).into())
             .unwrap(); // Blue
 
         let bitmap_result = Bitmap::from_drawing(&drawing1, 1, true);

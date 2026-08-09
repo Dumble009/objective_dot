@@ -42,7 +42,7 @@ mod test {
                     .set_color(
                         x,
                         y,
-                        (x + y * w) % drawing1.palette.borrow().get_color_count(),
+                        ((x + y * w) % drawing1.palette.borrow().get_color_count(), 0).into(),
                     )
                     .unwrap();
             }
@@ -119,8 +119,8 @@ mod test {
 
         for i in 0..color_count {
             assert_eq!(
-                p1.borrow().get_color(i).unwrap(),
-                p2.borrow().get_color(i).unwrap()
+                p1.borrow().get_color((i, 0).into()).unwrap(),
+                p2.borrow().get_color((i, 0).into()).unwrap()
             );
         }
     }

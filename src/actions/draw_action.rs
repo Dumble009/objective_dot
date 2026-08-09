@@ -3,11 +3,11 @@ use std::rc::Rc;
 
 use crate::actions::action::Action;
 use crate::common::canvas_grid::Grid;
-use crate::common::palette::PaletteColorIndex;
+use crate::common::palette::{Palette, PaletteColorIndex};
 
 pub struct DrawAction {
     canvas: Rc<RefCell<dyn Grid>>,
-    drawn_cells: Vec<(usize, usize, usize)>,
+    drawn_cells: Vec<(usize, usize, PaletteColorIndex)>,
     after_color_index: PaletteColorIndex,
 }
 

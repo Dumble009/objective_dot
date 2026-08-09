@@ -49,7 +49,7 @@ impl Drawing for ObjectDrawing {
 
         for x in 0..self.width {
             for y in 0..self.height {
-                result_grid.set_color(x, y, 0)?;
+                result_grid.set_color(x, y, (0, 0).into())?;
             }
         }
 
@@ -58,7 +58,7 @@ impl Drawing for ObjectDrawing {
             for y in 0..self.height {
                 for x in 0..self.width {
                     let color = layer_grid.get_color(x, y)?;
-                    if color == 0 {
+                    if color.idx == 0 {
                         continue;
                     }
                     result_grid.set_color(x, y, color)?;

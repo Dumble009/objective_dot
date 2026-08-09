@@ -9,11 +9,11 @@ mod test {
         let get_res = canvas_grid.get_color(0, 0);
         assert!(get_res.is_ok());
 
-        assert!(canvas_grid.set_color(0, 0, 1).is_ok());
+        assert!(canvas_grid.set_color(0, 0, (1, 0).into()).is_ok());
 
         let get_res = canvas_grid.get_color(0, 0);
         assert!(get_res.is_ok());
-        assert_eq!(get_res.unwrap(), 1);
+        assert_eq!(get_res.unwrap(), (1, 0));
     }
 
     #[test]
@@ -37,7 +37,7 @@ mod test {
         let get_res = canvas_grid.get_color(width, height);
         assert!(get_res.is_err());
 
-        let set_res = canvas_grid.set_color(width, height, 1);
+        let set_res = canvas_grid.set_color(width, height, (1, 0).into());
         assert!(set_res.is_err());
     }
 
@@ -63,7 +63,7 @@ mod test {
         let get_res = canvas_grid.get_color(INITIAL_GRID_WIDTH, INITIAL_GRID_HEIGHT);
         assert!(get_res.is_ok());
 
-        let set_res = canvas_grid.set_color(INITIAL_GRID_WIDTH, INITIAL_GRID_HEIGHT, 1);
+        let set_res = canvas_grid.set_color(INITIAL_GRID_WIDTH, INITIAL_GRID_HEIGHT, (1, 0).into());
         assert!(set_res.is_ok());
 
         let res = canvas_grid.set_grid_width(INITIAL_GRID_WIDTH);
@@ -81,7 +81,7 @@ mod test {
         let get_res = canvas_grid.get_color(INITIAL_GRID_WIDTH, INITIAL_GRID_HEIGHT);
         assert!(get_res.is_err());
 
-        let set_res = canvas_grid.set_color(INITIAL_GRID_WIDTH, INITIAL_GRID_HEIGHT, 1);
+        let set_res = canvas_grid.set_color(INITIAL_GRID_WIDTH, INITIAL_GRID_HEIGHT, (1, 0).into());
         assert!(set_res.is_err());
 
         // 現在と同じ値にも設定できる
@@ -115,7 +115,7 @@ mod test {
 
         for x in 0..2 {
             for y in 0..2 {
-                let res = canvas_grid.set_color(x, y, x + y * 2);
+                let res = canvas_grid.set_color(x, y, (x + y * 2, 0).into());
                 assert!(res.is_ok());
             }
         }
@@ -133,7 +133,7 @@ mod test {
                 assert!(res.is_ok());
                 let color = res.unwrap();
 
-                assert_eq!(color, (x / 2) + (y / 2) * 2, "x = {}, y = {}", x, y);
+                assert_eq!(color, ((x / 2) + (y / 2) * 2, 0), "x = {}, y = {}", x, y);
             }
         }
     }

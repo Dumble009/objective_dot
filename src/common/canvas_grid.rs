@@ -21,7 +21,7 @@ const INITIAL_GRID_HEIGHT: usize = 10;
 impl CanvasGrid {
     pub fn new() -> Self {
         CanvasGrid {
-            grid: vec![vec![0; INITIAL_GRID_WIDTH]; INITIAL_GRID_HEIGHT],
+            grid: vec![vec![(0, 0).into(); INITIAL_GRID_WIDTH]; INITIAL_GRID_HEIGHT],
         }
     }
 
@@ -74,7 +74,7 @@ impl Grid for CanvasGrid {
             let diff = new_w - old_w;
             for row in self.grid.iter_mut() {
                 for _ in 0..diff {
-                    row.push(0);
+                    row.push((0, 0).into());
                 }
             }
         } else {
@@ -104,7 +104,7 @@ impl Grid for CanvasGrid {
             let diff = new_h - old_h;
             let width = self.get_grid_width();
             for _ in 0..diff {
-                self.grid.push(vec![0; width]);
+                self.grid.push(vec![(0, 0).into(); width]);
             }
         } else {
             let diff = old_h - new_h;

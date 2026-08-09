@@ -68,9 +68,13 @@ impl PaletteUi {
                 action_q.push_front(Box::new(action));
                 self.color_picker.hide();
             } else if let ColorPickResult::ChangeColor(idx, color) = result {
-                let before_color = palette.borrow().get_color(idx).unwrap();
-                let action =
-                    PaletteColorChangeAction::new(palette.clone(), idx, before_color, color);
+                let before_color = palette.borrow().get_color((idx, 0).into()).unwrap();
+                let action = PaletteColorChangeAction::new(
+                    palette.clone(),
+                    (idx, 0).into(),
+                    before_color,
+                    color,
+                );
                 action_q.push_front(Box::new(action));
                 // palette.borrow_mut().change_color(idx, color).unwrap();
                 self.color_picker.hide();
@@ -100,12 +104,12 @@ impl PaletteUi {
     fn draw_color_boxes(&mut self, ui: &mut Ui, palette: Rc<RefCell<dyn Palette>>) {
         let color_count = palette.borrow().get_color_count();
         for idx in 0..color_count {
-            let color_i = palette.borrow().get_color(idx).unwrap();
+            let color_i = palette.borrow().get_color((idx, 0).into()).unwrap();
             let button = Button::new("").fill(color_i.to_color32());
             let button_add_res = ui.add(button);
 
             if button_add_res.clicked_by(PointerButton::Primary) {
-                if let Err(msg) = palette.borrow_mut().select_color(idx) {
+                if let Err(msg) = palette.borrow_mut().select_color((idx, 0).into()) {
                     println!("Palette Error: {msg}");
                 }
             } else if button_add_res.clicked_by(PointerButton::Secondary) {

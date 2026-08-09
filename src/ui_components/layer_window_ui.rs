@@ -97,7 +97,7 @@ impl LayerWindowUi {
                         .unwrap()
                         .borrow()
                         .get_color(x, y)
-                        .unwrap_or(0);
+                        .unwrap_or((0, 0).into());
                     let color = drawing
                         .borrow()
                         .get_palette()

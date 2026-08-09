@@ -30,7 +30,11 @@ impl DrawingPreviewUi {
 
         for y in 0..grid_h {
             for x in 0..grid_w {
-                let color_idx = drawing.get_grid().unwrap().get_color(x, y).unwrap_or(0);
+                let color_idx = drawing
+                    .get_grid()
+                    .unwrap()
+                    .get_color(x, y)
+                    .unwrap_or((0, 0).into());
                 let color = drawing
                     .get_palette()
                     .borrow()

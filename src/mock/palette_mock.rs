@@ -11,7 +11,7 @@ impl PaletteMock {
     pub fn new() -> Self {
         PaletteMock {
             colors: vec![ODColor::new(0, 0, 0)],
-            current_selected_idx: 0,
+            current_selected_idx: (0, 0).into(),
         }
     }
 }
@@ -23,7 +23,7 @@ impl Palette for PaletteMock {
     }
 
     fn get_color(&self, idx: PaletteColorIndex) -> Result<ODColor, String> {
-        Ok(self.colors[idx])
+        Ok(self.colors[idx.idx])
     }
 
     fn get_color_count(&self) -> usize {
@@ -40,14 +40,14 @@ impl Palette for PaletteMock {
     }
 
     fn change_color(&mut self, idx: PaletteColorIndex, new_color: ODColor) -> Result<(), String> {
-        self.colors[idx] = new_color;
+        self.colors[idx.idx] = new_color;
         Ok(())
     }
 
     fn reset(&mut self) {
         self.colors.clear();
         self.colors.push(ODColor::new(0, 0, 0));
-        self.current_selected_idx = 0;
+        self.current_selected_idx = (0, 0).into();
     }
 
     fn override_by_colorset(&mut self, _colorset: &[ODColor]) -> Result<(), String> {

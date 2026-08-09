@@ -135,7 +135,7 @@ impl CanvasUi {
         let grid = drawing.borrow().get_grid().unwrap();
         for (y, row) in canvas.iter_mut().enumerate() {
             for (x, color_idx) in row.iter_mut().enumerate() {
-                *color_idx = grid.get_color(x, y).unwrap_or(0);
+                *color_idx = grid.get_color(x, y).unwrap_or((0, 0).into());
             }
         }
     }

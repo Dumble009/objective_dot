@@ -14,7 +14,7 @@ mod test {
 
         assert!(palette.add_color(color).is_ok());
 
-        let get_color_res = palette.get_color(1);
+        let get_color_res = palette.get_color((1, 0).into());
         assert!(get_color_res.is_ok());
         assert_eq!(get_color_res.unwrap(), color);
 
@@ -29,7 +29,7 @@ mod test {
     fn get_color_invalid_idx_test() {
         let palette = ObjectPalette::new();
 
-        let get_color_res = palette.get_color(1);
+        let get_color_res = palette.get_color((1, 0).into());
         assert!(get_color_res.is_err());
     }
 
@@ -40,24 +40,24 @@ mod test {
         // 初期状態でも1色は存在している。最初はそれが選択されている。
         let get_current_selected_idx_res = palette.get_current_selected_idx();
         assert!(get_current_selected_idx_res.is_ok());
-        assert_eq!(get_current_selected_idx_res.unwrap(), 0);
+        assert_eq!(get_current_selected_idx_res.unwrap(), (0, 0));
 
         let color = ODColor::new(1, 2, 3);
         palette.add_color(color).unwrap();
 
-        let select_color_res = palette.select_color(1);
+        let select_color_res = palette.select_color((1, 0).into());
         assert!(select_color_res.is_ok());
 
         let get_current_selected_idx_res = palette.get_current_selected_idx();
         assert!(get_current_selected_idx_res.is_ok());
-        assert_eq!(get_current_selected_idx_res.unwrap(), 1);
+        assert_eq!(get_current_selected_idx_res.unwrap(), (1, 0));
     }
 
     #[test]
     fn select_color_invalid_idx_test() {
         let mut palette = ObjectPalette::new();
 
-        let select_color_res = palette.select_color(1);
+        let select_color_res = palette.select_color((1, 0).into());
         assert!(select_color_res.is_err());
     }
 
@@ -65,7 +65,7 @@ mod test {
     fn get_current_selected_color_test() {
         let mut palette = ObjectPalette::new();
 
-        palette.current_selected_idx = 1;
+        palette.current_selected_idx = (1, 0).into();
 
         let get_current_selected_idx_res = palette.get_current_selected_idx();
         assert!(get_current_selected_idx_res.is_err());
@@ -80,15 +80,15 @@ mod test {
 
         // 初期状態でも一色は存在するので、新しく追加した色は idx=1 になる。
         let new_color = ODColor::new(2, 3, 4);
-        let change_color_res = palette.change_color(1, new_color);
+        let change_color_res = palette.change_color((1, 0).into(), new_color);
         assert!(change_color_res.is_ok());
 
-        let get_color_res = palette.get_color(1);
+        let get_color_res = palette.get_color((1, 0).into());
         assert!(get_color_res.is_ok());
         let changed_color = get_color_res.unwrap();
         assert_eq!(changed_color, new_color);
 
-        let change_color_res = palette.change_color(2, new_color);
+        let change_color_res = palette.change_color((2, 0).into(), new_color);
         assert!(change_color_res.is_err());
     }
 
@@ -99,13 +99,13 @@ mod test {
         let color = ODColor::new(1, 2, 3);
         palette.add_color(color).unwrap();
 
-        let res = palette.change_color(0, color);
+        let res = palette.change_color((0, 0).into(), color);
         assert!(res.is_ok());
 
         palette.reset();
 
         assert_eq!(1, palette.get_color_count());
-        assert_ne!(color, palette.get_color(0).unwrap());
+        assert_ne!(color, palette.get_color((0, 0).into()).unwrap());
     }
 
     #[test]
@@ -123,9 +123,9 @@ mod test {
 
         assert_eq!(3, palette.get_color_count());
         for (i, color) in colorset.iter().enumerate() {
-            assert_eq!(*color, palette.get_color(i).unwrap());
+            assert_eq!(*color, palette.get_color((i, 0).into()).unwrap());
         }
-        assert_eq!(0, palette.get_current_selected_idx().unwrap());
+        assert_eq!(palette.get_current_selected_idx().unwrap(), (0, 0));
 
         let colorset = vec![];
 

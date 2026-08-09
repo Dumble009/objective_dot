@@ -24,7 +24,7 @@ impl Grid for GridMock {
         if self.colors.contains_key(&(x, y)) {
             Ok(self.colors[&(x, y)])
         } else {
-            Ok(0)
+            Ok((0, 0).into())
         }
     }
 
