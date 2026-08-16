@@ -1,4 +1,4 @@
-use crate::common::color::ODColor;
+use crate::common::color::{ColorSet, ODColor};
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq, PartialOrd, Ord, Default)]
 pub struct PaletteColorIndex {
@@ -35,13 +35,13 @@ pub trait Palette {
     fn select_color(&mut self, idx: PaletteColorIndex) -> Result<(), String>;
     fn change_color(&mut self, idx: PaletteColorIndex, new_color: ODColor) -> Result<(), String>;
     fn reset(&mut self);
-    fn override_by_colorset(&mut self, colorset: &[ODColor]) -> Result<(), String>;
+    fn override_by_color_sample(&mut self, colorset: &[ODColor]) -> Result<(), String>;
     fn remove_last_color(&mut self) -> Result<(), String>;
 }
 
 #[derive(Clone)]
 pub struct ObjectPalette {
-    colors: Vec<ODColor>,
+    color_sets: Vec<ColorSet>,
     current_selected_idx: PaletteColorIndex,
 }
 
@@ -50,7 +50,7 @@ const INITIAL_COLOR0: ODColor = ODColor::new(0, 0, 0);
 impl ObjectPalette {
     pub fn new() -> Self {
         ObjectPalette {
-            colors: vec![INITIAL_COLOR0],
+            color_sets: vec![ColorSet::new(INITIAL_COLOR0)],
             current_selected_idx: PaletteColorIndex::new(0, 0),
         }
     }
@@ -58,23 +58,23 @@ impl ObjectPalette {
 
 impl Palette for ObjectPalette {
     fn add_color(&mut self, color: ODColor) -> Result<(), String> {
-        self.colors.push(color);
+        self.color_sets.push(ColorSet::new(color));
         Ok(())
     }
 
     fn get_color(&self, idx: PaletteColorIndex) -> Result<ODColor, String> {
-        if idx.idx >= self.colors.len() {
+        if idx.idx >= self.color_sets.len() {
             return Err(format!(
                 "idx is invalid! idx:{}, brightness:{}",
                 idx.idx, idx.brightness
             ));
         }
 
-        Ok(self.colors[idx.idx])
+        self.color_sets[idx.idx].get_color(idx.brightness)
     }
 
     fn get_color_count(&self) -> usize {
-        self.colors.len()
+        self.color_sets.len()
     }
 
     fn get_current_selected_idx(&self) -> Result<PaletteColorIndex, String> {
@@ -110,37 +110,36 @@ impl Palette for ObjectPalette {
             ));
         }
 
-        self.colors[idx.idx] = new_color;
-        Ok(())
+        self.color_sets[idx.idx].set_color(idx.brightness, new_color)
     }
 
     fn reset(&mut self) {
-        self.colors.clear();
-        self.colors.push(INITIAL_COLOR0);
+        self.color_sets.clear();
+        self.color_sets.push(ColorSet::new(INITIAL_COLOR0));
         self.current_selected_idx = PaletteColorIndex::new(0, 0);
     }
 
-    fn override_by_colorset(&mut self, colorset: &[ODColor]) -> Result<(), String> {
-        if colorset.is_empty() {
+    fn override_by_color_sample(&mut self, color_sample: &[ODColor]) -> Result<(), String> {
+        if color_sample.is_empty() {
             return Err(String::from("Color set is empty."));
         }
 
-        self.colors.clear();
-        for color in colorset {
-            self.colors.push(*color);
+        self.color_sets.clear();
+        for color in color_sample {
+            self.color_sets.push(ColorSet::new(*color));
         }
 
         Ok(())
     }
 
     fn remove_last_color(&mut self) -> Result<(), String> {
-        if self.colors.len() <= 1 {
+        if self.color_sets.len() <= 1 {
             return Err(String::from(
                 "Called remove when there is only one color remaining.",
             ));
         }
 
-        self.colors.pop();
+        self.color_sets.pop();
 
         Ok(())
     }

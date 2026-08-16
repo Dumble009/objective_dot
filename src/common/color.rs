@@ -22,6 +22,7 @@ impl ODColor {
 }
 
 pub const BRIGHTNESS_RANGE: usize = 10;
+#[derive(Clone, Copy)]
 pub struct ColorSet {
     colors: [ODColor; BRIGHTNESS_RANGE * 2 + 1],
 }

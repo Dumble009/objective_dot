@@ -109,7 +109,7 @@ mod test {
     }
 
     #[test]
-    fn override_by_colorset_test() {
+    fn override_by_color_sample_test() {
         let mut palette = ObjectPalette::new();
 
         let colorset = vec![
@@ -118,7 +118,7 @@ mod test {
             ODColor::new(3, 3, 3),
         ];
 
-        let res = palette.override_by_colorset(&colorset);
+        let res = palette.override_by_color_sample(&colorset);
         assert!(res.is_ok());
 
         assert_eq!(3, palette.get_color_count());
@@ -130,7 +130,7 @@ mod test {
         let colorset = vec![];
 
         // 空のカラーセットで上書きしようとすると失敗する。
-        let res = palette.override_by_colorset(&colorset);
+        let res = palette.override_by_color_sample(&colorset);
         assert!(res.is_err());
     }
 

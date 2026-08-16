@@ -46,7 +46,7 @@ impl PaletteUi {
         } else if let Ok(content) = content {
             let mut colorset = vec![];
             decode(content, &mut colorset)?;
-            palette.borrow_mut().override_by_colorset(&colorset)?;
+            palette.borrow_mut().override_by_color_sample(&colorset)?;
         }
 
         Ok(())
