@@ -38,7 +38,7 @@ impl ColorSet {
             return Err(format!("invalid brightness {brightness}"));
         }
 
-        Ok(self.colors[BRIGHTNESS_RANGE + brightness as usize])
+        Ok(self.colors[(BRIGHTNESS_RANGE as i32 + brightness) as usize])
     }
 
     pub fn set_color(&mut self, brightness: i32, color: ODColor) -> Result<(), String> {
@@ -46,7 +46,7 @@ impl ColorSet {
             return Err(format!("invalid brightness {brightness}"));
         }
 
-        self.colors[BRIGHTNESS_RANGE + brightness as usize] = color;
+        self.colors[(BRIGHTNESS_RANGE as i32 + brightness) as usize] = color;
         Ok(())
     }
 }

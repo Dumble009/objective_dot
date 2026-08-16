@@ -1,8 +1,8 @@
-use crate::common::color::ODColor;
+use crate::common::color::{ColorSet, ODColor};
 use crate::common::palette::{Palette, PaletteColorIndex};
 
 pub struct PaletteMock {
-    colors: Vec<ODColor>,
+    colors: Vec<ColorSet>,
     current_selected_idx: PaletteColorIndex,
 }
 
@@ -10,7 +10,7 @@ impl PaletteMock {
     #[allow(dead_code)]
     pub fn new() -> Self {
         PaletteMock {
-            colors: vec![ODColor::new(0, 0, 0)],
+            colors: vec![ColorSet::new(ODColor::new(0, 0, 0))],
             current_selected_idx: (0, 0).into(),
         }
     }
@@ -18,12 +18,12 @@ impl PaletteMock {
 
 impl Palette for PaletteMock {
     fn add_color(&mut self, color: ODColor) -> Result<(), String> {
-        self.colors.push(color);
+        self.colors.push(ColorSet::new(color));
         Ok(())
     }
 
     fn get_color(&self, idx: PaletteColorIndex) -> Result<ODColor, String> {
-        Ok(self.colors[idx.idx])
+        self.colors[idx.idx].get_color(idx.brightness)
     }
 
     fn get_color_count(&self) -> usize {
@@ -40,13 +40,12 @@ impl Palette for PaletteMock {
     }
 
     fn change_color(&mut self, idx: PaletteColorIndex, new_color: ODColor) -> Result<(), String> {
-        self.colors[idx.idx] = new_color;
-        Ok(())
+        self.colors[idx.idx].set_color(idx.brightness, new_color)
     }
 
     fn reset(&mut self) {
         self.colors.clear();
-        self.colors.push(ODColor::new(0, 0, 0));
+        self.colors.push(ColorSet::new(ODColor::new(0, 0, 0)));
         self.current_selected_idx = (0, 0).into();
     }
 

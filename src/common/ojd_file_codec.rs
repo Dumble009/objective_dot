@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::common::color::ODColor;
+use crate::common::color::{ODColor, BRIGHTNESS_RANGE};
 
 use super::{drawing::Drawing, palette::PaletteColorIndex};
 const MAGIC_O: u8 = 0x4f;
@@ -39,10 +39,12 @@ pub fn encode(drawing: &dyn Drawing, out: &mut Vec<u8>) -> Result<(), String> {
     let color_count = palette.borrow().get_color_count();
     append!(out, color_count);
     for i in 0..palette.borrow().get_color_count() {
-        let color = palette.borrow().get_color((i, 0).into())?.to_color32();
-        append!(out, color.r());
-        append!(out, color.g());
-        append!(out, color.b());
+        for j in -(BRIGHTNESS_RANGE as i32)..(BRIGHTNESS_RANGE + 1) as i32 {
+            let color = palette.borrow().get_color((i, j).into())?.to_color32();
+            append!(out, color.r());
+            append!(out, color.g());
+            append!(out, color.b());
+        }
     }
 
     // グリッドのエンコード
@@ -88,15 +90,16 @@ pub fn decode(input: &[u8], drawing: Rc<RefCell<dyn Drawing>>) -> Result<(), Str
     let palette = drawing_ref.get_palette();
     palette.borrow_mut().reset();
     for i in 0..color_count {
-        let r: u8 = pop!(input, pos, 1, u8);
-        let g: u8 = pop!(input, pos, 1, u8);
-        let b: u8 = pop!(input, pos, 1, u8);
+        for j in -(BRIGHTNESS_RANGE as i32)..(BRIGHTNESS_RANGE + 1) as i32 {
+            let r: u8 = pop!(input, pos, 1, u8);
+            let g: u8 = pop!(input, pos, 1, u8);
+            let b: u8 = pop!(input, pos, 1, u8);
 
-        let color = ODColor::new(r, g, b);
-        if palette.borrow().get_color_count() <= i {
-            palette.borrow_mut().add_color(color)?;
-        } else {
-            palette.borrow_mut().change_color((i, 0).into(), color)?;
+            let color = ODColor::new(r, g, b);
+            if palette.borrow_mut().get_color_count() <= i {
+                palette.borrow_mut().add_color(color)?;
+            }
+            palette.borrow_mut().change_color((i, j).into(), color)?;
         }
     }
 
