@@ -43,7 +43,7 @@ impl ColorSet {
     pub fn get_color(&self, brightness: i32) -> Result<ODColor, String> {
         if i32::abs(brightness) > BRIGHTNESS_RANGE as i32
             || brightness > self.active_bright_range as i32
-            || brightness < (self.active_dark_range as i32) * -1
+            || brightness < -(self.active_dark_range as i32)
         {
             return Err(format!("invalid brightness {brightness}"));
         }
@@ -54,7 +54,7 @@ impl ColorSet {
     pub fn set_color(&mut self, brightness: i32, color: ODColor) -> Result<(), String> {
         if i32::abs(brightness) > BRIGHTNESS_RANGE as i32
             || brightness > self.active_bright_range as i32
-            || brightness < (self.active_dark_range as i32) * -1
+            || brightness < -(self.active_dark_range as i32)
         {
             return Err(format!("invalid brightness {brightness}"));
         }

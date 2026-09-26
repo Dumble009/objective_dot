@@ -1,7 +1,7 @@
 use std::cell::RefCell;
 use std::rc::Rc;
 
-use crate::common::color::{ODColor, BRIGHTNESS_RANGE};
+use crate::common::color::ODColor;
 
 use super::{drawing::Drawing, palette::PaletteColorIndex};
 const MAGIC_O: u8 = 0x4f;

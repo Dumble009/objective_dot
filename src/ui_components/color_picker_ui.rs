@@ -1,5 +1,5 @@
+use crate::common::color::ODColor;
 use crate::common::palette::PaletteColorIndex;
-use crate::common::{color::ODColor, palette::Palette};
 use color_picker::{color_picker_color32, Alpha};
 use eframe::egui::*;
 
