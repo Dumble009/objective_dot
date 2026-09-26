@@ -1,4 +1,5 @@
-use crate::common::color::ODColor;
+use crate::common::palette::PaletteColorIndex;
+use crate::common::{color::ODColor, palette::Palette};
 use color_picker::{color_picker_color32, Alpha};
 use eframe::egui::*;
 
@@ -13,7 +14,7 @@ pub struct ColorPickerUi {
 #[derive(PartialEq, Clone, Copy, Debug)]
 pub enum ColorPickResult {
     AddNewColor(ODColor),
-    ChangeColor(usize, ODColor),
+    ChangeColor(PaletteColorIndex, ODColor),
     Waiting,
     Canceled,
 }
@@ -22,7 +23,7 @@ pub enum ColorPickResult {
 
 pub enum ColorPickMode {
     AddNewColor,
-    ChangeColor(usize),
+    ChangeColor(PaletteColorIndex),
 }
 
 impl ColorPickerUi {

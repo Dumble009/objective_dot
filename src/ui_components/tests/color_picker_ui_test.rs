@@ -47,7 +47,7 @@ mod test {
     #[test]
     fn change_existing_color_test() {
         let mut color_picker_ui = ColorPickerUi::new();
-        let idx = 1;
+        let idx = (1, 0).into();
         color_picker_ui.show("", ColorPickMode::ChangeColor(idx));
 
         color_picker_ui.set_color(Color32::RED);
@@ -69,7 +69,7 @@ mod test {
         color_picker_ui.show(title2, ColorPickMode::AddNewColor);
         assert_eq!(color_picker_ui.window_title, title1);
 
-        color_picker_ui.show(title2, ColorPickMode::ChangeColor(1));
+        color_picker_ui.show(title2, ColorPickMode::ChangeColor((1, 0).into()));
         color_picker_ui.set_color(Color32::RED);
         let result = color_picker_ui.get_color();
         assert_eq!(

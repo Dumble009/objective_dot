@@ -29,6 +29,10 @@ impl From<(usize, i32)> for PaletteColorIndex {
 
 pub trait Palette {
     fn add_color(&mut self, color: ODColor) -> Result<(), String>;
+    fn add_brightness_range(&mut self, idx: usize) -> Result<(), String>;
+    fn add_darkness_range(&mut self, idx: usize) -> Result<(), String>;
+    fn get_active_brightness_range(&self, idx: usize) -> Result<usize, String>;
+    fn get_active_darkness_range(&self, idx: usize) -> Result<usize, String>;
     fn get_color(&self, idx: PaletteColorIndex) -> Result<ODColor, String>;
     fn get_color_count(&self) -> usize;
     fn get_current_selected_idx(&self) -> Result<PaletteColorIndex, String>;
@@ -60,6 +64,34 @@ impl Palette for ObjectPalette {
     fn add_color(&mut self, color: ODColor) -> Result<(), String> {
         self.color_sets.push(ColorSet::new(color));
         Ok(())
+    }
+
+    fn add_brightness_range(&mut self, idx: usize) -> Result<(), String> {
+        if idx >= self.color_sets.len() {
+            return Err(format!("idx is invalid! idx:{}", idx));
+        }
+
+        self.color_sets[idx].add_brightness_range()
+    }
+
+    fn get_active_brightness_range(&self, idx: usize) -> Result<usize, String> {
+        if idx >= self.color_sets.len() {
+            return Err(format!("idx is invalid! idx:{}", idx));
+        }
+
+        Ok(self.color_sets[idx].get_active_brightness_range())
+    }
+
+    fn get_active_darkness_range(&self, idx: usize) -> Result<usize, String> {
+        if idx >= self.color_sets.len() {
+            return Err(format!("idx is invalid! idx:{}", idx));
+        }
+
+        Ok(self.color_sets[idx].get_active_darkness_range())
+    }
+
+    fn add_darkness_range(&mut self, idx: usize) -> Result<(), String> {
+        self.color_sets[idx].add_darkness_range()
     }
 
     fn get_color(&self, idx: PaletteColorIndex) -> Result<ODColor, String> {

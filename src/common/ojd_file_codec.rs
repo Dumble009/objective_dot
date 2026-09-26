@@ -39,7 +39,11 @@ pub fn encode(drawing: &dyn Drawing, out: &mut Vec<u8>) -> Result<(), String> {
     let color_count = palette.borrow().get_color_count();
     append!(out, color_count);
     for i in 0..palette.borrow().get_color_count() {
-        for j in -(BRIGHTNESS_RANGE as i32)..(BRIGHTNESS_RANGE + 1) as i32 {
+        let brightness_range = palette.borrow().get_active_brightness_range(i)?;
+        append!(out, brightness_range);
+        let darkness_range = palette.borrow().get_active_darkness_range(i)?;
+        append!(out, darkness_range);
+        for j in -(darkness_range as i32)..=(brightness_range as i32) {
             let color = palette.borrow().get_color((i, j).into())?.to_color32();
             append!(out, color.r());
             append!(out, color.g());
@@ -90,7 +94,15 @@ pub fn decode(input: &[u8], drawing: Rc<RefCell<dyn Drawing>>) -> Result<(), Str
     let palette = drawing_ref.get_palette();
     palette.borrow_mut().reset();
     for i in 0..color_count {
-        for j in -(BRIGHTNESS_RANGE as i32)..(BRIGHTNESS_RANGE + 1) as i32 {
+        let brightness_range = pop!(input, pos, 8, usize);
+        for _ in 0..brightness_range {
+            palette.borrow_mut().add_brightness_range(i)?;
+        }
+        let darkness_range = pop!(input, pos, 8, usize);
+        for _ in 0..darkness_range {
+            palette.borrow_mut().add_darkness_range(i)?;
+        }
+        for j in -(darkness_range as i32)..=(brightness_range as i32) {
             let r: u8 = pop!(input, pos, 1, u8);
             let g: u8 = pop!(input, pos, 1, u8);
             let b: u8 = pop!(input, pos, 1, u8);

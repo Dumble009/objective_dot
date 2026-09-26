@@ -26,16 +26,35 @@ mod test {
         let color = color_set.get_color(0).unwrap();
         assert_eq!(color, ODColor::new(1, 2, 3));
 
+        let res = color_set.add_brightness_range();
+        assert!(res.is_ok());
+
         let res = color_set.set_color(1, ODColor::new(2, 4, 6));
         assert!(res.is_ok());
 
         let color = color_set.get_color(1).unwrap();
         assert_eq!(color, ODColor::new(2, 4, 6));
 
-        let res = color_set.get_color(100);
+        let res = color_set.add_darkness_range();
+        assert!(res.is_ok());
+
+        let res = color_set.set_color(-1, ODColor::new(3, 6, 9));
+        assert!(res.is_ok());
+
+        let color = color_set.get_color(-1).unwrap();
+        assert_eq!(color, ODColor::new(3, 6, 9));
+
+        // アクティブな範囲を超えるとエラー
+        let res = color_set.get_color(2);
         assert!(res.is_err());
 
-        let res = color_set.set_color(100, ODColor::new(5, 6, 7));
+        let res = color_set.set_color(2, ODColor::new(5, 6, 7));
+        assert!(res.is_err());
+
+        let res = color_set.get_color(-2);
+        assert!(res.is_err());
+
+        let res = color_set.set_color(-2, ODColor::new(5, 6, 7));
         assert!(res.is_err());
     }
 }
