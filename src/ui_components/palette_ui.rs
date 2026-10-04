@@ -105,9 +105,16 @@ impl PaletteUi {
 
     fn draw_color_rows(&mut self, ui: &mut Ui, palette: Rc<RefCell<dyn Palette>>, idx: usize) {
         let width = ui.available_width();
-        const ROW_HEIGHT: f32 = 20.0;
-        const COLOR_BUTTON_WIDTH: f32 = 20.0;
+        const ROW_HEIGHT: f32 = 23.0;
+        const CENTER_BUTTON_HEIGHT: f32 = ROW_HEIGHT;
+
+        const COLOR_BUTTON_AREA_WIDTH: f32 = 23.0;
+        const COLOR_BUTTON_X_MARGIN: f32 = 1.5;
+        const COLOR_BUTTON_WIDTH: f32 = COLOR_BUTTON_AREA_WIDTH - COLOR_BUTTON_X_MARGIN * 2.0;
+        const COLOR_BUTTON_HEIGHT: f32 = ROW_HEIGHT - 3.0;
+
         const ADD_BRIGHTNESS_BUTTON_WIDTH: f32 = 20.0;
+        const ADD_BRIGHTNESS_BUTTON_HEIGHT: f32 = 20.0;
 
         let (row_rect, _) =
             ui.allocate_exact_size(egui::vec2(width, ROW_HEIGHT), egui::Sense::hover());
@@ -115,7 +122,7 @@ impl PaletteUi {
             // 左端の + ボタン
             let rect = egui::Rect::from_min_size(
                 row_rect.left_top(),
-                egui::vec2(ADD_BRIGHTNESS_BUTTON_WIDTH, ROW_HEIGHT),
+                egui::vec2(ADD_BRIGHTNESS_BUTTON_WIDTH, ADD_BRIGHTNESS_BUTTON_HEIGHT),
             );
             let left_plus_button_res = ui.put(rect, egui::Button::new("+"));
             if left_plus_button_res.clicked_by(PointerButton::Primary) {
@@ -127,7 +134,7 @@ impl PaletteUi {
             // 右端の + ボタン
             let rect = egui::Rect::from_min_size(
                 row_rect.right_top() - egui::vec2(ADD_BRIGHTNESS_BUTTON_WIDTH, 0.0),
-                egui::vec2(ADD_BRIGHTNESS_BUTTON_WIDTH, ROW_HEIGHT),
+                egui::vec2(ADD_BRIGHTNESS_BUTTON_WIDTH, ADD_BRIGHTNESS_BUTTON_HEIGHT),
             );
             let right_plus_button_res = ui.put(rect, egui::Button::new("+"));
             if right_plus_button_res.clicked_by(PointerButton::Primary) {
@@ -142,8 +149,9 @@ impl PaletteUi {
         let button = Button::new("").fill(color.to_color32());
 
         let rect = egui::Rect::from_min_size(
-            row_rect.center() - egui::vec2(COLOR_BUTTON_WIDTH / 2.0, ROW_HEIGHT / 2.0),
-            egui::vec2(COLOR_BUTTON_WIDTH, ROW_HEIGHT),
+            row_rect.center()
+                - egui::vec2(COLOR_BUTTON_AREA_WIDTH / 2.0, CENTER_BUTTON_HEIGHT / 2.0),
+            egui::vec2(COLOR_BUTTON_AREA_WIDTH, CENTER_BUTTON_HEIGHT),
         );
         let color_button_res = ui.put(rect, button);
 
@@ -168,10 +176,12 @@ impl PaletteUi {
             let rect = egui::Rect::from_min_size(
                 row_rect.center()
                     + egui::vec2(
-                        COLOR_BUTTON_WIDTH / 2.0 + (brightness - 1) as f32 * COLOR_BUTTON_WIDTH,
-                        -ROW_HEIGHT / 2.0,
+                        COLOR_BUTTON_AREA_WIDTH / 2.0
+                            + (brightness - 1) as f32 * COLOR_BUTTON_AREA_WIDTH
+                            + COLOR_BUTTON_X_MARGIN,
+                        -COLOR_BUTTON_HEIGHT / 2.0,
                     ),
-                egui::vec2(COLOR_BUTTON_WIDTH, ROW_HEIGHT),
+                egui::vec2(COLOR_BUTTON_WIDTH, COLOR_BUTTON_HEIGHT),
             );
             let color_button_res = ui.put(rect, button);
 
@@ -201,10 +211,12 @@ impl PaletteUi {
             let rect = egui::Rect::from_min_size(
                 row_rect.center()
                     + egui::vec2(
-                        -COLOR_BUTTON_WIDTH / 2.0 - (darkness) as f32 * COLOR_BUTTON_WIDTH,
-                        -ROW_HEIGHT / 2.0,
+                        -COLOR_BUTTON_AREA_WIDTH / 2.0
+                            - (darkness) as f32 * COLOR_BUTTON_AREA_WIDTH
+                            + COLOR_BUTTON_X_MARGIN,
+                        -COLOR_BUTTON_HEIGHT / 2.0,
                     ),
-                egui::vec2(COLOR_BUTTON_WIDTH, ROW_HEIGHT),
+                egui::vec2(COLOR_BUTTON_WIDTH, COLOR_BUTTON_HEIGHT),
             );
             let color_button_res = ui.put(rect, button);
 
