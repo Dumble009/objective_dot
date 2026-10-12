@@ -1,6 +1,8 @@
 use crate::actions::action::Action;
+use crate::actions::palette_brightness_add_action::PaletteBrightnessAddAction;
 use crate::actions::palette_color_add_action::PaletteColorAddAction;
 use crate::actions::palette_color_change_action::PaletteColorChangeAction;
+use crate::actions::palette_darkness_add_action::PaletteDarknessAddAction;
 use crate::common::paint_net_codec::decode;
 use crate::common::palette::Palette;
 use crate::ui_components::color_picker_ui::{ColorPickMode, ColorPickResult, ColorPickerUi};
@@ -93,17 +95,30 @@ impl PaletteUi {
         }
 
         let layout = Layout::top_down(Align::Min);
-        ui.with_layout(layout, |ui| self.draw_color_boxes(ui, palette.clone()));
+        ui.with_layout(layout, |ui| {
+            self.draw_color_boxes(ui, palette.clone(), action_q)
+        });
     }
 
-    fn draw_color_boxes(&mut self, ui: &mut Ui, palette: Rc<RefCell<dyn Palette>>) {
+    fn draw_color_boxes(
+        &mut self,
+        ui: &mut Ui,
+        palette: Rc<RefCell<dyn Palette>>,
+        action_q: &mut VecDeque<Box<dyn Action>>,
+    ) {
         let color_count = palette.borrow().get_color_count();
         for idx in 0..color_count {
-            self.draw_color_rows(ui, palette.clone(), idx);
+            self.draw_color_rows(ui, palette.clone(), idx, action_q);
         }
     }
 
-    fn draw_color_rows(&mut self, ui: &mut Ui, palette: Rc<RefCell<dyn Palette>>, idx: usize) {
+    fn draw_color_rows(
+        &mut self,
+        ui: &mut Ui,
+        palette: Rc<RefCell<dyn Palette>>,
+        idx: usize,
+        action_q: &mut VecDeque<Box<dyn Action>>,
+    ) {
         let width = ui.available_width();
         const ROW_HEIGHT: f32 = 23.0;
         const CENTER_BUTTON_HEIGHT: f32 = ROW_HEIGHT;
@@ -126,9 +141,8 @@ impl PaletteUi {
             );
             let left_plus_button_res = ui.put(rect, egui::Button::new("+"));
             if left_plus_button_res.clicked_by(PointerButton::Primary) {
-                if let Err(msg) = palette.borrow_mut().add_darkness_range(idx) {
-                    println!("Palette Error: {msg}");
-                }
+                let action = PaletteDarknessAddAction::new(palette.clone(), idx);
+                action_q.push_front(Box::new(action));
             }
 
             // 右端の + ボタン
@@ -138,9 +152,8 @@ impl PaletteUi {
             );
             let right_plus_button_res = ui.put(rect, egui::Button::new("+"));
             if right_plus_button_res.clicked_by(PointerButton::Primary) {
-                if let Err(msg) = palette.borrow_mut().add_brightness_range(idx) {
-                    println!("Palette Error: {msg}");
-                }
+                let action = PaletteBrightnessAddAction::new(palette.clone(), idx);
+                action_q.push_front(Box::new(action));
             }
         }
 

@@ -30,8 +30,16 @@ impl Palette for PaletteMock {
         self.colors[idx].add_brightness_range()
     }
 
+    fn dec_brightness_range(&mut self, idx: usize) -> Result<(), String> {
+        self.colors[idx].dec_brightness_range()
+    }
+
     fn add_darkness_range(&mut self, idx: usize) -> Result<(), String> {
         self.colors[idx].add_darkness_range()
+    }
+
+    fn dec_darkness_range(&mut self, idx: usize) -> Result<(), String> {
+        self.colors[idx].dec_darkness_range()
     }
 
     fn get_active_brightness_range(&self, idx: usize) -> Result<usize, String> {

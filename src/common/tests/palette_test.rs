@@ -151,4 +151,38 @@ mod test {
         assert!(res.is_err());
         assert_eq!(1, palette.get_color_count());
     }
+
+    #[test]
+    fn add_dec_brightness_range_test() {
+        let mut palette = ObjectPalette::new();
+
+        let res = palette.add_color(ODColor::new(1, 1, 1));
+        assert!(res.is_ok());
+
+        let res = palette.add_brightness_range(1);
+        assert!(res.is_ok());
+
+        let res = palette.dec_brightness_range(1);
+        assert!(res.is_ok());
+
+        let res = palette.dec_brightness_range(1);
+        assert!(res.is_err());
+    }
+
+    #[test]
+    fn add_dec_darkness_range_test() {
+        let mut palette = ObjectPalette::new();
+
+        let res = palette.add_color(ODColor::new(1, 1, 1));
+        assert!(res.is_ok());
+
+        let res = palette.add_darkness_range(1);
+        assert!(res.is_ok());
+
+        let res = palette.dec_darkness_range(1);
+        assert!(res.is_ok());
+
+        let ref res = palette.dec_darkness_range(1);
+        assert!(res.is_err());
+    }
 }

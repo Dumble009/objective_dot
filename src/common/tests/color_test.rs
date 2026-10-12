@@ -56,5 +56,18 @@ mod test {
 
         let res = color_set.set_color(-2, ODColor::new(5, 6, 7));
         assert!(res.is_err());
+
+        // undo 用の明るさ・暗さの削減
+        let res = color_set.dec_brightness_range();
+        assert!(res.is_ok());
+
+        let res = color_set.get_color(1);
+        assert!(res.is_err());
+
+        let res = color_set.dec_darkness_range();
+        assert!(res.is_ok());
+
+        let res = color_set.get_color(-1);
+        assert!(res.is_err());
     }
 }
