@@ -18,6 +18,12 @@ impl PartialEq<(usize, i32)> for PaletteColorIndex {
     }
 }
 
+impl PartialEq<PaletteColorIndex> for (usize, i32) {
+    fn eq(&self, other: &PaletteColorIndex) -> bool {
+        self.0 == other.idx && self.1 == other.brightness
+    }
+}
+
 impl From<(usize, i32)> for PaletteColorIndex {
     fn from(value: (usize, i32)) -> Self {
         Self {

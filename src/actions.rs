@@ -6,3 +6,4 @@ pub mod palette_brightness_add_action;
 pub mod palette_color_add_action;
 pub mod palette_color_change_action;
 pub mod palette_darkness_add_action;
+pub mod palette_select_color_action;

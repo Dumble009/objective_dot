@@ -3,6 +3,7 @@ use crate::actions::palette_brightness_add_action::PaletteBrightnessAddAction;
 use crate::actions::palette_color_add_action::PaletteColorAddAction;
 use crate::actions::palette_color_change_action::PaletteColorChangeAction;
 use crate::actions::palette_darkness_add_action::PaletteDarknessAddAction;
+use crate::actions::palette_select_color_action::PaletteSelectColorAction;
 use crate::common::paint_net_codec::decode;
 use crate::common::palette::Palette;
 use crate::ui_components::color_picker_ui::{ColorPickMode, ColorPickResult, ColorPickerUi};
@@ -169,9 +170,11 @@ impl PaletteUi {
         let color_button_res = ui.put(rect, button);
 
         if color_button_res.clicked_by(PointerButton::Primary) {
-            if let Err(msg) = palette.borrow_mut().select_color((idx, 0).into()) {
-                println!("Palette Error: {msg}");
-            }
+            let before_idx = palette.borrow().get_current_selected_idx().unwrap();
+
+            let action =
+                PaletteSelectColorAction::new(palette.clone(), before_idx, (idx, 0).into());
+            action_q.push_front(Box::new(action));
         } else if color_button_res.clicked_by(PointerButton::Secondary) {
             self.color_picker
                 .show("Change Color", ColorPickMode::ChangeColor((idx, 0).into()));
@@ -199,12 +202,13 @@ impl PaletteUi {
             let color_button_res = ui.put(rect, button);
 
             if color_button_res.clicked_by(PointerButton::Primary) {
-                if let Err(msg) = palette
-                    .borrow_mut()
-                    .select_color((idx, brightness as i32).into())
-                {
-                    println!("Palette Error: {msg}");
-                }
+                let before_idx = palette.borrow().get_current_selected_idx().unwrap();
+                let action = PaletteSelectColorAction::new(
+                    palette.clone(),
+                    before_idx,
+                    (idx, brightness as i32).into(),
+                );
+                action_q.push_front(Box::new(action));
             } else if color_button_res.clicked_by(PointerButton::Secondary) {
                 self.color_picker.show(
                     "Change Color",
@@ -234,12 +238,13 @@ impl PaletteUi {
             let color_button_res = ui.put(rect, button);
 
             if color_button_res.clicked_by(PointerButton::Primary) {
-                if let Err(msg) = palette
-                    .borrow_mut()
-                    .select_color((idx, -(darkness as i32)).into())
-                {
-                    println!("Palette Error: {msg}");
-                }
+                let before_idx = palette.borrow().get_current_selected_idx().unwrap();
+                let action = PaletteSelectColorAction::new(
+                    palette.clone(),
+                    before_idx,
+                    (idx, -(darkness as i32)).into(),
+                );
+                action_q.push_front(Box::new(action));
             } else if color_button_res.clicked_by(PointerButton::Secondary) {
                 self.color_picker.show(
                     "Change Color",
