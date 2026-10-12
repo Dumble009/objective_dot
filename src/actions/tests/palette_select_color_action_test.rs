@@ -1,6 +1,7 @@
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::common::color::ODColor;
     use crate::common::palette::Palette;
     use crate::mock::palette_mock::PaletteMock;
 

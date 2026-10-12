@@ -76,7 +76,7 @@ impl ColorSet {
     }
 
     pub fn dec_brightness_range(&mut self) -> Result<(), String> {
-        if self.active_bright_range <= 0 {
+        if self.active_bright_range == 0 {
             return Err(format!(
                 "cannot decrease brightness range. current: {}",
                 self.active_bright_range
@@ -100,7 +100,7 @@ impl ColorSet {
     }
 
     pub fn dec_darkness_range(&mut self) -> Result<(), String> {
-        if self.active_dark_range <= 0 {
+        if self.active_dark_range == 0 {
             return Err(format!(
                 "cannot decrease darkness range. current: {}",
                 self.active_dark_range
